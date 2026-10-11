@@ -1,5 +1,12 @@
-import React from 'react';
-import { Hospital, MapPin, Phone, Mail, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import React from "react";
+import {
+  Hospital,
+  MapPin,
+  Phone,
+  Mail,
+  ArrowUpRight,
+  ShieldCheck,
+} from "lucide-react";
 
 interface PublicFooterProps {
   onNavigate: (path: string) => void;
@@ -25,7 +32,9 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </span>
             </div>
             <p className="text-sm text-zinc-400 leading-relaxed max-w-sm">
-              Modern private healthcare platform connecting patients with trusted doctors, real-time consultation queuing, and verified appointments across Addis Ababa.
+              Modern private healthcare platform connecting patients with
+              trusted doctors, real-time consultation queuing, and verified
+              appointments across Addis Ababa.
             </p>
             <div className="space-y-2 text-xs text-zinc-400 pt-2">
               <div className="flex items-center gap-2.5">
@@ -38,18 +47,20 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-[#3B82F6] shrink-0" />
-                <span>support@mediflowet.com</span>
+                <span>support@ClinicFlow.com</span>
               </div>
             </div>
           </div>
 
           {/* Column 2: Platform */}
           <div className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-white">Platform</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-white">
+              Platform
+            </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
                 <button
-                  onClick={() => scrollToSection('services')}
+                  onClick={() => scrollToSection("services")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   Medical Services
@@ -57,7 +68,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => scrollToSection('specialties')}
+                  onClick={() => scrollToSection("specialties")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   Specialties & Doctors
@@ -65,7 +76,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => scrollToSection('how-it-works')}
+                  onClick={() => scrollToSection("how-it-works")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   How It Works
@@ -73,7 +84,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => scrollToSection('faq')}
+                  onClick={() => scrollToSection("faq")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   Frequently Asked Questions
@@ -81,7 +92,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => onNavigate('/patient')}
+                  onClick={() => onNavigate("/patient")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   Patient Portal
@@ -92,11 +103,13 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
 
           {/* Column 3: Company */}
           <div className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-white">Company</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-white">
+              Company
+            </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
                 <button
-                  onClick={() => onNavigate('/about')}
+                  onClick={() => onNavigate("/about")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   About MediFlow
@@ -104,7 +117,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => onNavigate('/contact')}
+                  onClick={() => onNavigate("/contact")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   Contact & Support
@@ -112,7 +125,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => onNavigate('/dashboard/overview')}
+                  onClick={() => onNavigate("/dashboard/overview")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   Clinic Dashboard
@@ -120,7 +133,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => onNavigate('/doctor/overview')}
+                  onClick={() => onNavigate("/doctor/overview")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   Physician Portal
@@ -128,7 +141,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => onNavigate('/patient/dashboard')}
+                  onClick={() => onNavigate("/patient/dashboard")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   Patient Portal
@@ -139,16 +152,24 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
 
           {/* Column 4: Support & Standards */}
           <div className="space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-white">Support</h4>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-white">
+              Support
+            </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <span className="hover:text-white transition-colors cursor-pointer">Help Center & FAQ</span>
+                <span className="hover:text-white transition-colors cursor-pointer">
+                  Help Center & FAQ
+                </span>
               </li>
               <li>
-                <span className="hover:text-white transition-colors cursor-pointer">Privacy Policy</span>
+                <span className="hover:text-white transition-colors cursor-pointer">
+                  Privacy Policy
+                </span>
               </li>
               <li>
-                <span className="hover:text-white transition-colors cursor-pointer">Terms of Service</span>
+                <span className="hover:text-white transition-colors cursor-pointer">
+                  Terms of Service
+                </span>
               </li>
               <li>
                 <div className="pt-2">
@@ -168,10 +189,18 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
             © 2026 MediFlow ET. All rights reserved. Addis Ababa, Ethiopia.
           </div>
           <div className="flex items-center gap-6">
-            <span className="hover:text-zinc-300 transition-colors cursor-pointer">Privacy</span>
-            <span className="hover:text-zinc-300 transition-colors cursor-pointer">Terms</span>
-            <span className="hover:text-zinc-300 transition-colors cursor-pointer">Patient Rights</span>
-            <span className="hover:text-zinc-300 transition-colors cursor-pointer">Telebirr Integration</span>
+            <span className="hover:text-zinc-300 transition-colors cursor-pointer">
+              Privacy
+            </span>
+            <span className="hover:text-zinc-300 transition-colors cursor-pointer">
+              Terms
+            </span>
+            <span className="hover:text-zinc-300 transition-colors cursor-pointer">
+              Patient Rights
+            </span>
+            <span className="hover:text-zinc-300 transition-colors cursor-pointer">
+              Telebirr Integration
+            </span>
           </div>
         </div>
       </div>

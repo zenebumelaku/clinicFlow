@@ -1,24 +1,37 @@
-import React, { useState } from 'react';
-import { Mail, Phone, MapPin, CheckCircle2, Hospital, Clock, ShieldCheck, ArrowRight } from 'lucide-react';
-import { Button } from '../../components/ui/Button';
-import { useToast } from '../../components/ui/Toast';
+import React, { useState } from "react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  CheckCircle2,
+  Hospital,
+  Clock,
+  ShieldCheck,
+  ArrowRight,
+} from "lucide-react";
+import { Button } from "../../components/ui/Button";
+import { useToast } from "../../components/ui/Toast";
 
-export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () => {
+export const ContactPage: React.FC<{
+  onNavigate: (path: string) => void;
+}> = () => {
   const { success } = useToast();
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
-    clinicName: '',
-    contactPerson: '',
-    phone: '',
-    email: '',
-    city: 'Addis Ababa',
-    notes: ''
+    clinicName: "",
+    contactPerson: "",
+    phone: "",
+    email: "",
+    city: "Addis Ababa",
+    notes: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    success('Inquiry received! A MediFlow ET clinic onboarding specialist will contact you.');
+    success(
+      "Inquiry received! A MediFlow ET clinic onboarding specialist will contact you.",
+    );
   };
 
   return (
@@ -33,7 +46,8 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
             Contact MediFlow ET
           </h1>
           <p className="text-base text-[#667085] dark:text-zinc-400">
-            Have questions or want to deploy MediFlow ET in your private practice or hospital? Our Addis Ababa team is ready to assist.
+            Have questions or want to deploy MediFlow ET in your private
+            practice or hospital? Our Addis Ababa team is ready to assist.
           </p>
         </div>
 
@@ -41,9 +55,13 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
           {/* Info Side */}
           <div className="lg:col-span-5 bg-[#F7FAFC] dark:bg-[#121214] rounded-3xl p-8 border border-[#E6EAF0] dark:border-zinc-800 space-y-8">
             <div>
-              <h2 className="text-xl font-bold text-[#172033] dark:text-white">Clinic Onboarding Office</h2>
+              <h2 className="text-xl font-bold text-[#172033] dark:text-white">
+                Clinic Onboarding Office
+              </h2>
               <p className="text-sm text-[#667085] dark:text-zinc-400 mt-1 leading-relaxed">
-                We work directly with medical directors and clinic administrators across Ethiopia to set up consultation rooms, queue screens, and front desk tablets.
+                We work directly with medical directors and clinic
+                administrators across Ethiopia to set up consultation rooms,
+                queue screens, and front desk tablets.
               </p>
             </div>
 
@@ -53,7 +71,9 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
                   <MapPin className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="font-semibold text-[#172033] dark:text-white">Physical Address</div>
+                  <div className="font-semibold text-[#172033] dark:text-white">
+                    Physical Address
+                  </div>
                   <div className="text-xs text-[#667085] dark:text-zinc-400 mt-0.5">
                     Cameroon St., Bole Sub-City, Addis Ababa, Ethiopia
                   </div>
@@ -65,7 +85,9 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
                   <Phone className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="font-semibold text-[#172033] dark:text-white">Direct Lines</div>
+                  <div className="font-semibold text-[#172033] dark:text-white">
+                    Direct Lines
+                  </div>
                   <div className="text-xs text-[#667085] dark:text-zinc-400 mt-0.5">
                     +251 11 662 4890 · +251 911 200 300
                   </div>
@@ -77,9 +99,11 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
                   <Mail className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="font-semibold text-[#172033] dark:text-white">Electronic Mail</div>
+                  <div className="font-semibold text-[#172033] dark:text-white">
+                    Electronic Mail
+                  </div>
                   <div className="text-xs text-[#667085] dark:text-zinc-400 mt-0.5">
-                    clinics@mediflowet.com · support@mediflowet.com
+                    clinics@ClinicFlow.com · support@ClinicFlow.com
                   </div>
                 </div>
               </div>
@@ -89,7 +113,9 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
                   <Clock className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="font-semibold text-[#172033] dark:text-white">Operating Hours</div>
+                  <div className="font-semibold text-[#172033] dark:text-white">
+                    Operating Hours
+                  </div>
                   <div className="text-xs text-[#667085] dark:text-zinc-400 mt-0.5">
                     Monday – Saturday: 8:00 AM – 7:30 PM EAT
                   </div>
@@ -99,7 +125,10 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
 
             <div className="p-4 rounded-2xl bg-white dark:bg-[#18181b] border border-[#E6EAF0] dark:border-zinc-800 text-xs text-[#667085] dark:text-zinc-400 flex items-center gap-3">
               <ShieldCheck className="w-5 h-5 text-[#22A06B] shrink-0" />
-              <span>Certified under Ethiopian Ministry of Health clinical IT standards.</span>
+              <span>
+                Certified under Ethiopian Ministry of Health clinical IT
+                standards.
+              </span>
             </div>
           </div>
 
@@ -110,9 +139,12 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
                 <div className="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-[#22A06B] flex items-center justify-center mx-auto border border-emerald-200 dark:border-emerald-800">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
-                <h3 className="text-2xl font-bold text-[#172033] dark:text-white">Thank you for reaching out</h3>
+                <h3 className="text-2xl font-bold text-[#172033] dark:text-white">
+                  Thank you for reaching out
+                </h3>
                 <p className="text-sm text-[#667085] dark:text-zinc-400 max-w-md mx-auto">
-                  Our clinic onboarding specialist will contact {formData.contactPerson || 'you'} within one business day.
+                  Our clinic onboarding specialist will contact{" "}
+                  {formData.contactPerson || "you"} within one business day.
                 </p>
                 <button
                   onClick={() => setSubmitted(false)}
@@ -123,8 +155,13 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
-                <h2 className="text-xl font-bold text-[#172033] dark:text-white">Request Clinic Onboarding or Demo</h2>
-                <p className="text-xs text-[#667085] dark:text-zinc-400">Fill out the details below and we will prepare a custom overview.</p>
+                <h2 className="text-xl font-bold text-[#172033] dark:text-white">
+                  Request Clinic Onboarding or Demo
+                </h2>
+                <p className="text-xs text-[#667085] dark:text-zinc-400">
+                  Fill out the details below and we will prepare a custom
+                  overview.
+                </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -135,7 +172,9 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
                       type="text"
                       required
                       value={formData.clinicName}
-                      onChange={(e) => setFormData({ ...formData, clinicName: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, clinicName: e.target.value })
+                      }
                       placeholder="e.g. Bole Specialty Clinic"
                       className="w-full h-11 px-3.5 rounded-xl border border-[#E6EAF0] dark:border-zinc-700 bg-white dark:bg-[#18181b] text-xs text-[#172033] dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#1D5BD8]"
                     />
@@ -149,7 +188,12 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
                       type="text"
                       required
                       value={formData.contactPerson}
-                      onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          contactPerson: e.target.value,
+                        })
+                      }
                       placeholder="e.g. Dr. Yohannes T."
                       className="w-full h-11 px-3.5 rounded-xl border border-[#E6EAF0] dark:border-zinc-700 bg-white dark:bg-[#18181b] text-xs text-[#172033] dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#1D5BD8]"
                     />
@@ -165,7 +209,9 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
                       type="tel"
                       required
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
                       placeholder="+251 911 000 000"
                       className="w-full h-11 px-3.5 rounded-xl border border-[#E6EAF0] dark:border-zinc-700 bg-white dark:bg-[#18181b] text-xs text-[#172033] dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#1D5BD8]"
                     />
@@ -179,7 +225,9 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
                       type="email"
                       required
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
                       placeholder="admin@clinic.com"
                       className="w-full h-11 px-3.5 rounded-xl border border-[#E6EAF0] dark:border-zinc-700 bg-white dark:bg-[#18181b] text-xs text-[#172033] dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#1D5BD8]"
                     />
@@ -192,14 +240,24 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
                   </label>
                   <select
                     value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, city: e.target.value })
+                    }
                     className="w-full h-11 px-3.5 rounded-xl border border-[#E6EAF0] dark:border-zinc-700 bg-white dark:bg-[#18181b] text-xs text-[#172033] dark:text-white focus:outline-none focus:border-[#1D5BD8] cursor-pointer [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-[#18181b] dark:[&>option]:text-zinc-100"
                   >
-                    <option value="Addis Ababa - Bole">Addis Ababa - Bole</option>
-                    <option value="Addis Ababa - Kazanchis">Addis Ababa - Kazanchis</option>
+                    <option value="Addis Ababa - Bole">
+                      Addis Ababa - Bole
+                    </option>
+                    <option value="Addis Ababa - Kazanchis">
+                      Addis Ababa - Kazanchis
+                    </option>
                     <option value="Addis Ababa - CMC">Addis Ababa - CMC</option>
-                    <option value="Addis Ababa - Piassa">Addis Ababa - Piassa</option>
-                    <option value="Addis Ababa - Kirkos">Addis Ababa - Kirkos</option>
+                    <option value="Addis Ababa - Piassa">
+                      Addis Ababa - Piassa
+                    </option>
+                    <option value="Addis Ababa - Kirkos">
+                      Addis Ababa - Kirkos
+                    </option>
                     <option value="Hawassa">Hawassa</option>
                     <option value="Adama">Adama</option>
                     <option value="Bahir Dar">Bahir Dar</option>
@@ -213,7 +271,9 @@ export const ContactPage: React.FC<{ onNavigate: (path: string) => void }> = () 
                   <textarea
                     rows={3}
                     value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, notes: e.target.value })
+                    }
                     placeholder="e.g. 4 consultation rooms, 1 laboratory, expecting 40 patients daily."
                     className="w-full p-3.5 rounded-xl border border-[#E6EAF0] dark:border-zinc-700 bg-white dark:bg-[#18181b] text-xs text-[#172033] dark:text-white placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:outline-none focus:border-[#1D5BD8]"
                   />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Clock,
   Users,
@@ -24,10 +24,10 @@ import {
   FlaskConical,
   Microscope,
   Award,
-  X
-} from 'lucide-react';
-import { ScrollReveal } from '../../components/ui/ScrollReveal';
-import { AnimatedCounter } from '../../components/ui/AnimatedCounter';
+  X,
+} from "lucide-react";
+import { ScrollReveal } from "../../components/ui/ScrollReveal";
+import { AnimatedCounter } from "../../components/ui/AnimatedCounter";
 
 interface LandingPageProps {
   onNavigate: (path: string) => void;
@@ -35,17 +35,21 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
-  const [activeDeptTab, setActiveDeptTab] = useState<'all' | 'internal' | 'pediatrics' | 'womens' | 'procedure'>('all');
+  const [activeDeptTab, setActiveDeptTab] = useState<
+    "all" | "internal" | "pediatrics" | "womens" | "procedure"
+  >("all");
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [selectedDoctorForBooking, setSelectedDoctorForBooking] = useState<string | null>(null);
+  const [selectedDoctorForBooking, setSelectedDoctorForBooking] = useState<
+    string | null
+  >(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
   // Booking form states
-  const [patientName, setPatientName] = useState('');
-  const [patientPhone, setPatientPhone] = useState('');
-  const [selectedDate, setSelectedDate] = useState('2026-10-10');
-  const [selectedTime, setSelectedTime] = useState('10:30 AM');
-  const [selectedDoctor, setSelectedDoctor] = useState('Dr. Hana Tesfaye');
+  const [patientName, setPatientName] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [selectedDate, setSelectedDate] = useState("2026-10-10");
+  const [selectedTime, setSelectedTime] = useState("10:30 AM");
+  const [selectedDoctor, setSelectedDoctor] = useState("Dr. Hana Tesfaye");
 
   const toggleFaq = (idx: number) => {
     setActiveFaq(activeFaq === idx ? null : idx);
@@ -71,73 +75,77 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
   // Curated list of departments & accredited physicians in Addis Ababa
   const doctorsList = [
     {
-      id: 'doc-1',
-      name: 'Dr. Hana Tesfaye, MD',
-      specialty: 'Internal Medicine & Chronic Care',
-      dept: 'internal',
-      room: 'Suite 102 · East Wing',
-      experience: '14 Years Exp.',
-      rating: '4.95',
-      reviews: '340 reviews',
-      avatar: '/src/assets/images/doctor_hana_avatar_1791475818100.jpg',
-      image: '/src/assets/images/room_internal_suite_1791479207782.jpg',
-      hours: 'Mon - Fri · 08:30 - 17:00 EAT',
-      fee: '800 ETB',
-      status: 'Available Today',
-      description: 'Specializes in adult health evaluations, cardiovascular risk screening, hypertension, and long-term diabetes management.'
+      id: "doc-1",
+      name: "Dr. Hana Tesfaye, MD",
+      specialty: "Internal Medicine & Chronic Care",
+      dept: "internal",
+      room: "Suite 102 · East Wing",
+      experience: "14 Years Exp.",
+      rating: "4.95",
+      reviews: "340 reviews",
+      avatar: "/src/assets/images/doctor_hana_avatar_1791475818100.jpg",
+      image: "/src/assets/images/room_internal_suite_1791479207782.jpg",
+      hours: "Mon - Fri · 08:30 - 17:00 EAT",
+      fee: "800 ETB",
+      status: "Available Today",
+      description:
+        "Specializes in adult health evaluations, cardiovascular risk screening, hypertension, and long-term diabetes management.",
     },
     {
-      id: 'doc-2',
-      name: 'Dr. Dawit Alemu, MD',
-      specialty: 'Pediatrics & Adolescent Medicine',
-      dept: 'pediatrics',
-      room: 'Suite 104 · North Wing',
-      experience: '11 Years Exp.',
-      rating: '4.92',
-      reviews: '280 reviews',
-      avatar: '/src/assets/images/doctor_dawit_avatar_1791475828562.jpg',
-      image: '/src/assets/images/room_pediatric_suite_1791479224760.jpg',
-      hours: 'Mon - Sat · 09:00 - 17:30 EAT',
-      fee: '950 ETB',
-      status: 'Available Today',
-      description: 'Dedicated to compassionate pediatric care, childhood immunizations, nutritional guidance, and pediatric developmental health.'
+      id: "doc-2",
+      name: "Dr. Dawit Alemu, MD",
+      specialty: "Pediatrics & Adolescent Medicine",
+      dept: "pediatrics",
+      room: "Suite 104 · North Wing",
+      experience: "11 Years Exp.",
+      rating: "4.92",
+      reviews: "280 reviews",
+      avatar: "/src/assets/images/doctor_dawit_avatar_1791475828562.jpg",
+      image: "/src/assets/images/room_pediatric_suite_1791479224760.jpg",
+      hours: "Mon - Sat · 09:00 - 17:30 EAT",
+      fee: "950 ETB",
+      status: "Available Today",
+      description:
+        "Dedicated to compassionate pediatric care, childhood immunizations, nutritional guidance, and pediatric developmental health.",
     },
     {
-      id: 'doc-3',
-      name: 'Dr. Rahel Tadesse, MD',
-      specialty: 'Obstetrics & Women’s Health',
-      dept: 'womens',
-      room: 'Suite 105 · West Wing',
-      experience: '12 Years Exp.',
-      rating: '4.98',
-      reviews: '410 reviews',
-      avatar: '/src/assets/images/doctor_rahel_avatar_1791477130880.jpg',
-      image: '/src/assets/images/room_womens_suite_1791479241424.jpg',
-      hours: 'Mon - Fri · 10:00 - 18:00 EAT',
-      fee: '1,100 ETB',
-      status: 'Available Today',
-      description: 'Comprehensive gynecological exams, prenatal and postpartum checkups, ultrasound scans, and preventive wellness for women.'
+      id: "doc-3",
+      name: "Dr. Rahel Tadesse, MD",
+      specialty: "Obstetrics & Women’s Health",
+      dept: "womens",
+      room: "Suite 105 · West Wing",
+      experience: "12 Years Exp.",
+      rating: "4.98",
+      reviews: "410 reviews",
+      avatar: "/src/assets/images/doctor_rahel_avatar_1791477130880.jpg",
+      image: "/src/assets/images/room_womens_suite_1791479241424.jpg",
+      hours: "Mon - Fri · 10:00 - 18:00 EAT",
+      fee: "1,100 ETB",
+      status: "Available Today",
+      description:
+        "Comprehensive gynecological exams, prenatal and postpartum checkups, ultrasound scans, and preventive wellness for women.",
     },
     {
-      id: 'doc-4',
-      name: 'Dr. Samuel Kebede, MD',
-      specialty: 'Minor Procedures & Diagnostics',
-      dept: 'procedure',
-      room: 'Suite 106 · Central Suite',
-      experience: '16 Years Exp.',
-      rating: '4.91',
-      reviews: '215 reviews',
-      avatar: '/src/assets/images/doctor_samuel_avatar_1791477120159.jpg',
-      image: '/src/assets/images/clinic_procedure_care_1791478215526.jpg',
-      hours: 'Mon - Fri · 08:00 - 16:30 EAT',
-      fee: '1,250 ETB',
-      status: 'Available Today',
-      description: 'Expert in outpatient surgical dressings, minor dermatologic excisions, wound care, and fast sterile clinic procedures.'
-    }
+      id: "doc-4",
+      name: "Dr. Samuel Kebede, MD",
+      specialty: "Minor Procedures & Diagnostics",
+      dept: "procedure",
+      room: "Suite 106 · Central Suite",
+      experience: "16 Years Exp.",
+      rating: "4.91",
+      reviews: "215 reviews",
+      avatar: "/src/assets/images/doctor_samuel_avatar_1791477120159.jpg",
+      image: "/src/assets/images/clinic_procedure_care_1791478215526.jpg",
+      hours: "Mon - Fri · 08:00 - 16:30 EAT",
+      fee: "1,250 ETB",
+      status: "Available Today",
+      description:
+        "Expert in outpatient surgical dressings, minor dermatologic excisions, wound care, and fast sterile clinic procedures.",
+    },
   ];
 
-  const filteredDoctors = doctorsList.filter(d => {
-    if (activeDeptTab === 'all') return true;
+  const filteredDoctors = doctorsList.filter((d) => {
+    if (activeDeptTab === "all") return true;
     return d.dept === activeDeptTab;
   });
 
@@ -158,19 +166,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             {/* Left Column: Heading, Value Proposition & Actions */}
             <div className="lg:col-span-7 space-y-6">
               {/* Trust Badge */}
-              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#EFF4FF] dark:bg-blue-950/40 border border-[#1D5BD8]/20 dark:border-blue-800/40 text-[#1D5BD8] dark:text-[#93C5FD] text-xs font-semibold shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-[#1D5BD8] dark:bg-[#60A5FA] animate-pulse" />
-                <span>Addis Ababa’s Verified Healthcare Network</span>
-              </div>
 
               {/* Main Headline */}
               <div className="space-y-3">
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#172033] dark:text-white leading-[1.12]">
                   Find the right care, <br className="hidden sm:inline" />
-                  <span className="text-[#1D5BD8] dark:text-[#3B82F6]">when you need it.</span>
+                  <span className="text-[#1D5BD8] dark:text-[#3B82F6]">
+                    when you need it.
+                  </span>
                 </h1>
                 <p className="text-base sm:text-lg text-[#667085] dark:text-zinc-300 leading-relaxed max-w-xl font-normal pt-1">
-                  Connect with licensed Ethiopian medical specialists in Bole & Kazanchis. Experience punctual consultations, verified digital appointments, zero waiting room chaos, and seamless Telebirr payments.
+                  Connect with licensed Ethiopian medical specialists in Bole &
+                  Kazanchis. Experience punctual consultations, verified digital
+                  appointments, zero waiting room chaos, and seamless Telebirr
+                  payments.
                 </p>
               </div>
 
@@ -185,8 +194,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 </button>
                 <button
                   onClick={() => {
-                    const el = document.getElementById('services');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    const el = document.getElementById("services");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
                   }}
                   className="px-6 py-3.5 rounded-xl bg-white dark:bg-zinc-900 text-[#172033] dark:text-zinc-200 font-semibold text-sm hover:bg-[#F7FAFC] dark:hover:bg-zinc-800 hover:border-[#1D5BD8]/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 border border-[#E6EAF0] dark:border-zinc-700 cursor-pointer shadow-xs flex items-center gap-2"
                 >
@@ -225,7 +234,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     <Star className="w-3.5 h-3.5 fill-[#F59E0B]" />
                     <Star className="w-3.5 h-3.5 fill-[#F59E0B]" />
                     <Star className="w-3.5 h-3.5 fill-[#F59E0B]" />
-                    <span className="font-bold text-[#172033] dark:text-white ml-1">4.9 / 5.0</span>
+                    <span className="font-bold text-[#172033] dark:text-white ml-1">
+                      4.9 / 5.0
+                    </span>
                   </div>
                   <p className="text-[#667085] dark:text-zinc-400 font-medium mt-0.5">
                     Trusted by 1,400+ patients across Addis Ababa clinics
@@ -279,7 +290,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                         </div>
                       </div>
                       <button
-                        onClick={() => handleOpenBooking('Dr. Hana Tesfaye')}
+                        onClick={() => handleOpenBooking("Dr. Hana Tesfaye")}
                         className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#1D5BD8] text-white hover:bg-[#1548B0] transition-colors cursor-pointer"
                       >
                         Book
@@ -289,15 +300,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 </div>
 
                 {/* Subtle outer decorative card */}
-                <div className="hidden sm:flex absolute -bottom-5 -left-6 bg-white dark:bg-[#121214] rounded-2xl p-3.5 shadow-lg border border-[#E6EAF0] dark:border-zinc-800 items-center gap-3 animate-in fade-in slide-in-from-bottom-2">
-                  <div className="w-10 h-10 rounded-xl bg-[#EFF4FF] dark:bg-blue-950/40 text-[#1D5BD8] dark:text-[#60A5FA] flex items-center justify-center font-bold">
-                    <ShieldCheck className="w-5 h-5" />
-                  </div>
-                  <div className="text-xs">
-                    <div className="font-bold text-[#172033] dark:text-white">Ministry of Health Certified</div>
-                    <div className="text-[#667085] dark:text-zinc-400">Ethiopian Outpatient Standard</div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -316,8 +318,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 <div className="text-3xl sm:text-4xl font-bold text-[#1D5BD8] dark:text-[#60A5FA] tracking-tight">
                   <AnimatedCounter value={25} suffix="+" />
                 </div>
-                <div className="text-sm font-semibold text-[#172033] dark:text-white">Years Experience</div>
-                <p className="text-xs text-[#667085] dark:text-zinc-400">Combined medical staff practice in Addis Ababa</p>
+                <div className="text-sm font-semibold text-[#172033] dark:text-white">
+                  Years Experience
+                </div>
+                <p className="text-xs text-[#667085] dark:text-zinc-400">
+                  Combined medical staff practice in Addis Ababa
+                </p>
               </div>
             </ScrollReveal>
 
@@ -326,8 +332,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 <div className="text-3xl sm:text-4xl font-bold text-[#1D5BD8] dark:text-[#60A5FA] tracking-tight">
                   <AnimatedCounter value={15000} suffix="+" />
                 </div>
-                <div className="text-sm font-semibold text-[#172033] dark:text-white">Consultations Held</div>
-                <p className="text-xs text-[#667085] dark:text-zinc-400">Scheduled & attended with digital tracking</p>
+                <div className="text-sm font-semibold text-[#172033] dark:text-white">
+                  Consultations Held
+                </div>
+                <p className="text-xs text-[#667085] dark:text-zinc-400">
+                  Scheduled & attended with digital tracking
+                </p>
               </div>
             </ScrollReveal>
 
@@ -336,8 +346,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 <div className="text-3xl sm:text-4xl font-bold text-[#1D5BD8] dark:text-[#60A5FA] tracking-tight">
                   <AnimatedCounter value={98} suffix="%" />
                 </div>
-                <div className="text-sm font-semibold text-[#172033] dark:text-white">Patient Satisfaction</div>
-                <p className="text-xs text-[#667085] dark:text-zinc-400">Verified ratings from clinic visitors</p>
+                <div className="text-sm font-semibold text-[#172033] dark:text-white">
+                  Patient Satisfaction
+                </div>
+                <p className="text-xs text-[#667085] dark:text-zinc-400">
+                  Verified ratings from clinic visitors
+                </p>
               </div>
             </ScrollReveal>
 
@@ -346,8 +360,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 <div className="text-3xl sm:text-4xl font-bold text-[#1D5BD8] dark:text-[#60A5FA] tracking-tight">
                   <AnimatedCounter value={12} suffix="+" />
                 </div>
-                <div className="text-sm font-semibold text-[#172033] dark:text-white">Specialties & Suites</div>
-                <p className="text-xs text-[#667085] dark:text-zinc-400">Accredited outpatient departments</p>
+                <div className="text-sm font-semibold text-[#172033] dark:text-white">
+                  Specialties & Suites
+                </div>
+                <p className="text-xs text-[#667085] dark:text-zinc-400">
+                  Accredited outpatient departments
+                </p>
               </div>
             </ScrollReveal>
           </div>
@@ -358,7 +376,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           SECTION 3: MEDICAL SERVICES (HELTRO STYLE CARDS)
           - Clean white cards, generous spacing, hover lift
          ========================================================================= */}
-      <section id="services" className="py-24 bg-[#FFFFFF] dark:bg-[#09090b] border-b border-[#E6EAF0] dark:border-zinc-800">
+      <section
+        id="services"
+        className="py-24 bg-[#FFFFFF] dark:bg-[#09090b] border-b border-[#E6EAF0] dark:border-zinc-800"
+      >
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal animation="fade-up">
             <div className="max-w-2xl mx-auto text-center space-y-3 mb-16">
@@ -370,7 +391,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 Comprehensive care for every stage of life
               </h2>
               <p className="text-sm sm:text-base text-[#667085] dark:text-zinc-400 leading-relaxed">
-                From preventive family health to specialized diagnostics, discover calm, high-precision clinical services at MediFlow ET.
+                From preventive family health to specialized diagnostics,
+                discover calm, high-precision clinical services at MediFlow ET.
               </p>
             </div>
           </ScrollReveal>
@@ -379,58 +401,58 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             {[
               {
                 icon: Heart,
-                title: 'Primary Care & Internal Medicine',
-                lead: 'Dr. Hana Tesfaye, MD',
-                desc: 'Comprehensive adult physical exams, cardiovascular health, diabetes management, and chronic illness monitoring.',
-                fee: '800 ETB',
-                tag: 'Routine & Chronic',
-                doctorName: 'Dr. Hana Tesfaye'
+                title: "Primary Care & Internal Medicine",
+                lead: "Dr. Hana Tesfaye, MD",
+                desc: "Comprehensive adult physical exams, cardiovascular health, diabetes management, and chronic illness monitoring.",
+                fee: "800 ETB",
+                tag: "Routine & Chronic",
+                doctorName: "Dr. Hana Tesfaye",
               },
               {
                 icon: Baby,
-                title: 'Pediatrics & Family Care',
-                lead: 'Dr. Dawit Alemu, MD',
-                desc: 'Child developmental checks, routine vaccinations, infant nutrition, and seasonal pediatric illness treatment.',
-                fee: '950 ETB',
-                tag: 'Newborn to Teen',
-                doctorName: 'Dr. Dawit Alemu'
+                title: "Pediatrics & Family Care",
+                lead: "Dr. Dawit Alemu, MD",
+                desc: "Child developmental checks, routine vaccinations, infant nutrition, and seasonal pediatric illness treatment.",
+                fee: "950 ETB",
+                tag: "Newborn to Teen",
+                doctorName: "Dr. Dawit Alemu",
               },
               {
                 icon: UserCheck,
-                title: 'Women’s Health & Obstetrics',
-                lead: 'Dr. Rahel Tadesse, MD',
-                desc: 'Dedicated private suites for prenatal care, gynecological consultations, ultrasound imaging, and family planning.',
-                fee: '1,100 ETB',
-                tag: 'Specialized Suite',
-                doctorName: 'Dr. Rahel Tadesse'
+                title: "Women’s Health & Obstetrics",
+                lead: "Dr. Rahel Tadesse, MD",
+                desc: "Dedicated private suites for prenatal care, gynecological consultations, ultrasound imaging, and family planning.",
+                fee: "1,100 ETB",
+                tag: "Specialized Suite",
+                doctorName: "Dr. Rahel Tadesse",
               },
               {
                 icon: Activity,
-                title: 'Minor Outpatient Procedures',
-                lead: 'Dr. Samuel Kebede, MD',
-                desc: 'Sterile outpatient treatment including wound care, suture dressings, minor biopsies, and skin lesions.',
-                fee: '1,250 ETB',
-                tag: 'Sterile Suite',
-                doctorName: 'Dr. Samuel Kebede'
+                title: "Minor Outpatient Procedures",
+                lead: "Dr. Samuel Kebede, MD",
+                desc: "Sterile outpatient treatment including wound care, suture dressings, minor biopsies, and skin lesions.",
+                fee: "1,250 ETB",
+                tag: "Sterile Suite",
+                doctorName: "Dr. Samuel Kebede",
               },
               {
                 icon: FlaskConical,
-                title: 'Diagnostic Laboratory & Testing',
-                lead: 'Central Pathology Team',
-                desc: 'Rapid on-site hematology, lipid panels, urine analysis, and rapid diagnostic panels with same-day digital results.',
-                fee: 'From 350 ETB',
-                tag: 'Same-Day Results',
-                doctorName: 'Dr. Hana Tesfaye'
+                title: "Diagnostic Laboratory & Testing",
+                lead: "Central Pathology Team",
+                desc: "Rapid on-site hematology, lipid panels, urine analysis, and rapid diagnostic panels with same-day digital results.",
+                fee: "From 350 ETB",
+                tag: "Same-Day Results",
+                doctorName: "Dr. Hana Tesfaye",
               },
               {
                 icon: Stethoscope,
-                title: 'Preventive Health Checkups',
-                lead: 'General Outpatient Clinic',
-                desc: 'Annual executive screenings, blood pressure checks, lifestyle medicine, and doctor-guided health counseling.',
-                fee: '600 ETB',
-                tag: 'Preventive',
-                doctorName: 'Dr. Dawit Alemu'
-              }
+                title: "Preventive Health Checkups",
+                lead: "General Outpatient Clinic",
+                desc: "Annual executive screenings, blood pressure checks, lifestyle medicine, and doctor-guided health counseling.",
+                fee: "600 ETB",
+                tag: "Preventive",
+                doctorName: "Dr. Dawit Alemu",
+              },
             ].map((service, idx) => (
               <ScrollReveal key={idx} animation="fade-up" delay={idx * 60}>
                 <div className="bg-white dark:bg-[#121214] rounded-2xl border border-[#E6EAF0] dark:border-zinc-800 p-7 flex flex-col justify-between hover:border-[#1D5BD8]/50 dark:hover:border-blue-500/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group h-full">
@@ -459,8 +481,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
                   <div className="pt-6 mt-6 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between">
                     <div>
-                      <span className="text-[11px] text-[#667085] dark:text-zinc-400 block">Consultation:</span>
-                      <strong className="text-sm font-bold text-[#172033] dark:text-white">{service.fee}</strong>
+                      <span className="text-[11px] text-[#667085] dark:text-zinc-400 block">
+                        Consultation:
+                      </span>
+                      <strong className="text-sm font-bold text-[#172033] dark:text-white">
+                        {service.fee}
+                      </strong>
                     </div>
                     <button
                       onClick={() => handleOpenBooking(service.doctorName)}
@@ -481,7 +507,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           SECTION 4: DOCTORS & SPECIALTY DEPARTMENTS (`#specialties`)
           - Clean tab filter + doctor cards with avatars & schedules
          ========================================================================= */}
-      <section id="specialties" className="py-24 bg-[#F7FAFC] dark:bg-[#0e0e10] border-b border-[#E6EAF0] dark:border-zinc-800">
+      <section
+        id="specialties"
+        className="py-24 bg-[#F7FAFC] dark:bg-[#0e0e10] border-b border-[#E6EAF0] dark:border-zinc-800"
+      >
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal animation="fade-up">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
@@ -494,26 +523,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   Meet our medical team & specialists
                 </h2>
                 <p className="text-sm text-[#667085] dark:text-zinc-400 leading-relaxed">
-                  Dedicated Ethiopian medical professionals with decades of clinical experience in Bole Medhanealem.
+                  Dedicated Ethiopian medical professionals with decades of
+                  clinical experience in Bole Medhanealem.
                 </p>
               </div>
 
               {/* Department Category Filter */}
               <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
                 {[
-                  { label: 'All Specialties', val: 'all' },
-                  { label: 'Internal Medicine', val: 'internal' },
-                  { label: 'Pediatrics', val: 'pediatrics' },
-                  { label: 'Women’s Care', val: 'womens' },
-                  { label: 'Procedures', val: 'procedure' }
-                ].map(tab => (
+                  { label: "All Specialties", val: "all" },
+                  { label: "Internal Medicine", val: "internal" },
+                  { label: "Pediatrics", val: "pediatrics" },
+                  { label: "Women’s Care", val: "womens" },
+                  { label: "Procedures", val: "procedure" },
+                ].map((tab) => (
                   <button
                     key={tab.val}
                     onClick={() => setActiveDeptTab(tab.val as any)}
                     className={`px-3.5 py-2 rounded-xl transition-all duration-200 cursor-pointer font-semibold ${
                       activeDeptTab === tab.val
-                        ? 'bg-[#1D5BD8] text-white shadow-sm'
-                        : 'bg-white dark:bg-[#18181b] text-[#667085] dark:text-zinc-300 border border-[#E6EAF0] dark:border-zinc-700 hover:text-[#172033] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-zinc-800'
+                        ? "bg-[#1D5BD8] text-white shadow-sm"
+                        : "bg-white dark:bg-[#18181b] text-[#667085] dark:text-zinc-300 border border-[#E6EAF0] dark:border-zinc-700 hover:text-[#172033] dark:hover:text-white hover:bg-slate-50 dark:hover:bg-zinc-800"
                     }`}
                   >
                     {tab.label}
@@ -572,11 +602,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                             <Clock className="w-3.5 h-3.5 text-[#1D5BD8] dark:text-[#60A5FA]" />
                             <span>Hours:</span>
                           </span>
-                          <span className="text-[#172033] dark:text-zinc-200 font-semibold">{doc.hours}</span>
+                          <span className="text-[#172033] dark:text-zinc-200 font-semibold">
+                            {doc.hours}
+                          </span>
                         </div>
                         <div className="flex items-center justify-between text-[#667085] dark:text-zinc-400">
                           <span className="font-medium">Consultation Fee:</span>
-                          <strong className="text-[#172033] dark:text-white font-bold">{doc.fee}</strong>
+                          <strong className="text-[#172033] dark:text-white font-bold">
+                            {doc.fee}
+                          </strong>
                         </div>
                       </div>
                     </div>
@@ -603,7 +637,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           SECTION 5: HOW IT WORKS / PATIENT JOURNEY (`#how-it-works`)
           - 4 simple steps showing the effortless patient experience
          ========================================================================= */}
-      <section id="how-it-works" className="py-24 bg-[#FFFFFF] dark:bg-[#09090b] border-b border-[#E6EAF0] dark:border-zinc-800">
+      <section
+        id="how-it-works"
+        className="py-24 bg-[#FFFFFF] dark:bg-[#09090b] border-b border-[#E6EAF0] dark:border-zinc-800"
+      >
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal animation="fade-up">
             <div className="max-w-2xl mx-auto text-center space-y-3 mb-16">
@@ -615,7 +652,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 How MediFlow ET simplifies your visit
               </h2>
               <p className="text-sm sm:text-base text-[#667085] dark:text-zinc-400 leading-relaxed">
-                Enjoy transparent, punctual healthcare without early morning lines or lobby confusion.
+                Enjoy transparent, punctual healthcare without early morning
+                lines or lobby confusion.
               </p>
             </div>
           </ScrollReveal>
@@ -623,25 +661,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
             {[
               {
-                step: '01',
-                title: 'Select Doctor & Specialty',
-                desc: 'Browse accredited physicians by department, view transparent ETB consultation fees, and read patient feedback.'
+                step: "01",
+                title: "Select Doctor & Specialty",
+                desc: "Browse accredited physicians by department, view transparent ETB consultation fees, and read patient feedback.",
               },
               {
-                step: '02',
-                title: 'Instant Confirmation',
-                desc: 'Pick your preferred date and time slot. Receive an instant digital appointment confirmation and SMS reminder.'
+                step: "02",
+                title: "Instant Confirmation",
+                desc: "Pick your preferred date and time slot. Receive an instant digital appointment confirmation and SMS reminder.",
               },
               {
-                step: '03',
-                title: 'Punctual Consultation',
-                desc: 'Arrive at the clinic suite. Our digital queuing system coordinates doctor rooms to ensure zero hallway delays.'
+                step: "03",
+                title: "Punctual Consultation",
+                desc: "Arrive at the clinic suite. Our digital queuing system coordinates doctor rooms to ensure zero hallway delays.",
               },
               {
-                step: '04',
-                title: 'Digital Records & Telebirr',
-                desc: 'Access doctor notes and prescriptions in your patient portal. Settle fees effortlessly via Telebirr, CBE, or cash.'
-              }
+                step: "04",
+                title: "Digital Records & Telebirr",
+                desc: "Access doctor notes and prescriptions in your patient portal. Settle fees effortlessly via Telebirr, CBE, or cash.",
+              },
             ].map((item, idx) => (
               <ScrollReveal key={idx} animation="fade-up" delay={idx * 80}>
                 <div className="bg-[#F7FAFC] dark:bg-[#141416] rounded-2xl border border-[#E6EAF0] dark:border-zinc-800 p-7 h-full flex flex-col justify-between hover:border-[#1D5BD8]/40 dark:hover:border-blue-500/40 transition-colors">
@@ -686,8 +724,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   <div className="absolute bottom-6 left-6 right-6 bg-white/95 dark:bg-[#141416]/95 backdrop-blur-md rounded-2xl p-5 border border-[#E6EAF0] dark:border-zinc-800">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-xs font-bold text-[#1D5BD8] dark:text-[#60A5FA]">Bole Medhanealem Center</div>
-                        <div className="text-sm font-bold text-[#172033] dark:text-white mt-0.5">Modern Outpatient Consultation Suites</div>
+                        <div className="text-xs font-bold text-[#1D5BD8] dark:text-[#60A5FA]">
+                          Bole Medhanealem Center
+                        </div>
+                        <div className="text-sm font-bold text-[#172033] dark:text-white mt-0.5">
+                          Modern Outpatient Consultation Suites
+                        </div>
                         <div className="text-xs text-[#667085] dark:text-zinc-400 mt-1 flex items-center gap-2">
                           <MapPin className="w-3.5 h-3.5 text-[#1D5BD8] dark:text-[#60A5FA]" />
                           <span>Cameroon St, Addis Ababa, Ethiopia</span>
@@ -716,36 +758,42 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     Why patients choose MediFlow ET for private care
                   </h2>
                   <p className="text-sm sm:text-base text-[#667085] dark:text-zinc-400 leading-relaxed">
-                    We eliminate the stress of traditional clinic visits by combining compassionate Ethiopian doctors with modern scheduling technology.
+                    We eliminate the stress of traditional clinic visits by
+                    combining compassionate Ethiopian doctors with modern
+                    scheduling technology.
                   </p>
                 </div>
 
                 <div className="space-y-4 pt-4">
                   {[
                     {
-                      title: 'Punctual Appointments',
-                      desc: 'Say goodbye to 3-hour waiting lobby queues. Consultation slots are tracked to start within 15 minutes of scheduled time.'
+                      title: "Punctual Appointments",
+                      desc: "Say goodbye to 3-hour waiting lobby queues. Consultation slots are tracked to start within 15 minutes of scheduled time.",
                     },
                     {
-                      title: 'Local Telebirr & CBE Birr Payment',
-                      desc: 'Instant QR code or transaction reference payment in ETB with immediate receipt issuance.'
+                      title: "Local Telebirr & CBE Birr Payment",
+                      desc: "Instant QR code or transaction reference payment in ETB with immediate receipt issuance.",
                     },
                     {
-                      title: 'Secure Digital Health Records',
-                      desc: 'Access your consultation notes, lab results, and digital prescriptions anytime through our patient portal.'
+                      title: "Secure Digital Health Records",
+                      desc: "Access your consultation notes, lab results, and digital prescriptions anytime through our patient portal.",
                     },
                     {
-                      title: 'Comfortable Modern Waiting Lounge',
-                      desc: 'Calm outpatient waiting environments with clear digital displays and acoustic chimes.'
-                    }
+                      title: "Comfortable Modern Waiting Lounge",
+                      desc: "Calm outpatient waiting environments with clear digital displays and acoustic chimes.",
+                    },
                   ].map((val, idx) => (
                     <div key={idx} className="flex items-start gap-3.5">
                       <div className="w-7 h-7 rounded-lg bg-[#EFF4FF] dark:bg-blue-950/40 text-[#1D5BD8] dark:text-[#60A5FA] flex items-center justify-center shrink-0 mt-0.5">
                         <Check className="w-4 h-4" />
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-[#172033] dark:text-white">{val.title}</h4>
-                        <p className="text-xs text-[#667085] dark:text-zinc-400 mt-0.5 leading-relaxed">{val.desc}</p>
+                        <h4 className="text-sm font-bold text-[#172033] dark:text-white">
+                          {val.title}
+                        </h4>
+                        <p className="text-xs text-[#667085] dark:text-zinc-400 mt-0.5 leading-relaxed">
+                          {val.desc}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -759,7 +807,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     Schedule A Visit
                   </button>
                   <button
-                    onClick={() => onNavigate('/about')}
+                    onClick={() => onNavigate("/about")}
                     className="px-6 py-3 rounded-xl bg-white dark:bg-[#18181b] text-[#172033] dark:text-zinc-200 font-semibold text-xs border border-[#E6EAF0] dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all cursor-pointer"
                   >
                     Read About Our Clinic
@@ -786,7 +834,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 Trusted by families across Addis Ababa
               </h2>
               <p className="text-sm sm:text-base text-[#667085] dark:text-zinc-400 leading-relaxed">
-                Read what our patients say about their consultation experience and care quality.
+                Read what our patients say about their consultation experience
+                and care quality.
               </p>
             </div>
           </ScrollReveal>
@@ -794,26 +843,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                name: 'Selamawit Bekele',
-                location: 'Bole, Addis Ababa',
-                doctor: 'Dr. Hana Tesfaye (Internal Medicine)',
+                name: "Selamawit Bekele",
+                location: "Bole, Addis Ababa",
+                doctor: "Dr. Hana Tesfaye (Internal Medicine)",
                 rating: 5,
-                comment: 'I booked an appointment for 10:30 AM and was actually in Dr. Hana’s room at 10:35 AM! In other clinics I used to wait for 3 hours. The Telebirr payment took 10 seconds. Outstanding care!'
+                comment:
+                  "I booked an appointment for 10:30 AM and was actually in Dr. Hana’s room at 10:35 AM! In other clinics I used to wait for 3 hours. The Telebirr payment took 10 seconds. Outstanding care!",
               },
               {
-                name: 'Dawit Girma',
-                location: 'Kazanchis, Addis Ababa',
-                doctor: 'Dr. Dawit Alemu (Pediatrics)',
+                name: "Dawit Girma",
+                location: "Kazanchis, Addis Ababa",
+                doctor: "Dr. Dawit Alemu (Pediatrics)",
                 rating: 5,
-                comment: 'Dr. Dawit took so much time to examine my 2-year-old son and explained the treatment thoroughly. The clinic waiting lounge is clean, peaceful, and child-friendly.'
+                comment:
+                  "Dr. Dawit took so much time to examine my 2-year-old son and explained the treatment thoroughly. The clinic waiting lounge is clean, peaceful, and child-friendly.",
               },
               {
-                name: 'Bethlehem Tilahun',
-                location: 'Old Airport, Addis Ababa',
-                doctor: 'Dr. Rahel Tadesse (Women’s Health)',
+                name: "Bethlehem Tilahun",
+                location: "Old Airport, Addis Ababa",
+                doctor: "Dr. Rahel Tadesse (Women’s Health)",
                 rating: 5,
-                comment: 'The privacy and professionalism in Suite 105 was remarkable. Receiving my lab results and digital prescription right on my phone made follow-up effortless.'
-              }
+                comment:
+                  "The privacy and professionalism in Suite 105 was remarkable. Receiving my lab results and digital prescription right on my phone made follow-up effortless.",
+              },
             ].map((t, idx) => (
               <ScrollReveal key={idx} animation="fade-up" delay={idx * 80}>
                 <div className="bg-[#F7FAFC] dark:bg-[#141416] rounded-2xl border border-[#E6EAF0] dark:border-zinc-800 p-7 flex flex-col justify-between h-full hover:border-[#1D5BD8]/40 dark:hover:border-blue-500/40 transition-colors">
@@ -828,9 +880,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     </p>
                   </div>
                   <div className="pt-5 mt-5 border-t border-slate-200 dark:border-zinc-800">
-                    <div className="font-bold text-sm text-[#172033] dark:text-white">{t.name}</div>
-                    <div className="text-xs text-[#667085] dark:text-zinc-400">{t.location}</div>
-                    <div className="text-[11px] font-semibold text-[#1D5BD8] dark:text-[#60A5FA] mt-0.5">{t.doctor}</div>
+                    <div className="font-bold text-sm text-[#172033] dark:text-white">
+                      {t.name}
+                    </div>
+                    <div className="text-xs text-[#667085] dark:text-zinc-400">
+                      {t.location}
+                    </div>
+                    <div className="text-[11px] font-semibold text-[#1D5BD8] dark:text-[#60A5FA] mt-0.5">
+                      {t.doctor}
+                    </div>
                   </div>
                 </div>
               </ScrollReveal>
@@ -842,7 +900,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       {/* =========================================================================
           SECTION 8: FAQ ACCORDION (`#faq`)
          ========================================================================= */}
-      <section id="faq" className="py-24 bg-[#F7FAFC] dark:bg-[#0e0e10] border-b border-[#E6EAF0] dark:border-zinc-800">
+      <section
+        id="faq"
+        className="py-24 bg-[#F7FAFC] dark:bg-[#0e0e10] border-b border-[#E6EAF0] dark:border-zinc-800"
+      >
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal animation="fade-up">
             <div className="text-center mb-14 space-y-3">
@@ -853,7 +914,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 Got questions? We have answers.
               </h2>
               <p className="text-sm text-[#667085] dark:text-zinc-400">
-                Learn how appointments, local payments, and doctor visits work at MediFlow ET.
+                Learn how appointments, local payments, and doctor visits work
+                at MediFlow ET.
               </p>
             </div>
           </ScrollReveal>
@@ -861,25 +923,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <div className="space-y-3.5">
             {[
               {
-                q: 'How do I book an appointment?',
-                a: 'You can click "Book Appointment" anywhere on this page, choose your doctor and specialty, select your date and time slot, and confirm in seconds. You can also visit our reception desk for walk-in scheduling.'
+                q: "How do I book an appointment?",
+                a: 'You can click "Book Appointment" anywhere on this page, choose your doctor and specialty, select your date and time slot, and confirm in seconds. You can also visit our reception desk for walk-in scheduling.',
               },
               {
-                q: 'What payment methods do you accept?',
-                a: 'We accept Telebirr, CBE Birr, commercial bank mobile transfers, M-Pesa, and cash payments at reception. All fees are transparently shown in Ethiopian Birr (ETB).'
+                q: "What payment methods do you accept?",
+                a: "We accept Telebirr, CBE Birr, commercial bank mobile transfers, M-Pesa, and cash payments at reception. All fees are transparently shown in Ethiopian Birr (ETB).",
               },
               {
-                q: 'Can I do a walk-in consultation without an appointment?',
-                a: 'Yes! Walk-in patients can check in at the reception kiosk or desk upon arrival. You will receive a digital ticket and estimated wait time on our lounge display.'
+                q: "Can I do a walk-in consultation without an appointment?",
+                a: "Yes! Walk-in patients can check in at the reception kiosk or desk upon arrival. You will receive a digital ticket and estimated wait time on our lounge display.",
               },
               {
-                q: 'Where is MediFlow ET located in Addis Ababa?',
-                a: 'Our main outpatient medical facility is situated at Cameroon Street, Bole Medhanealem (near Edna Mall & Brass Hospital area), with branch diagnostic suites in Kazanchis.'
+                q: "Where is MediFlow ET located in Addis Ababa?",
+                a: "Our main outpatient medical facility is situated at Cameroon Street, Bole Medhanealem (near Edna Mall & Brass Hospital area), with branch diagnostic suites in Kazanchis.",
               },
               {
-                q: 'How can doctors and clinics use MediFlow ET?',
-                a: 'Clinics and medical staff can click "Launch Clinic App" in the top navigation to access the full operational suite: patient queue management, electronic prescriptions, billing, and scheduling.'
-              }
+                q: "How can doctors and clinics use MediFlow ET?",
+                a: 'Clinics and medical staff can click "Launch Clinic App" in the top navigation to access the full operational suite: patient queue management, electronic prescriptions, billing, and scheduling.',
+              },
             ].map((faq, idx) => (
               <ScrollReveal key={idx} animation="fade-up" delay={idx * 50}>
                 <div className="bg-white dark:bg-[#141416] rounded-xl border border-[#E6EAF0] dark:border-zinc-800 overflow-hidden transition-all duration-200">
@@ -890,7 +952,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     <span>{faq.q}</span>
                     <ChevronRight
                       className={`w-4 h-4 text-[#667085] dark:text-zinc-400 transition-transform duration-200 shrink-0 ${
-                        activeFaq === idx ? 'rotate-90 text-[#1D5BD8] dark:text-[#60A5FA]' : ''
+                        activeFaq === idx
+                          ? "rotate-90 text-[#1D5BD8] dark:text-[#60A5FA]"
+                          : ""
                       }`}
                     />
                   </button>
@@ -921,7 +985,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               Ready to experience healthcare you can trust?
             </h2>
             <p className="text-sm sm:text-base text-white/90 max-w-xl mx-auto leading-relaxed font-normal">
-              Book your consultation today or explore our clinical management suite for modern healthcare practices in Addis Ababa.
+              Book your consultation today or explore our clinical management
+              suite for modern healthcare practices in Addis Ababa.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
               <button
@@ -931,7 +996,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 Book An Appointment
               </button>
               <button
-                onClick={() => onNavigate('/dashboard/overview')}
+                onClick={() => onNavigate("/dashboard/overview")}
                 className="px-7 py-3.5 rounded-xl bg-white/15 text-white font-semibold text-sm hover:bg-white/25 hover:-translate-y-0.5 active:scale-95 transition-all border border-white/30 cursor-pointer backdrop-blur-xs"
               >
                 Launch Clinic Management App
@@ -966,7 +1031,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     Book A Consultation
                   </h3>
                   <p className="text-xs text-[#667085] dark:text-zinc-400 mt-1">
-                    Select your doctor and preferred time. Confirmation is instant.
+                    Select your doctor and preferred time. Confirmation is
+                    instant.
                   </p>
                 </div>
 
@@ -978,13 +1044,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     </label>
                     <select
                       value={selectedDoctor}
-                      onChange={e => setSelectedDoctor(e.target.value)}
+                      onChange={(e) => setSelectedDoctor(e.target.value)}
                       className="w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-[#E6EAF0] dark:border-zinc-700 focus:border-[#1D5BD8] focus:ring-2 focus:ring-[#EFF4FF] dark:focus:ring-blue-600/20 outline-none transition-all text-[#172033] dark:text-white bg-white dark:bg-[#18181b] cursor-pointer"
                     >
-                      <option value="Dr. Hana Tesfaye">Dr. Hana Tesfaye, MD (Internal Medicine · 800 ETB)</option>
-                      <option value="Dr. Dawit Alemu">Dr. Dawit Alemu, MD (Pediatrics · 950 ETB)</option>
-                      <option value="Dr. Rahel Tadesse">Dr. Rahel Tadesse, MD (Women’s Health · 1,100 ETB)</option>
-                      <option value="Dr. Samuel Kebede">Dr. Samuel Kebede, MD (Minor Procedures · 1,250 ETB)</option>
+                      <option value="Dr. Hana Tesfaye">
+                        Dr. Hana Tesfaye, MD (Internal Medicine · 800 ETB)
+                      </option>
+                      <option value="Dr. Dawit Alemu">
+                        Dr. Dawit Alemu, MD (Pediatrics · 950 ETB)
+                      </option>
+                      <option value="Dr. Rahel Tadesse">
+                        Dr. Rahel Tadesse, MD (Women’s Health · 1,100 ETB)
+                      </option>
+                      <option value="Dr. Samuel Kebede">
+                        Dr. Samuel Kebede, MD (Minor Procedures · 1,250 ETB)
+                      </option>
                     </select>
                   </div>
 
@@ -998,7 +1072,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       required
                       placeholder="e.g. Almaz Kebede"
                       value={patientName}
-                      onChange={e => setPatientName(e.target.value)}
+                      onChange={(e) => setPatientName(e.target.value)}
                       className="w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-[#E6EAF0] dark:border-zinc-700 focus:border-[#1D5BD8] focus:ring-2 focus:ring-[#EFF4FF] dark:focus:ring-blue-600/20 outline-none transition-all text-[#172033] dark:text-white bg-white dark:bg-[#18181b] placeholder:text-slate-400 dark:placeholder:text-zinc-500"
                     />
                   </div>
@@ -1013,7 +1087,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       required
                       placeholder="0911 234 567"
                       value={patientPhone}
-                      onChange={e => setPatientPhone(e.target.value)}
+                      onChange={(e) => setPatientPhone(e.target.value)}
                       className="w-full text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-[#E6EAF0] dark:border-zinc-700 focus:border-[#1D5BD8] focus:ring-2 focus:ring-[#EFF4FF] dark:focus:ring-blue-600/20 outline-none transition-all text-[#172033] dark:text-white bg-white dark:bg-[#18181b] placeholder:text-slate-400 dark:placeholder:text-zinc-500"
                     />
                   </div>
@@ -1027,7 +1101,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       <input
                         type="date"
                         value={selectedDate}
-                        onChange={e => setSelectedDate(e.target.value)}
+                        onChange={(e) => setSelectedDate(e.target.value)}
                         className="w-full text-xs px-3 py-2 rounded-xl border border-[#E6EAF0] dark:border-zinc-700 focus:border-[#1D5BD8] outline-none text-[#172033] dark:text-white bg-white dark:bg-[#18181b]"
                       />
                     </div>
@@ -1037,7 +1111,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       </label>
                       <select
                         value={selectedTime}
-                        onChange={e => setSelectedTime(e.target.value)}
+                        onChange={(e) => setSelectedTime(e.target.value)}
                         className="w-full text-xs px-3 py-2 rounded-xl border border-[#E6EAF0] dark:border-zinc-700 focus:border-[#1D5BD8] outline-none text-[#172033] dark:text-white bg-white dark:bg-[#18181b] cursor-pointer"
                       >
                         <option value="09:00 AM">09:00 AM (Morning)</option>
@@ -1072,23 +1146,39 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     Appointment Confirmed!
                   </h3>
                   <p className="text-xs text-[#667085] dark:text-zinc-400 mt-1 max-w-sm mx-auto">
-                    We have booked your slot with <strong>{selectedDoctor}</strong> for{' '}
-                    <strong>{selectedDate} at {selectedTime}</strong>.
+                    We have booked your slot with{" "}
+                    <strong>{selectedDoctor}</strong> for{" "}
+                    <strong>
+                      {selectedDate} at {selectedTime}
+                    </strong>
+                    .
                   </p>
                 </div>
 
                 <div className="bg-[#F7FAFC] dark:bg-[#18181b] rounded-2xl p-4 border border-[#E6EAF0] dark:border-zinc-800 text-left text-xs space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-[#667085] dark:text-zinc-400">Patient:</span>
-                    <strong className="text-[#172033] dark:text-white">{patientName || 'Registered Patient'}</strong>
+                    <span className="text-[#667085] dark:text-zinc-400">
+                      Patient:
+                    </span>
+                    <strong className="text-[#172033] dark:text-white">
+                      {patientName || "Registered Patient"}
+                    </strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#667085] dark:text-zinc-400">Booking Reference:</span>
-                    <strong className="text-[#1D5BD8] dark:text-[#60A5FA] font-mono">MF-ET-{Math.floor(1000 + Math.random() * 9000)}</strong>
+                    <span className="text-[#667085] dark:text-zinc-400">
+                      Booking Reference:
+                    </span>
+                    <strong className="text-[#1D5BD8] dark:text-[#60A5FA] font-mono">
+                      MF-ET-{Math.floor(1000 + Math.random() * 9000)}
+                    </strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#667085] dark:text-zinc-400">Location:</span>
-                    <strong className="text-[#172033] dark:text-white">Bole Medhanealem Clinic</strong>
+                    <span className="text-[#667085] dark:text-zinc-400">
+                      Location:
+                    </span>
+                    <strong className="text-[#172033] dark:text-white">
+                      Bole Medhanealem Clinic
+                    </strong>
                   </div>
                 </div>
 
@@ -1096,7 +1186,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   <button
                     onClick={() => {
                       setIsBookingModalOpen(false);
-                      onNavigate('/patient');
+                      onNavigate("/patient");
                     }}
                     className="flex-1 py-3 rounded-xl bg-[#1D5BD8] text-white text-xs font-semibold hover:bg-[#1548B0] transition-colors cursor-pointer"
                   >

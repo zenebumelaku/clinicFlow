@@ -159,13 +159,18 @@ async function apiFetch(
   options: ApiRequestOptions = {},
 ): Promise<Response> {
   const { authenticated = true, retryUnauthorized = true, ...init } = options;
+
   const send = () => {
     const headers = new Headers(init.headers);
     if (init.body !== undefined) headers.set('Content-Type', 'application/json');
+
     if (authenticated) {
       const accessToken = tokenStore.getAccessToken();
-      if (accessToken) headers.set('Authorization', `Bearer ${accessToken}`);
+      if (accessToken) {
+        headers.set('Authorization', `Bearer ${accessToken}`);
+      }
     }
+
     return fetch(`${apiBaseUrl()}${path}`, {
       ...init,
       headers,
@@ -181,6 +186,7 @@ async function apiFetch(
       window.location.assign('/login');
     }
   }
+
   return response;
 }
 

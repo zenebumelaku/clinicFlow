@@ -1,0 +1,8 @@
+{
+  "chat.tools.terminal.autoApprove": {
+    "/^cd /Users/zeni/Desktop/projects/clinic/frontend && npm run lint$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
+  }
+}
