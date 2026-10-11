@@ -1,125 +1,98 @@
-# ClinicFlow
+<div align="center">
 
-ClinicFlow is a modern electronic healthcare and clinic management platform designed to streamline patient care, queue flow, appointments, billing, and operational reporting for clinics and healthcare teams.
+# MediFlow ET
 
-Built by Zenebu Melaku, a Fullstack Developer, this project combines a secure NestJS backend with a polished React + Vite frontend to deliver a complete digital clinic experience for administrators, receptionists, doctors, and patients.
+### Clinic operations, brought together.
 
-## Why this project?
+An electronic healthcare and clinic management platform for coordinating appointments, patient records, clinic queues, payments, and reporting.
 
-Healthcare operations need speed, clarity, and trust. ClinicFlow helps clinics manage:
+**Designed and built by Zenebu Melaku · Fullstack Developer**
 
-- patient registration and records
-- appointment scheduling and tracking
-- real-time clinic queue workflows
-- staff and doctor access control
-- payment and billing records
-- reporting and clinic analytics
-- secure authentication and authorization
+<br />
 
-The goal is to make clinical operations more organized, more transparent, and easier to manage across roles.
+<img src="./frontend/src/assets/images/hero_clinic_reception_1791475794007.jpg" alt="Illustrative clinic reception for MediFlow ET" width="100%" />
 
-## Core features
+<br />
 
-### For clinic administrators and receptionists
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![NestJS](https://img.shields.io/badge/NestJS-10-E0234E?logo=nestjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma&logoColor=white)
 
-- manage clinic profiles and branches
-- onboard staff and patient records
-- track appointment flow and check-in status
-- handle queue operations and patient movement
-- manage payments and billing information
-- view operational performance reports
+</div>
 
-### For doctors
+---
 
-- access patient records within clinic scope
-- monitor scheduled appointments
-- manage queue priorities and consultation flow
-- review clinic dashboard insights
+## Overview
 
-### For patients
+MediFlow ET brings the everyday work of a clinic into one role-aware application. Administrators and front-desk staff can coordinate clinic operations, doctors can follow appointments and patient queues, and patients have a dedicated portal for their visit information.
 
-- access appointment and queue information
-- view personal portal details
-- stay informed about visit status and payments
+The project is built as a full-stack application with a React and Vite frontend, a NestJS API, and PostgreSQL persistence managed through Prisma.
 
-### Platform capabilities
+## What it includes
 
-- JWT-based authentication and role-based access control
-- Prisma ORM with PostgreSQL
-- validation, logging, and structured API responses
-- Swagger API documentation
-- tenant-aware clinic access patterns
-- responsive modern UI for desktop and browser-based workflows
+| Clinic operations | Patient care | Platform foundation |
+| --- | --- | --- |
+| Clinics and branches | Patient records | Role-based access |
+| Staff and doctor management | Appointment workflows | JWT authentication |
+| Check-in and queue management | Patient portal | Clinic-scoped access |
+| Payment records | Visit status | Request validation |
+| Reports and analytics | Notifications | Swagger API docs |
 
-## Tech stack
+### Role-focused experiences
 
-### Frontend
+- **Administrators** — oversee clinic operations, staff, and reporting.
+- **Receptionists** — manage patient registration, appointments, check-in, and queues.
+- **Doctors** — review relevant patient information and manage their appointment and queue workflows.
+- **Patients** — access their portal and follow appointment, queue, and payment details.
 
-- React
-- Vite
-- TypeScript
-- Tailwind-style UI system
-- TanStack React Query
-- Recharts for data visualization
+## Technology
 
-### Backend
+| Area | Tools |
+| --- | --- |
+| Frontend | React, TypeScript, Vite, TanStack Query, Tailwind CSS |
+| Backend | NestJS, TypeScript, Passport, JWT |
+| Data | PostgreSQL 16, Prisma ORM |
+| API | REST, Swagger / OpenAPI |
+| Security and validation | Helmet, class-validator, role and clinic access controls |
 
-- NestJS
-- TypeScript
-- Prisma ORM
-- PostgreSQL
-- Swagger/OpenAPI
-- JWT + Passport
-- Helmet for HTTP hardening
+## Architecture
 
-## Project structure
-
-```text
-clinic/
-├── backend/
-│   ├── prisma/
-│   ├── src/
-│   ├── test/
-│   ├── .env.example
-│   ├── docker-compose.yml
-│   ├── package.json
-│   └── README.md
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── README.md
-├── README.md
-└── .git/
+```mermaid
+flowchart LR
+    U[Clinic users] --> FE[React + Vite frontend]
+    FE -->|REST API| API[NestJS backend]
+    API --> AUTH[Authentication and access control]
+    API --> DOMAIN[Clinic, patients, appointments, queue, payments, reports]
+    DOMAIN --> ORM[Prisma ORM]
+    ORM --> DB[(PostgreSQL)]
 ```
 
-## Role-based workflow
-
-The system is structured around clinic roles:
-
-- Admin: overall clinic operations and configuration
-- Receptionist: patients, appointments, check-in, queue management
-- Doctor: queue, patient data, appointments
-- Patient: personal dashboard and visit status
-
-This role-based separation helps keep each user experience focused and secure.
-
-## Getting started
+## Get started
 
 ### Prerequisites
 
-Before you run the project locally, make sure you have the following installed:
-
-- Node.js 18+ or newer
+- Node.js 20 or newer
 - npm
-- PostgreSQL 16 or a compatible local instance
-- Git
+- Docker with Docker Compose, or a PostgreSQL 16 instance
 
-## Backend setup
+### 1. Start the database
+
+The backend includes a Compose service for local PostgreSQL. From the backend directory:
 
 ```bash
 cd backend
-npm install
+docker compose up -d postgres
+```
+
+### 2. Configure and start the API
+
+In a second terminal, from the repository root:
+
+```bash
+cd backend
+npm ci
 cp .env.example .env
 npm run prisma:generate
 npm run prisma:migrate
@@ -127,128 +100,95 @@ npm run db:seed
 npm run start:dev
 ```
 
-The backend starts on:
+Update `backend/.env` before running the seed. Use private development values for `JWT_SECRET`, `OTP_PEPPER`, and `SEED_PASSWORD`; never commit your `.env` file. The included development OTP adapter writes codes to the backend console.
 
-- http://localhost:3000
-- Swagger docs: http://localhost:3000/api/docs
+The API is available at `http://localhost:3000/api/v1`. The health check is `http://localhost:3000/api/v1/health`, and Swagger docs are at `http://localhost:3000/api/docs` when enabled.
 
-### Backend environment variables
+### 3. Configure and start the frontend
 
-The backend uses a `.env` file. A sample configuration is included in `backend/.env.example`.
-
-Key variables include:
-
-```env
-PORT=3000
-NODE_ENV=development
-DATABASE_URL=postgresql://postgres:postgres@localhost:5433/mediflow_db?schema=public
-JWT_SECRET=your-secure-secret
-JWT_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_DAYS=7
-OTP_PEPPER=your-otp-pepper
-CORS_ORIGIN=http://localhost:5173
-API_PREFIX=api/v1
-SWAGGER_PATH=api/docs
-SWAGGER_ENABLED=true
-```
-
-## Frontend setup
+In another terminal, from the repository root:
 
 ```bash
 cd frontend
-npm install
+npm ci
 cp .env.example .env.local
 npm run dev
 ```
 
-By default the frontend runs on:
-
-- http://localhost:5173
-
-Ensure the frontend API URL points to the backend API base, for example:
+The frontend runs at `http://localhost:5173`. Set `VITE_API_BASE_URL` in `frontend/.env.local` to the API base URL:
 
 ```env
 VITE_API_BASE_URL=http://localhost:3000/api/v1
 ```
 
-## Common scripts
+Only public configuration belongs in `VITE_*` variables. Do not put database credentials, signing keys, or API secrets in frontend environment variables.
+
+## Useful commands
+
+Run commands from the corresponding `backend/` or `frontend/` directory.
 
 ### Backend
 
-```bash
-npm run build
-npm run start
-npm run start:dev
-npm run test
-npm run lint
-npm run typecheck
-npm run prisma:generate
-npm run prisma:migrate
-npm run prisma:studio
-```
+| Command | Purpose |
+| --- | --- |
+| `npm run start:dev` | Start the API in watch mode |
+| `npm run build` | Build the API |
+| `npm run test` | Run backend test suites |
+| `npm run lint` | Lint backend TypeScript |
+| `npm run typecheck` | Type-check the backend |
+| `npm run prisma:studio` | Open Prisma Studio |
+
+For production, apply committed migrations with `npm run prisma:migrate:deploy`; see [backend/README.md](./backend/README.md) for environment and deployment guidance.
 
 ### Frontend
 
-```bash
-npm run dev
-npm run build
-npm run preview
-npm run lint
-npm run test
-```
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the Vite development server |
+| `npm run build` | Build the frontend |
+| `npm run preview` | Preview the production build |
+| `npm run lint` | Type-check the frontend |
+| `npm run test` | Run frontend tests |
 
-## API documentation
-
-The backend exposes Swagger documentation for interactive testing of endpoints.
-
-Open:
+## Project layout
 
 ```text
-http://localhost:3000/api/docs
+.
+├── backend/
+│   ├── prisma/       # Database schema, migrations, and seed
+│   ├── src/          # NestJS modules and API
+│   └── test/         # Backend tests
+├── frontend/
+│   └── src/          # React application
+└── README.md
 ```
 
-The API includes modules for:
+## API modules
 
-- authentication and authorization
-- clinics and branches
-- staff and doctors
-- patients and appointments
-- queue management
-- payments
-- notifications
-- reporting
+The API is organized around the application's core domains:
 
-## Notes on architecture
+`Authentication` · `Clinics` · `Branches` · `Staff` · `Doctors` · `Patients` · `Appointments` · `Queue` · `Payments` · `Notifications` · `Reports`
 
-This application is designed with a clear separation of concerns:
+Explore endpoints interactively through Swagger at `/api/docs` while the backend is running.
 
-- backend handles business logic, validation, security, and persistence
-- frontend handles user experience, role-specific dashboards, and interactions
-- Prisma manages the data layer and database schema
-- Swagger documents the API contract for team collaboration and testing
+## Security notes
 
-## Future roadmap
+- Keep backend secrets in the backend environment, never in source control.
+- Use unique, strong `JWT_SECRET` and `OTP_PEPPER` values outside local development.
+- Configure an explicit allowed CORS origin for production.
+- The console OTP delivery adapter is for development only; production requires a configured delivery provider.
+- Review [backend/README.md](./backend/README.md) for production configuration and deployment details.
 
-Possible improvements for the platform include:
+## About the developer
 
-- real SMS/OTP provider integration
-- advanced reporting dashboards and export features
-- patient portal notifications and reminders
-- audit and compliance enhancements
-- improved scheduling and resource availability
-- deployment automation for production environments
-
-## Author
-
-Zenebu Melaku  
-Fullstack Developer
-
-I enjoy building modern, reliable, and user-centered digital systems that solve real-world problems and improve day-to-day operations.
+**Zenebu Melaku** is a Fullstack Developer interested in building practical, reliable, and user-centered software. MediFlow ET demonstrates full-stack development across frontend experiences, API design, authentication, and data persistence.
 
 ## License
 
-This project is currently maintained for development and internal use. Please contact the project owner before reusing or commercializing the codebase.
+This repository is marked `UNLICENSED` in the backend package. Contact the project owner for permission before reusing or distributing the code.
 
----
+<div align="center">
 
-If you want, I can also turn this into a more premium README with badges, architecture diagram sections, screenshots placeholders, and a portfolio-style "About the developer" section.
+**MediFlow ET · Built with care for better-organized clinic workflows.**
+
+</div>
