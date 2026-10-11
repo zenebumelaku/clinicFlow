@@ -1,0 +1,138 @@
+import { plainToInstance, Transform } from 'class-transformer';
+import {
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Max,
+  Min,
+  MinLength,
+  ValidateIf,
+  validateSync,
+} from 'class-validator';
+import { Environment } from '../enums/environment.enum';
+
+export class EnvironmentVariables {
+  @IsEnum(Environment)
+  @IsOptional()
+  NODE_ENV: Environment = Environment.Development;
+
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  PORT: number = 3000;
+
+  @IsString()
+  @IsNotEmpty()
+  DATABASE_URL!: string;
+
+  @IsString()
+  @MinLength(32, { message: 'JWT_SECRET must be at least 32 characters long' })
+  JWT_SECRET!: string;
+
+  @IsString()
+  @IsOptional()
+  JWT_EXPIRES_IN: string = '15m';
+
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  JWT_REFRESH_EXPIRES_DAYS: number = 7;
+
+  @ValidateIf((env: EnvironmentVariables) => env.NODE_ENV === Environment.Production)
+  @IsString()
+  @MinLength(32, { message: 'OTP_PEPPER must be at least 32 characters long in production' })
+  @IsNotEmpty()
+  OTP_PEPPER?: string;
+
+  @ValidateIf((env: EnvironmentVariables) => env.NODE_ENV === Environment.Production)
+  @IsUrl({ protocols: ['https'], require_protocol: true })
+  OTP_DELIVERY_URL?: string;
+
+  @ValidateIf((env: EnvironmentVariables) => env.NODE_ENV === Environment.Production)
+  @IsString()
+  @MinLength(32, { message: 'OTP_DELIVERY_TOKEN must be at least 32 characters long' })
+  @IsNotEmpty()
+  OTP_DELIVERY_TOKEN?: string;
+
+  @ValidateIf((env: EnvironmentVariables) => env.NODE_ENV === Environment.Production)
+  @IsString()
+  @IsNotEmpty({ message: 'CORS_ORIGIN must be set to explicit origins in production' })
+  @IsOptional()
+  CORS_ORIGIN: string = '*';
+
+  @IsInt()
+  @Min(1000)
+  @IsOptional()
+  THROTTLE_TTL: number = 60000;
+
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  THROTTLE_LIMIT: number = 100;
+
+  @IsInt()
+  @Min(0)
+  @Max(8)
+  @IsOptional()
+  TRUST_PROXY_HOPS: number = 0;
+
+  @IsString()
+  @IsOptional()
+  API_PREFIX: string = 'api/v1';
+
+  @IsString()
+  @IsOptional()
+  SWAGGER_PATH: string = 'api/docs';
+
+  @Transform(({ value }) => {
+    if (value === undefined || value === '') return undefined;
+    if (typeof value === 'boolean') return value;
+    return String(value).toLowerCase() === 'true';
+  })
+  @IsBoolean()
+  @IsOptional()
+  SWAGGER_ENABLED?: boolean;
+}
+
+export function validate(config: Record<string, unknown>) {
+  const validatedConfig = plainToInstance(EnvironmentVariables, config, {
+    enableImplicitConversion: true,
+  });
+
+  if (
+    validatedConfig.NODE_ENV === Environment.Production &&
+    (!validatedConfig.CORS_ORIGIN || validatedConfig.CORS_ORIGIN.trim() === '*')
+  ) {
+    throw new Error(
+      'Environment validation failed: CORS_ORIGIN must list explicit origins in production',
+    );
+  }
+
+  if (
+    validatedConfig.NODE_ENV === Environment.Production &&
+    (!validatedConfig.OTP_PEPPER ||
+      !validatedConfig.OTP_DELIVERY_URL ||
+      !validatedConfig.OTP_DELIVERY_TOKEN)
+  ) {
+    throw new Error(
+      'Environment validation failed: production requires OTP_PEPPER, OTP_DELIVERY_URL, and OTP_DELIVERY_TOKEN',
+    );
+  }
+
+  const errors = validateSync(validatedConfig, {
+    skipMissingProperties: false,
+  });
+
+  if (errors.length > 0) {
+    const formattedErrors = errors
+      .map((error) => Object.values(error.constraints || {}).join(', '))
+      .join('; ');
+    throw new Error(`Environment validation failed: ${formattedErrors}`);
+  }
+
+  return validatedConfig;
+}
