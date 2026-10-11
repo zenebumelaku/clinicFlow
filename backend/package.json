@@ -1,7 +1,7 @@
 {
   "name": "mediflow-et-backend",
   "version": "1.0.0",
-  "description": "MediFlow ET - Electronic Healthcare & Clinic Management System Backend",
+  "description": "ClinicFlow - Electronic Healthcare & Clinic Management System Backend",
   "author": "MediFlow Team",
   "private": true,
   "license": "UNLICENSED",

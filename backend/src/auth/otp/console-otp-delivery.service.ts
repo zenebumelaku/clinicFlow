@@ -12,7 +12,7 @@ export class ConsoleOtpDeliveryService implements IOtpDeliveryService {
     this.recentOtps.set(recipient, { code, timestamp: new Date() });
 
     this.logger.log(
-      `\n================= [MediFlow ET OTP Service] =================\n` +
+      `\n================= [ClinicFlow OTP Service] =================\n` +
         `  Recipient : ${recipient}\n` +
         `  Purpose   : ${purpose}\n` +
         `  Code      : ${code} (Expires in 5 minutes)\n` +

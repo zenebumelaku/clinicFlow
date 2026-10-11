@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import {
   Menu,
   Bell,
@@ -10,11 +10,11 @@ import {
   Sun,
   Moon,
   Monitor,
-  LogOut
-} from 'lucide-react';
-import { Role } from '../../types';
-import { useClinicData } from '../../lib/hooks/useClinic';
-import { useTheme } from '../../lib/theme';
+  LogOut,
+} from "lucide-react";
+import { Role } from "../../types";
+import { useClinicData } from "../../lib/hooks/useClinic";
+import { useTheme } from "../../lib/theme";
 
 interface TopBarProps {
   onToggleSidebar: () => void;
@@ -29,18 +29,19 @@ export const TopBar: React.FC<TopBarProps> = ({
   role,
   userName,
   onLogout,
-  onNavigate
+  onNavigate,
 }) => {
-  const { notifications, markNotificationAsRead, markAllNotificationsAsRead } = useClinicData();
+  const { notifications, markNotificationAsRead, markAllNotificationsAsRead } =
+    useClinicData();
   const { theme, isDark, setTheme, toggleTheme } = useTheme();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const notifRef = useRef<HTMLDivElement>(null);
   const themeRef = useRef<HTMLDivElement>(null);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -51,8 +52,8 @@ export const TopBar: React.FC<TopBarProps> = ({
         setShowThemeMenu(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -72,9 +73,13 @@ export const TopBar: React.FC<TopBarProps> = ({
             <Building2 className="w-4 h-4 text-[#1D5BD8] dark:text-[#60A5FA]" />
           </div>
           <div>
-            <span className="font-bold text-[#172033] dark:text-white">MediFlow ET</span>
+            <span className="font-bold text-[#172033] dark:text-white">
+              ClinicFlow
+            </span>
             <span className="text-[#667085] dark:text-zinc-500 mx-1.5">·</span>
-            <span className="text-[#667085] dark:text-zinc-400 font-medium">Clinic workspace</span>
+            <span className="text-[#667085] dark:text-zinc-400 font-medium">
+              Clinic workspace
+            </span>
           </div>
         </div>
       </div>
@@ -87,10 +92,12 @@ export const TopBar: React.FC<TopBarProps> = ({
             type="text"
             placeholder="Search patient MRN, phone, doctor or ticket..."
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' && searchQuery.trim()) {
-                onNavigate(`/dashboard/patients?search=${encodeURIComponent(searchQuery)}`);
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && searchQuery.trim()) {
+                onNavigate(
+                  `/dashboard/patients?search=${encodeURIComponent(searchQuery)}`,
+                );
               }
             }}
             className="w-full pl-9 pr-12 py-1.5 text-xs bg-slate-100/80 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl text-slate-800 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-500 focus:bg-white dark:focus:bg-zinc-900 focus:border-[#1E40AF] focus:outline-none focus:ring-2 focus:ring-[#1E40AF]/15 transition-all font-medium"
@@ -138,58 +145,64 @@ export const TopBar: React.FC<TopBarProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  setTheme('light');
+                  setTheme("light");
                   setShowThemeMenu(false);
                 }}
                 className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer text-left ${
-                  theme === 'light'
-                    ? 'bg-[#EFF4FF] dark:bg-blue-950/40 text-[#1D5BD8] dark:text-[#93C5FD] font-semibold'
-                    : 'text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800'
+                  theme === "light"
+                    ? "bg-[#EFF4FF] dark:bg-blue-950/40 text-[#1D5BD8] dark:text-[#93C5FD] font-semibold"
+                    : "text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800"
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <Sun className="w-3.5 h-3.5 text-amber-500" />
                   <span>Light</span>
                 </div>
-                {theme === 'light' && <CheckCircle2 className="w-3.5 h-3.5 text-[#1D5BD8] dark:text-[#60A5FA]" />}
+                {theme === "light" && (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#1D5BD8] dark:text-[#60A5FA]" />
+                )}
               </button>
 
               <button
                 type="button"
                 onClick={() => {
-                  setTheme('dark');
+                  setTheme("dark");
                   setShowThemeMenu(false);
                 }}
                 className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer text-left ${
-                  theme === 'dark'
-                    ? 'bg-[#EFF4FF] dark:bg-blue-950/40 text-[#1D5BD8] dark:text-[#93C5FD] font-semibold'
-                    : 'text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800'
+                  theme === "dark"
+                    ? "bg-[#EFF4FF] dark:bg-blue-950/40 text-[#1D5BD8] dark:text-[#93C5FD] font-semibold"
+                    : "text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800"
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <Moon className="w-3.5 h-3.5 text-blue-400" />
                   <span>Dark</span>
                 </div>
-                {theme === 'dark' && <CheckCircle2 className="w-3.5 h-3.5 text-[#1D5BD8] dark:text-[#60A5FA]" />}
+                {theme === "dark" && (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#1D5BD8] dark:text-[#60A5FA]" />
+                )}
               </button>
 
               <button
                 type="button"
                 onClick={() => {
-                  setTheme('system');
+                  setTheme("system");
                   setShowThemeMenu(false);
                 }}
                 className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer text-left ${
-                  theme === 'system'
-                    ? 'bg-[#EFF4FF] dark:bg-blue-950/40 text-[#1D5BD8] dark:text-[#93C5FD] font-semibold'
-                    : 'text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800'
+                  theme === "system"
+                    ? "bg-[#EFF4FF] dark:bg-blue-950/40 text-[#1D5BD8] dark:text-[#93C5FD] font-semibold"
+                    : "text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800"
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <Monitor className="w-3.5 h-3.5 text-slate-500 dark:text-zinc-400" />
                   <span>System</span>
                 </div>
-                {theme === 'system' && <CheckCircle2 className="w-3.5 h-3.5 text-[#1D5BD8] dark:text-[#60A5FA]" />}
+                {theme === "system" && (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#1D5BD8] dark:text-[#60A5FA]" />
+                )}
               </button>
             </div>
           )}
@@ -233,23 +246,29 @@ export const TopBar: React.FC<TopBarProps> = ({
 
               <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-zinc-800">
                 {notifications.length === 0 ? (
-                  <div className="p-6 text-center text-xs text-slate-400 dark:text-zinc-500">No notifications</div>
+                  <div className="p-6 text-center text-xs text-slate-400 dark:text-zinc-500">
+                    No notifications
+                  </div>
                 ) : (
-                  notifications.slice(0, 6).map(n => (
+                  notifications.slice(0, 6).map((n) => (
                     <div
                       key={n.id}
                       onClick={() => markNotificationAsRead(n.id)}
                       className={`p-3 text-xs hover:bg-slate-50 dark:hover:bg-zinc-800 cursor-pointer transition-colors ${
-                        !n.read ? 'bg-[#EFF4FF]/60 dark:bg-blue-950/20' : ''
+                        !n.read ? "bg-[#EFF4FF]/60 dark:bg-blue-950/20" : ""
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold text-slate-800 dark:text-white">{n.title}</span>
+                        <span className="font-semibold text-slate-800 dark:text-white">
+                          {n.title}
+                        </span>
                         {!n.read && (
                           <span className="w-1.5 h-1.5 rounded-full bg-[#1D5BD8] dark:bg-[#60A5FA] shrink-0" />
                         )}
                       </div>
-                      <p className="text-slate-600 dark:text-zinc-400 text-[11px] mt-1 leading-snug">{n.message}</p>
+                      <p className="text-slate-600 dark:text-zinc-400 text-[11px] mt-1 leading-snug">
+                        {n.message}
+                      </p>
                     </div>
                   ))
                 )}
@@ -259,7 +278,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 <button
                   onClick={() => {
                     setShowNotifications(false);
-                    onNavigate('/dashboard/notifications');
+                    onNavigate("/dashboard/notifications");
                   }}
                   className="text-xs text-[#1D5BD8] dark:text-[#60A5FA] font-medium hover:text-[#1548B0] cursor-pointer"
                 >
@@ -271,27 +290,29 @@ export const TopBar: React.FC<TopBarProps> = ({
         </div>
 
         <div className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-lg border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-900">
-            <div className="w-7 h-7 rounded-full bg-[#1D5BD8] text-white flex items-center justify-center text-xs font-bold shrink-0">
-              {role === 'admin' && 'A'}
-              {role === 'receptionist' && 'R'}
-              {role === 'doctor' && 'D'}
-              {role === 'patient' && 'P'}
+          <div className="w-7 h-7 rounded-full bg-[#1D5BD8] text-white flex items-center justify-center text-xs font-bold shrink-0">
+            {role === "admin" && "A"}
+            {role === "receptionist" && "R"}
+            {role === "doctor" && "D"}
+            {role === "patient" && "P"}
+          </div>
+          <div className="hidden sm:block">
+            <div className="text-xs font-semibold text-slate-900 dark:text-white truncate max-w-[140px]">
+              {userName}
             </div>
-            <div className="hidden sm:block">
-              <div className="text-xs font-semibold text-slate-900 dark:text-white truncate max-w-[140px]">
-                {userName}
-              </div>
-              <div className="text-[10px] text-slate-500 dark:text-zinc-400 uppercase font-medium">Role: {role}</div>
+            <div className="text-[10px] text-slate-500 dark:text-zinc-400 uppercase font-medium">
+              Role: {role}
             </div>
-            <button
-              type="button"
-              onClick={onLogout}
-              title="Log out"
-              aria-label="Log out"
-              className="p-2 rounded-lg text-slate-500 hover:text-red-600 dark:text-zinc-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+          </div>
+          <button
+            type="button"
+            onClick={onLogout}
+            title="Log out"
+            aria-label="Log out"
+            className="p-2 rounded-lg text-slate-500 hover:text-red-600 dark:text-zinc-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </header>

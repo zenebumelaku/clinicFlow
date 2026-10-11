@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
-import { Hospital, Phone, User, Building, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
-import { Button } from '../../components/ui/Button';
-import { Input, Select } from '../../components/ui/Input';
-import { useToast } from '../../components/ui/Toast';
+import React, { useState } from "react";
+import {
+  Hospital,
+  Phone,
+  User,
+  Building,
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle2,
+} from "lucide-react";
+import { Button } from "../../components/ui/Button";
+import { Input, Select } from "../../components/ui/Input";
+import { useToast } from "../../components/ui/Toast";
 
 interface RegisterPageProps {
   onNavigate: (path: string) => void;
@@ -12,12 +20,12 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
   const { success } = useToast();
   const [step, setStep] = useState<1 | 2>(1);
   const [formData, setFormData] = useState({
-    phone: '',
-    otp: '',
-    fullName: '',
-    clinicName: '',
-    clinicType: 'outpatient_specialty',
-    role: 'admin'
+    phone: "",
+    otp: "",
+    fullName: "",
+    clinicName: "",
+    clinicType: "outpatient_specialty",
+    role: "admin",
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -28,8 +36,10 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
     setTimeout(() => {
       setIsLoading(false);
       setStep(2);
-      success('OTP code sent to ' + formData.phone + ' (use test code: 123456)');
-      setFormData(prev => ({ ...prev, otp: '123456' }));
+      success(
+        "OTP code sent to " + formData.phone + " (use test code: 123456)",
+      );
+      setFormData((prev) => ({ ...prev, otp: "123456" }));
     }, 500);
   };
 
@@ -38,8 +48,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      success('Clinic account registered successfully!');
-      onNavigate('/dashboard/overview');
+      success("Clinic account registered successfully!");
+      onNavigate("/dashboard/overview");
     }, 600);
   };
 
@@ -49,7 +59,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
       <div className="hidden lg:block lg:col-span-5 relative bg-zinc-950 overflow-hidden">
         <img
           src="/src/assets/images/auth_medical_visual_1791475805267.jpg"
-          alt="MediFlow ET registration"
+          alt="ClinicFlow registration"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover opacity-75"
         />
@@ -60,7 +70,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
             <div className="w-9 h-9 rounded-xl bg-[#1D5BD8] flex items-center justify-center text-white font-bold">
               <Hospital className="w-5 h-5" />
             </div>
-            <span className="text-xl font-bold tracking-tight">MediFlow ET</span>
+            <span className="text-xl font-bold tracking-tight">ClinicFlow</span>
           </div>
 
           <div className="space-y-4">
@@ -68,7 +78,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
               Onboard your clinic in under two minutes.
             </h2>
             <p className="text-xs text-slate-300 leading-relaxed max-w-sm">
-              Empower your receptionists and physicians with structured patient queues, local billing records, and automated scheduling.
+              Empower your receptionists and physicians with structured patient
+              queues, local billing records, and automated scheduling.
             </p>
             <div className="flex items-center gap-2 text-xs text-emerald-400">
               <CheckCircle2 className="w-4 h-4" />
@@ -86,7 +97,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
               Register New Practice
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Step {step} of 2: {step === 1 ? 'Mobile Verification' : 'Practice & Admin Details'}
+              Step {step} of 2:{" "}
+              {step === 1 ? "Mobile Verification" : "Practice & Admin Details"}
             </p>
           </div>
 
@@ -98,7 +110,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                 placeholder="+251 911 234567 or 0911..."
                 leftIcon={<Phone className="w-4 h-4" />}
                 value={formData.phone}
-                onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
                 helperText="We'll send a 6-digit verification code to confirm your clinic contact."
               />
 
@@ -119,7 +133,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                 required
                 placeholder="6-digit code"
                 value={formData.otp}
-                onChange={e => setFormData({ ...formData, otp: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, otp: e.target.value })
+                }
                 helperText="Default demo code: 123456"
               />
 
@@ -129,7 +145,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                 placeholder="Dr. / Ato / W/ro Full Name"
                 leftIcon={<User className="w-4 h-4" />}
                 value={formData.fullName}
-                onChange={e => setFormData({ ...formData, fullName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, fullName: e.target.value })
+                }
               />
 
               <Input
@@ -138,17 +156,25 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                 placeholder="e.g. Bole Specialty Outpatient Clinic"
                 leftIcon={<Building className="w-4 h-4" />}
                 value={formData.clinicName}
-                onChange={e => setFormData({ ...formData, clinicName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, clinicName: e.target.value })
+                }
               />
 
               <div className="grid grid-cols-2 gap-3">
                 <Select
                   label="Clinic Category"
                   value={formData.clinicType}
-                  onChange={e => setFormData({ ...formData, clinicType: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, clinicType: e.target.value })
+                  }
                 >
-                  <option value="outpatient_specialty">Specialty Outpatient</option>
-                  <option value="general_practice">General Practice Clinic</option>
+                  <option value="outpatient_specialty">
+                    Specialty Outpatient
+                  </option>
+                  <option value="general_practice">
+                    General Practice Clinic
+                  </option>
                   <option value="pediatric_care">Pediatric Center</option>
                   <option value="dental_eye">Dental & Eye Practice</option>
                 </Select>
@@ -156,7 +182,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                 <Select
                   label="Initial Role"
                   value={formData.role}
-                  onChange={e => setFormData({ ...formData, role: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, role: e.target.value })
+                  }
                 >
                   <option value="admin">Clinic Owner / Admin</option>
                   <option value="receptionist">Receptionist</option>
@@ -186,9 +214,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
           )}
 
           <div className="text-center text-xs text-slate-500 dark:text-zinc-400 pt-4 border-t border-slate-100 dark:border-zinc-800">
-            Already registered?{' '}
+            Already registered?{" "}
             <button
-              onClick={() => onNavigate('/login')}
+              onClick={() => onNavigate("/login")}
               className="text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300 cursor-pointer"
             >
               Sign In

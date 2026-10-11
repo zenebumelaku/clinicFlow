@@ -64,7 +64,7 @@
         "skipped": false,
         "skippedReason": null,
         "exitCode": null,
-        "outputSample": "HTTP 200\n\u003C!doctype html\u003E\n\u003Chtml lang=\u0022en\u0022\u003E\n  \u003Chead\u003E\n    \u003Cscript type=\u0022module\u0022\u003Eimport { injectIntoGlobalHook } from \u0022/@react-refresh\u0022;\ninjectIntoGlobalHook(window);\nwindow.$RefreshReg$ = () =\u003E {};\nwindow.$RefreshSig$ = () =\u003E (type) =\u003E type;\u003C/script\u003E\n\n    \u003Cscript type=\u0022module\u0022 src=\u0022/@vite/client\u0022\u003E\u003C/script\u003E\n\n    \u003Cmeta charset=\u0022UTF-8\u0022 /\u003E\n    \u003Cmeta name=\u0022viewport\u0022 content=\u0022width=device-width, initial-scale=1.0\u0022 /\u003E\n    \u003Ctitle\u003EMediFlow ET - Clinic Operations Platform\u003C/title\u003E\n    \u003Cmeta name=\u0022description\u0022 content=\u0022Smarter clinic operations and patient experiences for private clinics and outpatient medical centers in Ethiopia.\u0022 /\u003E\n    \u003Cmeta property=\u0022og:title\u0022 content=\u0022MediFlow ET - Clinic Operations Platform\u0022 /\u003E\n    \u003Cmeta property=\u0022og:description\u0022 content=\u0022Smarter clinic operations and patient experiences for private clinics and outpatient medical centers in Ethiopia.\u0022 /\u003E\n    \u003Cmeta property=\u0022og:type\u0022 content=\u0022website\u0022 /\u003E\n    \u003Cmeta name=\u0022twitter:card\u0022 content=\u0022summary_large_image\u0022 /\u003E\n    \u003Clink rel=\u0022preconnect\u0022 href=\u0022https://fonts.googleapis.com\u0022\u003E\n    \u003Clink rel=\u0022preconnect\u0022 href=\u0022https://fonts.gstatic.com\u0022 crossorigin\u003E\n    \u003Clink href=\u0022https://fonts.googleapis.com/css2?family=Plus\u002BJakarta\u002BSans:wght@300;400;500;600;700;800\u0026family=JetBrains\u002BMono:wght@400;500\u0026display=swap\u0022 rel=\u0022stylesheet\u0022\u003E\n    \u003Cscript\u003E\n      (function() {\n        try {\n          var saved = localStorage.getItem(\u0027mediflow-theme\u0027);\n          var isDark = saved === \u0027dark\u0027 || (!saved \u0026\u0026 window.matchMedia(\u0027(prefers-color-scheme: dark)\u0027).matches);\n          if (isDark) {\n            document.documentElement.classList.add(\u0027dark\u0027);\n          }\n        } catch (e) {}\n      })();\n    \u003C/script\u003E\n  \u003C/head\u003E\n  \u003Cbody class=\u0022bg-[#F8FAFC] text-slate-900 dark:bg-[#09090b] dark:text-zinc-100 antialiased font-sans min-h-screen\u0022\u003E\n    \u003Cdiv id=\u0022root\u0022\u003E\u003C/div\u003E\n    \u003Cscript type=\u0022module\u0022 src=\u0022/src/main.tsx\u0022\u003E\u003C/script\u003E\n  \u003C/body\u003E\n\u003C/html\u003E\n\n\n--- server output ---\n\n\u003E react-example@0.0.0 dev\n\u003E vite --port=5173 --host=0.0.0.0\n\n(!) Your Vite config uses features that are unsupported by \u0060configLoader: \u0027native\u0027\u0060, which is planned to become the default in a future major version of Vite:\n  - \u0060__dirname\u0060 (vite.config.ts:11:27). Use \u0060import.meta.dirname\u0060 instead\nSet \u0060VITE_CONFIG_NATIVE_IGNORE_WARNING=true\u0060 to suppress this warning.\n\n  VITE v8.3.4  ready in 937 ms\n\n  \u279C  Local:   http://localhost:5173/\n  \u279C  Network: http://10.5.193.78:5173/  en0\n",
+        "outputSample": "HTTP 200\n\u003C!doctype html\u003E\n\u003Chtml lang=\u0022en\u0022\u003E\n  \u003Chead\u003E\n    \u003Cscript type=\u0022module\u0022\u003Eimport { injectIntoGlobalHook } from \u0022/@react-refresh\u0022;\ninjectIntoGlobalHook(window);\nwindow.$RefreshReg$ = () =\u003E {};\nwindow.$RefreshSig$ = () =\u003E (type) =\u003E type;\u003C/script\u003E\n\n    \u003Cscript type=\u0022module\u0022 src=\u0022/@vite/client\u0022\u003E\u003C/script\u003E\n\n    \u003Cmeta charset=\u0022UTF-8\u0022 /\u003E\n    \u003Cmeta name=\u0022viewport\u0022 content=\u0022width=device-width, initial-scale=1.0\u0022 /\u003E\n    \u003Ctitle\u003EClinicFlow - Clinic Operations Platform\u003C/title\u003E\n    \u003Cmeta name=\u0022description\u0022 content=\u0022Smarter clinic operations and patient experiences for private clinics and outpatient medical centers in Ethiopia.\u0022 /\u003E\n    \u003Cmeta property=\u0022og:title\u0022 content=\u0022ClinicFlow - Clinic Operations Platform\u0022 /\u003E\n    \u003Cmeta property=\u0022og:description\u0022 content=\u0022Smarter clinic operations and patient experiences for private clinics and outpatient medical centers in Ethiopia.\u0022 /\u003E\n    \u003Cmeta property=\u0022og:type\u0022 content=\u0022website\u0022 /\u003E\n    \u003Cmeta name=\u0022twitter:card\u0022 content=\u0022summary_large_image\u0022 /\u003E\n    \u003Clink rel=\u0022preconnect\u0022 href=\u0022https://fonts.googleapis.com\u0022\u003E\n    \u003Clink rel=\u0022preconnect\u0022 href=\u0022https://fonts.gstatic.com\u0022 crossorigin\u003E\n    \u003Clink href=\u0022https://fonts.googleapis.com/css2?family=Plus\u002BJakarta\u002BSans:wght@300;400;500;600;700;800\u0026family=JetBrains\u002BMono:wght@400;500\u0026display=swap\u0022 rel=\u0022stylesheet\u0022\u003E\n    \u003Cscript\u003E\n      (function() {\n        try {\n          var saved = localStorage.getItem(\u0027mediflow-theme\u0027);\n          var isDark = saved === \u0027dark\u0027 || (!saved \u0026\u0026 window.matchMedia(\u0027(prefers-color-scheme: dark)\u0027).matches);\n          if (isDark) {\n            document.documentElement.classList.add(\u0027dark\u0027);\n          }\n        } catch (e) {}\n      })();\n    \u003C/script\u003E\n  \u003C/head\u003E\n  \u003Cbody class=\u0022bg-[#F8FAFC] text-slate-900 dark:bg-[#09090b] dark:text-zinc-100 antialiased font-sans min-h-screen\u0022\u003E\n    \u003Cdiv id=\u0022root\u0022\u003E\u003C/div\u003E\n    \u003Cscript type=\u0022module\u0022 src=\u0022/src/main.tsx\u0022\u003E\u003C/script\u003E\n  \u003C/body\u003E\n\u003C/html\u003E\n\n\n--- server output ---\n\n\u003E react-example@0.0.0 dev\n\u003E vite --port=5173 --host=0.0.0.0\n\n(!) Your Vite config uses features that are unsupported by \u0060configLoader: \u0027native\u0027\u0060, which is planned to become the default in a future major version of Vite:\n  - \u0060__dirname\u0060 (vite.config.ts:11:27). Use \u0060import.meta.dirname\u0060 instead\nSet \u0060VITE_CONFIG_NATIVE_IGNORE_WARNING=true\u0060 to suppress this warning.\n\n  VITE v8.3.4  ready in 937 ms\n\n  \u279C  Local:   http://localhost:5173/\n  \u279C  Network: http://10.5.193.78:5173/  en0\n",
         "durationMs": 1697
       }
     ],
@@ -72,10 +72,7 @@
       {
         "source": "frontend-typecheck",
         "resolvedExecutable": "/Users/zeni/.nvm/versions/node/v20.20.2/bin/npm",
-        "args": [
-          "run",
-          "lint"
-        ],
+        "args": ["run", "lint"],
         "cwd": "/Users/zeni/Desktop/projects/clinic/frontend",
         "env": {},
         "prependPath": [],
@@ -84,10 +81,7 @@
       {
         "source": "frontend-production-build",
         "resolvedExecutable": "/Users/zeni/.nvm/versions/node/v20.20.2/bin/npm",
-        "args": [
-          "run",
-          "build"
-        ],
+        "args": ["run", "build"],
         "cwd": "/Users/zeni/Desktop/projects/clinic/frontend",
         "env": {},
         "prependPath": [],
@@ -96,9 +90,7 @@
       {
         "source": "tests-pass",
         "resolvedExecutable": "/Users/zeni/.nvm/versions/node/v20.20.2/bin/npm",
-        "args": [
-          "test"
-        ],
+        "args": ["test"],
         "cwd": "/Users/zeni/Desktop/projects/clinic/frontend",
         "env": {},
         "prependPath": [],
@@ -107,10 +99,7 @@
       {
         "source": "login-route-serves",
         "resolvedExecutable": "/Users/zeni/.nvm/versions/node/v20.20.2/bin/npm",
-        "args": [
-          "run",
-          "dev"
-        ],
+        "args": ["run", "dev"],
         "cwd": "/Users/zeni/Desktop/projects/clinic/frontend",
         "env": {},
         "prependPath": [],

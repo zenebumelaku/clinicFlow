@@ -2,9 +2,9 @@
 <img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
 </div>
 
-# MediFlow ET frontend
+# ClinicFlow frontend
 
-React/Vite frontend for MediFlow ET. Clinic data and authentication are served by
+React/Vite frontend for ClinicFlow. Clinic data and authentication are served by
 the NestJS backend.
 
 ## Run locally

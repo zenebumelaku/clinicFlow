@@ -1,12 +1,12 @@
-# MediFlow ET
+# ClinicFlow
 
-MediFlow ET is a modern electronic healthcare and clinic management platform designed to streamline patient care, queue flow, appointments, billing, and operational reporting for clinics and healthcare teams.
+ClinicFlow is a modern electronic healthcare and clinic management platform designed to streamline patient care, queue flow, appointments, billing, and operational reporting for clinics and healthcare teams.
 
 Built by Zenebu Melaku, a Fullstack Developer, this project combines a secure NestJS backend with a polished React + Vite frontend to deliver a complete digital clinic experience for administrators, receptionists, doctors, and patients.
 
 ## Why this project?
 
-Healthcare operations need speed, clarity, and trust. MediFlow ET helps clinics manage:
+Healthcare operations need speed, clarity, and trust. ClinicFlow helps clinics manage:
 
 - patient registration and records
 - appointment scheduling and tracking
@@ -21,6 +21,7 @@ The goal is to make clinical operations more organized, more transparent, and ea
 ## Core features
 
 ### For clinic administrators and receptionists
+
 - manage clinic profiles and branches
 - onboard staff and patient records
 - track appointment flow and check-in status
@@ -29,17 +30,20 @@ The goal is to make clinical operations more organized, more transparent, and ea
 - view operational performance reports
 
 ### For doctors
+
 - access patient records within clinic scope
 - monitor scheduled appointments
 - manage queue priorities and consultation flow
 - review clinic dashboard insights
 
 ### For patients
+
 - access appointment and queue information
 - view personal portal details
 - stay informed about visit status and payments
 
 ### Platform capabilities
+
 - JWT-based authentication and role-based access control
 - Prisma ORM with PostgreSQL
 - validation, logging, and structured API responses
@@ -50,6 +54,7 @@ The goal is to make clinical operations more organized, more transparent, and ea
 ## Tech stack
 
 ### Frontend
+
 - React
 - Vite
 - TypeScript
@@ -58,6 +63,7 @@ The goal is to make clinical operations more organized, more transparent, and ea
 - Recharts for data visualization
 
 ### Backend
+
 - NestJS
 - TypeScript
 - Prisma ORM

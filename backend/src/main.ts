@@ -69,9 +69,9 @@ async function bootstrap() {
 
   if (swaggerEnabled) {
     const swaggerConfig = new DocumentBuilder()
-      .setTitle('MediFlow ET API')
+      .setTitle('ClinicFlow API')
       .setDescription(
-        'MediFlow ET - Electronic Healthcare & Clinic Management System Backend API Documentation',
+        'ClinicFlow - Electronic Healthcare & Clinic Management System Backend API Documentation',
       )
       .setVersion('1.0.0')
       .addBearerAuth(
@@ -106,7 +106,7 @@ async function bootstrap() {
         docExpansion: 'none',
         filter: true,
       },
-      customSiteTitle: 'MediFlow ET - API Documentation',
+      customSiteTitle: 'ClinicFlow - API Documentation',
     });
   }
 
@@ -114,7 +114,7 @@ async function bootstrap() {
 
   await app.listen(port);
 
-  logger.log(`MediFlow ET Backend is running on: http://localhost:${port}/${apiPrefix}`);
+  logger.log(`ClinicFlow Backend is running on: http://localhost:${port}/${apiPrefix}`);
   if (swaggerEnabled) {
     logger.log(`Swagger Documentation available at: http://localhost:${port}/${swaggerPath}`);
   }

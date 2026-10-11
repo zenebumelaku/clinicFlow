@@ -392,7 +392,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               </h2>
               <p className="text-sm sm:text-base text-[#667085] dark:text-zinc-400 leading-relaxed">
                 From preventive family health to specialized diagnostics,
-                discover calm, high-precision clinical services at MediFlow ET.
+                discover calm, high-precision clinical services at ClinicFlow.
               </p>
             </div>
           </ScrollReveal>
@@ -649,7 +649,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 <span>The Patient Journey</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-[#172033] dark:text-white tracking-tight">
-                How MediFlow ET simplifies your visit
+                How ClinicFlow simplifies your visit
               </h2>
               <p className="text-sm sm:text-base text-[#667085] dark:text-zinc-400 leading-relaxed">
                 Enjoy transparent, punctual healthcare without early morning
@@ -755,7 +755,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     <span>The MediFlow Standard</span>
                   </div>
                   <h2 className="text-3xl sm:text-4xl font-bold text-[#172033] dark:text-white tracking-tight">
-                    Why patients choose MediFlow ET for private care
+                    Why patients choose ClinicFlow for private care
                   </h2>
                   <p className="text-sm sm:text-base text-[#667085] dark:text-zinc-400 leading-relaxed">
                     We eliminate the stress of traditional clinic visits by
@@ -915,7 +915,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               </h2>
               <p className="text-sm text-[#667085] dark:text-zinc-400">
                 Learn how appointments, local payments, and doctor visits work
-                at MediFlow ET.
+                at ClinicFlow.
               </p>
             </div>
           </ScrollReveal>
@@ -935,11 +935,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 a: "Yes! Walk-in patients can check in at the reception kiosk or desk upon arrival. You will receive a digital ticket and estimated wait time on our lounge display.",
               },
               {
-                q: "Where is MediFlow ET located in Addis Ababa?",
+                q: "Where is ClinicFlow located in Addis Ababa?",
                 a: "Our main outpatient medical facility is situated at Cameroon Street, Bole Medhanealem (near Edna Mall & Brass Hospital area), with branch diagnostic suites in Kazanchis.",
               },
               {
-                q: "How can doctors and clinics use MediFlow ET?",
+                q: "How can doctors and clinics use ClinicFlow?",
                 a: 'Clinics and medical staff can click "Launch Clinic App" in the top navigation to access the full operational suite: patient queue management, electronic prescriptions, billing, and scheduling.',
               },
             ].map((faq, idx) => (

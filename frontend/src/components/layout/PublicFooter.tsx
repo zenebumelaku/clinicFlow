@@ -186,7 +186,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
         {/* Bottom bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
           <div>
-            © 2026 MediFlow ET. All rights reserved. Addis Ababa, Ethiopia.
+            © 2026 ClinicFlow. All rights reserved. Addis Ababa, Ethiopia.
           </div>
           <div className="flex items-center gap-6">
             <span className="hover:text-zinc-300 transition-colors cursor-pointer">

@@ -18,7 +18,7 @@ import { AllExceptionsFilter } from '../src/common/filters/all-exceptions.filter
 import { TransformInterceptor } from '../src/common/interceptors/transform.interceptor';
 import { MockPrismaService } from './mock-prisma.service';
 
-describe('MediFlow ET Part 6: Payments and Notifications', () => {
+describe('ClinicFlow Part 6: Payments and Notifications', () => {
   let app: INestApplication;
   let baseUrl: string;
   let mockPrisma: MockPrismaService;

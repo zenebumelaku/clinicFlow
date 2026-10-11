@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Hospital, Lock, Phone, ArrowRight } from 'lucide-react';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
-import { useToast } from '../../components/ui/Toast';
-import { authService } from '../../lib/services/authService';
+import React, { useState } from "react";
+import { Hospital, Lock, Phone, ArrowRight } from "lucide-react";
+import { Button } from "../../components/ui/Button";
+import { Input } from "../../components/ui/Input";
+import { useToast } from "../../components/ui/Toast";
+import { authService } from "../../lib/services/authService";
 
 interface LoginPageProps {
   onNavigate: (path: string) => void;
@@ -11,8 +11,8 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   const { success, error } = useToast();
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -21,9 +21,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
       const user = await authService.login(identifier, password);
       success(`Signed in as ${user.role}`);
       const role = user.role.toLowerCase();
-      onNavigate(role === 'doctor' ? '/doctor/overview' : role === 'patient' ? '/patient/dashboard' : '/dashboard/overview');
+      onNavigate(
+        role === "doctor"
+          ? "/doctor/overview"
+          : role === "patient"
+            ? "/patient/dashboard"
+            : "/dashboard/overview",
+      );
     } catch (loginError) {
-      error(loginError instanceof Error ? loginError.message : 'Unable to sign in.');
+      error(
+        loginError instanceof Error ? loginError.message : "Unable to sign in.",
+      );
     } finally {
       setLoading(false);
     }
@@ -35,7 +43,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
       <div className="hidden lg:block lg:col-span-5 relative bg-zinc-950 overflow-hidden">
         <img
           src="/src/assets/images/auth_medical_visual_1791475805267.jpg"
-          alt="MediFlow ET Healthcare Architecture"
+          alt="ClinicFlow Healthcare Architecture"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover opacity-75"
         />
@@ -46,7 +54,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             <div className="w-9 h-9 rounded-xl bg-[#1D5BD8] flex items-center justify-center text-white font-bold">
               <Hospital className="w-5 h-5" />
             </div>
-            <span className="text-xl font-bold tracking-tight">MediFlow ET</span>
+            <span className="text-xl font-bold tracking-tight">ClinicFlow</span>
           </div>
 
           <div className="space-y-4">
@@ -54,7 +62,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               Smarter clinic operations. Better patient experiences.
             </h2>
             <p className="text-xs text-zinc-300 leading-relaxed max-w-sm">
-              Empowering healthcare facilities in Addis Ababa and across Ethiopia with seamless patient check-in, real-time queues, and local billing.
+              Empowering healthcare facilities in Addis Ababa and across
+              Ethiopia with seamless patient check-in, real-time queues, and
+              local billing.
             </p>
             <div className="pt-4 flex items-center gap-4 text-xs text-zinc-400">
               <span>Bole Specialty Clinic Portal</span>
@@ -73,7 +83,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               <div className="w-8 h-8 rounded-lg bg-[#1D5BD8] flex items-center justify-center text-white">
                 <Hospital className="w-5 h-5" />
               </div>
-              <span className="text-lg font-bold text-slate-900 dark:text-white">MediFlow ET</span>
+              <span className="text-lg font-bold text-slate-900 dark:text-white">
+                ClinicFlow
+              </span>
             </div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
               Sign in to your clinic
@@ -85,7 +97,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
           {/* Form */}
           <form
-            onSubmit={e => {
+            onSubmit={(e) => {
               e.preventDefault();
               void handleLogin();
             }}
@@ -96,16 +108,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               placeholder="+251 9... or 09..."
               leftIcon={<Phone className="w-4 h-4" />}
               value={identifier}
-              onChange={e => setIdentifier(e.target.value)}
+              onChange={(e) => setIdentifier(e.target.value)}
               required
             />
 
             <div className="space-y-1">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Password / PIN</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Password / PIN
+                </label>
                 <button
                   type="button"
-                  onClick={() => onNavigate('/forgot-password')}
+                  onClick={() => onNavigate("/forgot-password")}
                   className="text-xs text-[#1D5BD8] dark:text-[#60A5FA] hover:underline font-medium cursor-pointer"
                 >
                   Forgot PIN?
@@ -116,7 +130,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 placeholder="Enter 6-digit staff PIN"
                 leftIcon={<Lock className="w-4 h-4" />}
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
@@ -135,9 +149,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
           {/* Footnote */}
           <div className="text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
             <div>
-              Want to register a new clinic?{' '}
+              Want to register a new clinic?{" "}
               <button
-                onClick={() => onNavigate('/register')}
+                onClick={() => onNavigate("/register")}
                 className="text-[#1D5BD8] dark:text-[#60A5FA] font-semibold hover:underline cursor-pointer"
               >
                 Register Practice
@@ -145,7 +159,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             </div>
             <div>
               <button
-                onClick={() => onNavigate('/')}
+                onClick={() => onNavigate("/")}
                 className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
               >
                 ← Back to public website

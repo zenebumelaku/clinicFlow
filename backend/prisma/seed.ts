@@ -54,7 +54,7 @@ async function main(): Promise<void> {
       city: 'Addis Ababa',
       region: 'Addis Ababa',
       licenseNumber: 'DEMO-CLINIC-001',
-      description: 'Development seed clinic for MediFlow ET workflows.',
+      description: 'Development seed clinic for ClinicFlow workflows.',
     },
   });
 

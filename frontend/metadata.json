@@ -1,8 +1,6 @@
 {
-  "name": "Remix Remix MediFlow ET - Clinic Operations Platform",
+  "name": "Remix Remix ClinicFlow - Clinic Operations Platform",
   "description": "Smarter clinic operations and patient experiences for private clinics and outpatient medical centers in Ethiopia.",
   "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

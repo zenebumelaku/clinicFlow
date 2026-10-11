@@ -30,7 +30,7 @@ export const ContactPage: React.FC<{
     e.preventDefault();
     setSubmitted(true);
     success(
-      "Inquiry received! A MediFlow ET clinic onboarding specialist will contact you.",
+      "Inquiry received! A ClinicFlow clinic onboarding specialist will contact you.",
     );
   };
 
@@ -43,11 +43,11 @@ export const ContactPage: React.FC<{
             Get in Touch
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold text-[#172033] dark:text-white tracking-tight">
-            Contact MediFlow ET
+            Contact ClinicFlow
           </h1>
           <p className="text-base text-[#667085] dark:text-zinc-400">
-            Have questions or want to deploy MediFlow ET in your private
-            practice or hospital? Our Addis Ababa team is ready to assist.
+            Have questions or want to deploy ClinicFlow in your private practice
+            or hospital? Our Addis Ababa team is ready to assist.
           </p>
         </div>
 

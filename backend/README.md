@@ -1,6 +1,6 @@
-# MediFlow ET - Backend Foundation & Authentication
+# ClinicFlow - Backend Foundation & Authentication
 
-**MediFlow ET** is an enterprise-grade electronic medical and clinic management system backend built with [NestJS](https://nestjs.com/), [TypeScript](https://www.typescriptlang.org/), [Prisma ORM](https://www.prisma.io/), and [PostgreSQL](https://www.postgresql.org/).
+**ClinicFlow** is an enterprise-grade electronic medical and clinic management system backend built with [NestJS](https://nestjs.com/), [TypeScript](https://www.typescriptlang.org/), [Prisma ORM](https://www.prisma.io/), and [PostgreSQL](https://www.postgresql.org/).
 
 ---
 
