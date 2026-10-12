@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Logger } from '../common/utils/logger';
 import { PrismaService } from '../prisma/prisma.service';
 
 export interface AuditRecord {
@@ -13,7 +13,6 @@ export interface AuditRecord {
   correlationId?: string | null;
 }
 
-@Injectable()
 export class AuditService {
   private readonly logger = new Logger(AuditService.name);
 

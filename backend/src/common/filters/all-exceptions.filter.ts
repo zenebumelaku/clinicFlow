@@ -1,18 +1,18 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  HttpStatus,
-  Logger,
-} from '@nestjs/common';
 import { Request, Response } from 'express';
+import { HttpException, HttpStatus } from '../exceptions/http.exceptions';
+import { Logger } from '../utils/logger';
 
-@Catch()
-export class AllExceptionsFilter implements ExceptionFilter {
+export interface HostContext {
+  switchToHttp(): {
+    getResponse<T = Response>(): T;
+    getRequest<T = Request>(): T;
+  };
+}
+
+export class AllExceptionsFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
 
-  catch(exception: unknown, host: ArgumentsHost): void {
+  catch(exception: unknown, host: HostContext): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
@@ -42,9 +42,21 @@ export class AllExceptionsFilter implements ExceptionFilter {
       statusCode = prismaParsed.statusCode;
       message = prismaParsed.message;
       errorDetails = prismaParsed.error;
+    } else if (
+      exception instanceof Error &&
+      (exception.name === 'PrismaClientInitializationError' ||
+        exception.name === 'PrismaClientKnownRequestError' ||
+        exception.name === 'PrismaClientUnknownRequestError' ||
+        exception.name === 'PrismaClientRustPanicError' ||
+        exception.name === 'PrismaClientValidationError')
+    ) {
+      statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+      message = 'Internal server error';
+      errorDetails = null;
     }
 
-    const correlationId = request.correlationId;
+    const correlationId = request?.correlationId;
+    const reqUrl = (request?.originalUrl || request?.url || '').split('?')[0];
 
     if (statusCode >= 500) {
       this.logger.error(
@@ -63,7 +75,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message,
       ...(errorDetails ? { error: errorDetails } : {}),
       timestamp: new Date().toISOString(),
-      path: request.originalUrl?.split('?')[0] || request.url.split('?')[0],
+      path: reqUrl,
       ...(correlationId ? { correlationId } : {}),
     });
   }

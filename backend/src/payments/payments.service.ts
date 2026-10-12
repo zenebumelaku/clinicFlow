@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException } from '../common/exceptions/http.exceptions';
 import { PaymentStatus, Prisma } from '@prisma/client';
 import { PaginatedResponseDto } from '../common/dto/pagination.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -6,7 +6,6 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import { PaymentQueryDto } from './dto/payment-query.dto';
 import { PaymentResponseDto } from './dto/payment-response.dto';
 
-@Injectable()
 export class PaymentsService {
   constructor(private readonly prisma: PrismaService) {}
 

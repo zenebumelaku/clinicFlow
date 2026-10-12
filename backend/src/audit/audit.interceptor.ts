@@ -1,20 +1,25 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  HttpException,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Observable } from 'rxjs';
 import { catchError, from, mergeMap, throwError } from 'rxjs';
+import { HttpException } from '../common/exceptions/http.exceptions';
 import { AuthenticatedUser } from '../common/interfaces/authenticated-user.interface';
 import { AuditRecord, AuditService } from './audit.service';
 
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
-@Injectable()
-export class AuditInterceptor implements NestInterceptor {
+export interface ExecutionContext {
+  getType(): string;
+  switchToHttp(): {
+    getRequest<T = Request>(): T;
+    getResponse<T = Response>(): T;
+  };
+}
+
+export interface CallHandler<T = unknown> {
+  handle(): Observable<T>;
+}
+
+export class AuditInterceptor {
   constructor(private readonly auditService: AuditService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
@@ -55,7 +60,7 @@ export class AuditInterceptor implements NestInterceptor {
     );
   }
 
-  private createRecord(
+  createRecord(
     request: Request,
     path: string,
     outcome: 'success' | 'failure',
@@ -80,18 +85,18 @@ export class AuditInterceptor implements NestInterceptor {
     };
   }
 
-  private routeWithoutQuery(path: string): string {
+  routeWithoutQuery(path: string): string {
     return path.split('?')[0];
   }
 
-  private entityFromPath(path: string): string {
+  entityFromPath(path: string): string {
     const segments = this.routeWithoutQuery(path)
       .split('/')
       .filter((segment) => segment && segment !== 'api' && segment !== 'v1');
     return segments[0] || 'unknown';
   }
 
-  private entityIdFromRequest(request: Request, result?: unknown): string | null {
+  entityIdFromRequest(request: Request, result?: unknown): string | null {
     const params = request.params || {};
     const paramId =
       params.appointmentId ||

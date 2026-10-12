@@ -1,9 +1,8 @@
 import {
   BadRequestException,
   ConflictException,
-  Injectable,
   NotFoundException,
-} from '@nestjs/common';
+} from '../common/exceptions/http.exceptions';
 import { AppointmentStatus, NotificationType, Prisma, QueuePriority, QueueTicketStatus } from '@prisma/client';
 import { PaginatedResponseDto } from '../common/dto/pagination.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -11,7 +10,6 @@ import { CheckInQueueDto } from './dto/check-in-queue.dto';
 import { QueueQueryDto } from './dto/queue-query.dto';
 import { QueueTicketResponseDto } from './dto/queue-ticket-response.dto';
 
-@Injectable()
 export class QueueService {
   constructor(private readonly prisma: PrismaService) {}
 

@@ -1,9 +1,8 @@
 import {
   BadRequestException,
   ConflictException,
-  Injectable,
   NotFoundException,
-} from '@nestjs/common';
+} from '../common/exceptions/http.exceptions';
 import { Prisma, Role } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../prisma/prisma.service';
@@ -17,7 +16,6 @@ import { StaffResponseDto } from './dto/staff-response.dto';
 
 const STAFF_ROLES = new Set<Role>([Role.ADMIN, Role.RECEPTIONIST, Role.DOCTOR]);
 
-@Injectable()
 export class StaffService {
   constructor(
     private readonly prisma: PrismaService,

@@ -1,9 +1,8 @@
 import {
   BadRequestException,
   ForbiddenException,
-  Injectable,
   NotFoundException,
-} from '@nestjs/common';
+} from '../common/exceptions/http.exceptions';
 import { NotificationType, Prisma } from '@prisma/client';
 import { PaginatedResponseDto } from '../common/dto/pagination.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -19,7 +18,6 @@ export interface CreateNotificationInput {
   appointmentId?: string;
 }
 
-@Injectable()
 export class NotificationsService {
   constructor(private readonly prisma: PrismaService) {}
 

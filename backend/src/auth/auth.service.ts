@@ -1,4 +1,5 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Logger } from '../common/utils/logger';
+import { UnauthorizedException } from '../common/exceptions/http.exceptions';
 import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { OtpPurpose, Role } from '@prisma/client';
@@ -20,7 +21,6 @@ import {
 
 const DUMMY_PASSWORD_HASH = bcrypt.hashSync(randomBytes(32).toString('hex'), 10);
 
-@Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 

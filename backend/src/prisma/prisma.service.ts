@@ -1,8 +1,7 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { Logger } from '../common/utils/logger';
 
-@Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+export class PrismaService extends PrismaClient {
   private readonly logger = new Logger(PrismaService.name);
 
   constructor() {
@@ -28,7 +27,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         'Failed to connect to PostgreSQL database via Prisma:',
         error instanceof Error ? error.message : error,
       );
-      // In development, allow the application to start so swagger and endpoints can be inspected
       if (process.env.NODE_ENV === 'production') {
         throw error;
       }

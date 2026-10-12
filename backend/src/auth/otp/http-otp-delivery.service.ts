@@ -1,13 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigAccessor } from '../../common/config/config.service';
 import { IOtpDeliveryService } from './otp-delivery.interface';
 
-@Injectable()
 export class HttpOtpDeliveryService implements IOtpDeliveryService {
   private readonly url: string;
   private readonly token: string;
 
-  constructor(configService: ConfigService) {
+  constructor(configService: ConfigAccessor) {
     this.url = configService.getOrThrow<string>('otp.deliveryUrl');
     this.token = configService.getOrThrow<string>('otp.deliveryToken');
   }

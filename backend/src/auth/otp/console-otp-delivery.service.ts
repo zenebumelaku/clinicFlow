@@ -1,7 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Logger } from '../../common/utils/logger';
 import { IOtpDeliveryService } from './otp-delivery.interface';
 
-@Injectable()
 export class ConsoleOtpDeliveryService implements IOtpDeliveryService {
   private readonly logger = new Logger(ConsoleOtpDeliveryService.name);
 

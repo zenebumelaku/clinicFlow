@@ -1,9 +1,8 @@
 import {
   ConflictException,
-  Injectable,
   NotFoundException,
   BadRequestException,
-} from '@nestjs/common';
+} from '../common/exceptions/http.exceptions';
 import { Prisma, Role } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -13,7 +12,6 @@ import { PatientQueryDto } from './dto/patient-query.dto';
 import { PatientResponseDto } from './dto/patient-response.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 
-@Injectable()
 export class PatientsService {
   constructor(private readonly prisma: PrismaService) {}
 

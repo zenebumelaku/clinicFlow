@@ -91,7 +91,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               Sign in to your clinic
             </h1>
             <p className="text-xs text-slate-500 dark:text-zinc-400">
-              Enter your registered Ethiopian mobile number and staff PIN
+              Sign in with your registered email or phone number and password
             </p>
           </div>
 
@@ -107,6 +107,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               label="Phone Number or Email"
               placeholder="+251 9... or 09..."
               leftIcon={<Phone className="w-4 h-4" />}
+              name="username"
+              autoComplete="username"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
               required
@@ -115,20 +117,22 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             <div className="space-y-1">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Password / PIN
+                  Password
                 </label>
                 <button
                   type="button"
                   onClick={() => onNavigate("/forgot-password")}
                   className="text-xs text-[#1D5BD8] dark:text-[#60A5FA] hover:underline font-medium cursor-pointer"
                 >
-                  Forgot PIN?
+                  Forgot password?
                 </button>
               </div>
               <Input
                 type="password"
-                placeholder="Enter 6-digit staff PIN"
+                placeholder="Enter your password"
                 leftIcon={<Lock className="w-4 h-4" />}
+                name="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required

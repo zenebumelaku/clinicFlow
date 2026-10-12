@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '../common/exceptions/http.exceptions';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaginatedResponseDto } from '../common/dto/pagination.dto';
@@ -7,7 +7,6 @@ import { CreateClinicDto } from './dto/create-clinic.dto';
 import { UpdateClinicDto } from './dto/update-clinic.dto';
 import { ClinicResponseDto } from './dto/clinic-response.dto';
 
-@Injectable()
 export class ClinicsService {
   constructor(private readonly prisma: PrismaService) {}
 

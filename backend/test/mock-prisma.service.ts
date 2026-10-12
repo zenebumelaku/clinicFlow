@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import {
   Role,
   OtpPurpose,
@@ -397,7 +396,6 @@ function paginate<T>(
   return sorted;
 }
 
-@Injectable()
 export class MockPrismaService {
   users = new Map<string, MockUser>();
   otps = new Map<string, MockOtp>();

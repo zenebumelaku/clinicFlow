@@ -1,6 +1,7 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import { Logger } from '../common/utils/logger';
+import { UnauthorizedException } from '../common/exceptions/http.exceptions';
+import { ConfigAccessor } from '../common/config/config.service';
+import { JwtService } from './jwt.service';
 import { createHash, randomBytes } from 'crypto';
 import { Prisma, Role } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -15,7 +16,6 @@ export interface TokenPair {
   expiresIn: string;
 }
 
-@Injectable()
 export class TokenService {
   private readonly logger = new Logger(TokenService.name);
   private readonly accessExpiresIn: string;
@@ -24,7 +24,7 @@ export class TokenService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigAccessor,
   ) {
     this.accessExpiresIn =
       this.configService.get<string>('jwt.expiresIn') ||

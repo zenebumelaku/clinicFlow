@@ -1,17 +1,14 @@
 import {
   BadRequestException,
-  Inject,
-  Injectable,
-  Logger,
   ServiceUnavailableException,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+} from '../../common/exceptions/http.exceptions';
+import { Logger } from '../../common/utils/logger';
+import { ConfigAccessor } from '../../common/config/config.service';
 import { createHash, randomInt, timingSafeEqual } from 'crypto';
 import { OtpPurpose, Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
-import { IOtpDeliveryService, OTP_DELIVERY_SERVICE } from './otp-delivery.interface';
+import { IOtpDeliveryService } from './otp-delivery.interface';
 
-@Injectable()
 export class OtpService {
   private readonly logger = new Logger(OtpService.name);
 
@@ -22,8 +19,7 @@ export class OtpService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly configService: ConfigService,
-    @Inject(OTP_DELIVERY_SERVICE)
+    private readonly configService: ConfigAccessor,
     private readonly deliveryService: IOtpDeliveryService,
   ) {}
 

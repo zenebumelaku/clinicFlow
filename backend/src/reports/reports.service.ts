@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException } from '../common/exceptions/http.exceptions';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { ReportQueryDto, ReportRange } from './dto/report-query.dto';
@@ -45,7 +45,6 @@ export interface WaitingTimePoint {
   averageConsultationTimeMinutes: number | null;
 }
 
-@Injectable()
 export class ReportsService {
   constructor(private readonly prisma: PrismaService) {}
 

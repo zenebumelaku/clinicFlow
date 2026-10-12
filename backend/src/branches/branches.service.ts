@@ -1,9 +1,8 @@
 import {
   BadRequestException,
   ConflictException,
-  Injectable,
   NotFoundException,
-} from '@nestjs/common';
+} from '../common/exceptions/http.exceptions';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaginatedResponseDto, PaginationQueryDto } from '../common/dto/pagination.dto';
@@ -11,7 +10,6 @@ import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
 import { BranchResponseDto } from './dto/branch-response.dto';
 
-@Injectable()
 export class BranchesService {
   constructor(private readonly prisma: PrismaService) {}
 

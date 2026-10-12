@@ -26,7 +26,8 @@
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@nestjs/swagger": ["src/common/decorators/swagger.shim.ts"]
     }
   },
   "include": ["src/**/*", "test/**/*"]

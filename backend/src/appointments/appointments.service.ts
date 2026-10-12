@@ -1,9 +1,8 @@
 import {
   BadRequestException,
   ConflictException,
-  Injectable,
   NotFoundException,
-} from '@nestjs/common';
+} from '../common/exceptions/http.exceptions';
 import { AppointmentStatus, Prisma } from '@prisma/client';
 import { PaginatedResponseDto, SortOrder } from '../common/dto/pagination.dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -37,7 +36,6 @@ const ALLOWED_TRANSITIONS: Record<AppointmentStatus, AppointmentStatus[]> = {
   [AppointmentStatus.NO_SHOW]: [],
 };
 
-@Injectable()
 export class AppointmentsService {
   constructor(private readonly prisma: PrismaService) {}
 

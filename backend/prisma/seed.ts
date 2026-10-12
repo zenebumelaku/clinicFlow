@@ -36,11 +36,79 @@ async function main(): Promise<void> {
   if (process.env.NODE_ENV === 'production') {
     throw new Error('Database seeding is disabled in production');
   }
-  const seedPassword = process.env.SEED_PASSWORD;
-  if (!seedPassword || seedPassword.length < 12) {
-    throw new Error('Set SEED_PASSWORD to a development password of at least 12 characters');
+  const seedUsers = [
+    {
+      phone: '+251911100701',
+      email: 'admin@mediflow-demo.local',
+      firstName: 'Demo',
+      lastName: 'Admin',
+      role: Role.ADMIN,
+      passwordEnv: 'SEED_ADMIN_PASSWORD',
+    },
+    {
+      phone: '+251911100702',
+      email: 'reception@mediflow-demo.local',
+      firstName: 'Sara',
+      lastName: 'Reception',
+      role: Role.RECEPTIONIST,
+      passwordEnv: 'SEED_RECEPTIONIST_PASSWORD',
+    },
+    {
+      phone: '+251911100703',
+      email: 'doctor.abebe@mediflow-demo.local',
+      firstName: 'Abebe',
+      lastName: 'Bekele',
+      role: Role.DOCTOR,
+      passwordEnv: 'SEED_DOCTOR_ABEBE_PASSWORD',
+    },
+    {
+      phone: '+251911100704',
+      email: 'doctor.hana@mediflow-demo.local',
+      firstName: 'Hana',
+      lastName: 'Tadesse',
+      role: Role.DOCTOR,
+      passwordEnv: 'SEED_DOCTOR_HANA_PASSWORD',
+    },
+    {
+      phone: '+251911100705',
+      email: 'patient.ayalew@mediflow-demo.local',
+      firstName: 'Ayalew',
+      lastName: 'Kebede',
+      role: Role.PATIENT,
+      passwordEnv: 'SEED_PATIENT_AYALEW_PASSWORD',
+    },
+    {
+      phone: '+251911100706',
+      email: 'patient.mekdes@mediflow-demo.local',
+      firstName: 'Mekdes',
+      lastName: 'Tesfaye',
+      role: Role.PATIENT,
+      passwordEnv: 'SEED_PATIENT_MEKDES_PASSWORD',
+    },
+    {
+      phone: '+251911100707',
+      email: 'patient.dawit@mediflow-demo.local',
+      firstName: 'Dawit',
+      lastName: 'Worku',
+      role: Role.PATIENT,
+      passwordEnv: 'SEED_PATIENT_DAWIT_PASSWORD',
+    },
+  ] as const;
+
+  const seedPasswords = seedUsers.map((user) => {
+    const password = process.env[user.passwordEnv];
+    if (!password || password.length < 12) {
+      throw new Error(`Set ${user.passwordEnv} to a development password of at least 12 characters`);
+    }
+    return password;
+  });
+  if (new Set(seedPasswords).size !== seedPasswords.length) {
+    throw new Error('Each seeded account must have a different SEED_*_PASSWORD value');
   }
-  const passwordHash = await bcrypt.hash(seedPassword, 10);
+  const passwordHashes = new Map<string, string>();
+  for (const [index, user] of seedUsers.entries()) {
+    passwordHashes.set(user.email, await bcrypt.hash(seedPasswords[index], 10));
+  }
 
   const clinic = await prisma.clinic.upsert({
     where: { slug: 'mediflow-addis-demo' },
@@ -71,60 +139,12 @@ async function main(): Promise<void> {
     },
   });
 
-  const seedUsers = [
-    {
-      phone: '+251911100701',
-      email: 'admin@mediflow-demo.local',
-      firstName: 'Demo',
-      lastName: 'Admin',
-      role: Role.ADMIN,
-    },
-    {
-      phone: '+251911100702',
-      email: 'reception@mediflow-demo.local',
-      firstName: 'Sara',
-      lastName: 'Reception',
-      role: Role.RECEPTIONIST,
-    },
-    {
-      phone: '+251911100703',
-      email: 'doctor.abebe@mediflow-demo.local',
-      firstName: 'Abebe',
-      lastName: 'Bekele',
-      role: Role.DOCTOR,
-    },
-    {
-      phone: '+251911100704',
-      email: 'doctor.hana@mediflow-demo.local',
-      firstName: 'Hana',
-      lastName: 'Tadesse',
-      role: Role.DOCTOR,
-    },
-    {
-      phone: '+251911100705',
-      email: 'patient.ayalew@mediflow-demo.local',
-      firstName: 'Ayalew',
-      lastName: 'Kebede',
-      role: Role.PATIENT,
-    },
-    {
-      phone: '+251911100706',
-      email: 'patient.mekdes@mediflow-demo.local',
-      firstName: 'Mekdes',
-      lastName: 'Tesfaye',
-      role: Role.PATIENT,
-    },
-    {
-      phone: '+251911100707',
-      email: 'patient.dawit@mediflow-demo.local',
-      firstName: 'Dawit',
-      lastName: 'Worku',
-      role: Role.PATIENT,
-    },
-  ] as const;
-
   const users = new Map<string, { id: string }>();
   for (const user of seedUsers) {
+    const passwordHash = passwordHashes.get(user.email);
+    if (!passwordHash) {
+      throw new Error(`Missing password hash for seeded account ${user.email}`);
+    }
     const saved = await prisma.user.upsert({
       where: { phone: user.phone },
       update: {
@@ -135,7 +155,15 @@ async function main(): Promise<void> {
         passwordHash,
         isActive: true,
       },
-      create: { ...user, passwordHash, isActive: true },
+      create: {
+        phone: user.phone,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        passwordHash,
+        isActive: true,
+      },
       select: { id: true },
     });
     users.set(user.phone, saved);
@@ -414,7 +442,7 @@ async function main(): Promise<void> {
   console.log(
     `Seeded ${clinic.name} with ${seedUsers.length} users, ${appointmentSeeds.length} appointments, and ${queueSeeds.length} queue tickets.`,
   );
-  console.log('Development accounts use the configured SEED_PASSWORD.');
+  console.log('Each development account uses its own configured SEED_*_PASSWORD.');
 }
 
 main()

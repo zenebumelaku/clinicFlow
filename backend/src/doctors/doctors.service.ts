@@ -2,9 +2,8 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
-  Injectable,
   NotFoundException,
-} from '@nestjs/common';
+} from '../common/exceptions/http.exceptions';
 import { DoctorAvailabilityStatus, Prisma, Role } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaginatedResponseDto } from '../common/dto/pagination.dto';
@@ -17,7 +16,6 @@ import { UpdateDoctorDto } from './dto/update-doctor.dto';
 import { DoctorQueryDto } from './dto/doctor-query.dto';
 import { DoctorResponseDto } from './dto/doctor-response.dto';
 
-@Injectable()
 export class DoctorsService {
   constructor(
     private readonly prisma: PrismaService,

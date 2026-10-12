@@ -216,7 +216,7 @@ Create the local environment file:
 cp .env.example .env
 ```
 
-For development, the example values target the bundled PostgreSQL container and the console OTP adapter. Replace `JWT_SECRET`, `OTP_PEPPER`, and `SEED_PASSWORD` with private values before use. Generate cryptographic values with:
+For development, the example values target the bundled PostgreSQL container and the console OTP adapter. Replace `JWT_SECRET`, `OTP_PEPPER`, and every `SEED_*_PASSWORD` value with private values before use. Generate cryptographic values with:
 
 ```bash
 openssl rand -hex 32
@@ -251,13 +251,13 @@ Use `npx prisma migrate dev --name <migration_name>` for subsequent development 
 
 ## Seed Commands
 
-Set `SEED_PASSWORD` in `.env` to a development-only password of at least 12 characters, then run:
+Set a different development-only password of at least 12 characters for every `SEED_*_PASSWORD` variable in `.env`, then run:
 
 ```bash
 npm run db:seed
 ```
 
-The seed is idempotent and refuses to run when `NODE_ENV=production`. It creates demo admin, receptionist, doctor, and patient accounts; a clinic and branch; appointments, queue tickets, a payment record, and a notification. Seeded accounts share `SEED_PASSWORD`.
+The seed is idempotent and refuses to run when `NODE_ENV=production`. It creates demo admin, receptionist, doctor, and patient accounts; a clinic and branch; appointments, queue tickets, a payment record, and a notification. Each seeded account has a separate password. Running the seed updates those accounts to the passwords currently configured in `.env`.
 
 ## Development Commands
 
