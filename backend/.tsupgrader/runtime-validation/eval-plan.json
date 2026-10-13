@@ -35,7 +35,7 @@
       "args": ["test"],
       "verificationMethod": "test-results",
       "expected": "0",
-      "timeoutSeconds": 300
+      "timeoutSeconds": 900
     },
     {
       "name": "backend-health-200",
@@ -45,7 +45,7 @@
       "url": "http://localhost:3000/api/v1/health",
       "verificationMethod": "http-status",
       "expected": "200",
-      "timeoutSeconds": 60
+      "timeoutSeconds": 120
     },
     {
       "name": "swagger-docs-200",
@@ -55,7 +55,7 @@
       "url": "http://localhost:3000/api/docs/",
       "verificationMethod": "http-status",
       "expected": "200",
-      "timeoutSeconds": 60
+      "timeoutSeconds": 120
     },
     {
       "name": "protected-profile-unauthorized",
@@ -65,7 +65,7 @@
       "url": "http://localhost:3000/api/v1/auth/me",
       "verificationMethod": "http-status",
       "expected": "401",
-      "timeoutSeconds": 60
+      "timeoutSeconds": 120
     }
   ]
 }

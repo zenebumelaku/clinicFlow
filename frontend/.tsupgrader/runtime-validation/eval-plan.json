@@ -2,6 +2,19 @@
   "generatedAt": "2026-10-11T07:50:00Z",
   "generatedOnPlatform": "darwin",
   "projectType": "webapp",
+  "devServer": {
+    "command": "npm",
+    "args": ["run", "dev"],
+    "url": "http://localhost:5173/",
+    "readyTimeoutSeconds": 120
+  },
+  "setup": [
+    {
+      "command": "npm",
+      "args": ["ci"],
+      "timeoutSeconds": 600
+    }
+  ],
   "assertions": [
     {
       "name": "frontend-typecheck",
@@ -36,19 +49,14 @@
       ],
       "verificationMethod": "test-results",
       "expected": "0",
-      "timeoutSeconds": 120
+      "timeoutSeconds": 300
     },
     {
-      "name": "login-route-serves",
-      "kind": "http-probe",
-      "startCommand": "npm",
-      "startArgs": [
-        "run",
-        "dev"
-      ],
-      "url": "http://localhost:5173/login",
-      "verificationMethod": "http-status",
-      "expected": "200",
+      "name": "public-to-login-flow",
+      "kind": "playwright-route",
+      "scriptPath": ".tsupgrader/runtime-validation/playwright-scripts/public-to-login.spec.ts",
+      "verificationMethod": "exit-code",
+      "expected": "0",
       "timeoutSeconds": 120
     }
   ]

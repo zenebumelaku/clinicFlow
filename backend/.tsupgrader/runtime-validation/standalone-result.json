@@ -1,16 +1,180 @@
 {
-  "planHash": "8a239f990a1fd2f534f65ab54893795ec91c9e528b8547fcca04b31bd7a318a6",
+  "planHash": "f38bf3c47d82e557b108ad8e784fbf213948d9b0f3d61b54389e85049650fb36",
   "phase": "standalone",
-  "recordedAtUtc": "2026-10-13T08:45:57.5352410Z",
-  "retryCount": 1,
+  "recordedAtUtc": "2026-10-13T09:33:41.1490960Z",
+  "retryCount": 3,
   "resetBaseline": false,
-  "complete": false,
-  "runningStep": "initializing",
+  "complete": true,
   "result": {
-    "setupSucceeded": false,
-    "setupDurationMs": 0,
+    "setupSucceeded": true,
+    "setupDurationMs": 53235,
     "setupFailureOutput": null,
-    "assertions": [],
-    "executions": []
+    "assertions": [
+      {
+        "name": "backend-typecheck",
+        "kind": "process",
+        "verificationMethod": "exit-code",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "\n\u003E mediflow-et-backend@1.0.0 typecheck\n\u003E tsc --noEmit\n\n",
+        "durationMs": 11686
+      },
+      {
+        "name": "backend-build",
+        "kind": "process",
+        "verificationMethod": "exit-code",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "\n\u003E mediflow-et-backend@1.0.0 build\n\u003E tsc -p tsconfig.build.json\n\n",
+        "durationMs": 10483
+      },
+      {
+        "name": "tests-pass",
+        "kind": "process",
+        "verificationMethod": "test-results",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": 0,
+        "outputSample": "\n\u003E mediflow-et-backend@1.0.0 test\n\u003E ts-node -r tsconfig-paths/register test/auth.spec.ts \u0026\u0026 ts-node -r tsconfig-paths/register test/clinics.spec.ts \u0026\u0026 ts-node -r tsconfig-paths/register test/patients-appointments.spec.ts \u0026\u0026 ts-node -r tsconfig-paths/register test/queue.spec.ts \u0026\u0026 ts-node -r tsconfig-paths/register test/payments-notifications.spec.ts \u0026\u0026 ts-node -r tsconfig-paths/register test/reports.spec.ts \u0026\u0026 ts-node -r tsconfig-paths/register test/hardening.spec.ts\n\nTAP version 13\n[ClinicFlow] [2026-10-13T09:31:17.363Z] [LOG] [ConsoleOtpDeliveryService] \n================= [ClinicFlow OTP Service] =================\n  Recipient : \u002B251911000001\n  Purpose   : LOGIN\n  Code      : 799257 (Expires in 5 minutes)\n=============================================================\n\n[ClinicFlow] [2026-10-13T09:31:17.372Z] [LOG] [OtpService] Dispatched OTP (purpose: LOGIN)\n[ClinicFlow] [2026-10-13T09:31:17.376Z] [LOG] [HTTP] [b607e9c1-1dee-42e2-964d-fc6d848248d6] POST /api/v1/auth/send-otp 200 \u002B118ms - IP: 127.0.0.1 Agent: node\n# Subtest: ClinicFlow Part 2: Authentication \u0026 Authorization Tests\n    # Subtest: 1. Successful Authentication\n        # Subtest: should send an OTP code successfully\n        ok 1 - should send an OTP code successfully\n          ---\n          duration_ms: 1710.027753\n          ...\n[ClinicFlow] [2026-10-13T09:31:17.996Z] [LOG] [AuthService] Created new PATIENT account after OTP verification\n[ClinicFlow] [2026-10-13T09:31:18.134Z] [LOG] [HTTP] [0c87346a-9a66-480b-b4e8-b1f11113e25b] POST /api/v1/auth/verify-otp 200 \u002B151ms - IP: 127.0.0.1 Agent: node\n        # Subtest: should verify OTP and return access token \u002B refresh token \u002B user profile\n        ok 2 - should verify OTP and return access token \u002B refresh token \u002B user profile\n          ---\n          duration_ms: 464.176587\n          ...\n[ClinicFlow] [2026-10-13T09:31:18.301Z] [LOG] [HTTP] [cfdeff0a-6802-4b66-92ce-188974f5c262] GET /api/v1/auth/me 200 \u002B154ms - IP: 127.0.0.1 Agent: node\n        # Subtest: should access protected /auth/me endpoint using JWT bearer token\n        ok 3 - should access protected /auth/me endpoint using JWT bearer token\n          ---\n          duration_ms: 164.227523\n          ...\n[ClinicFlow] [2026-10-13T09:31:18.541Z] [LOG] [HTTP] [10ec1107-d5c9-403d-8ea2-45a16477d47f] POST /api/v1/auth/refresh 200 \u002B121ms - IP: 127.0.0.1 Agent: node\n        # Subtest: should successfully rotate tokens via /auth/refresh\n        ok 4 - should successfully rotate tokens via /auth/refresh\n          ---\n          duration_ms: 251.19371\n          ...\n[ClinicFlow] [2026-10-13T09:31:18.656Z] [LOG] [HTTP] [3846b575-ebda-4473-9f32-0f374812bc34] POST /api/v1/auth/logout 200 \u002B2ms - IP: 127.0.0.1 Agent: node\n[ClinicFlow] [2026-10-13T09:31:18.662Z] [WARN] [TokenService] Refresh token reuse detected; revoking remaining user sessions\n[ClinicFlow] [2026-10-13T09:31:18.664Z] [WARN] [AllExceptionsFilter] [fda32f9f-4bdf-4548-a0ec-de3bf1d9e6c1] Handled Exception (401): Refresh token has been revoked. All sessions invalidated.\n[ClinicFlow] [2026-10-13T09:31:18.665Z] [WARN] [HTTP] [fda32f9f-4bdf-4548-a0ec-de3bf1d9e6c1] POST /api/v1/auth/refresh 401 \u002B4ms - IP: 127.0.0.1 Agent: node\n        # Subtest: should log out and revoke the refresh token\n        ok 5 - should log out and revoke the refresh token\n          ---\n          duration_ms: 116.8571\n          ...\n        1..5\n    ok 1 - 1. Successful Authentication\n      ---\n      duration_ms: 2711.452064\n      type: \u0027suite\u0027\n      ...\n[ClinicFlow] [2026-10-13T09:31:18.801Z] [LOG] [HTTP] [c2c5f687-29b8-4a53-94d0-7dd2a3da75c8] POST /api/v1/auth/refresh 200 \u002B25ms - IP: 127.0.0.1 Agent: node\n[ClinicFlow] [2026-10-13T09:31:18.939Z] [WARN] [TokenService] Refresh token reuse detected; revoking remaining user sessions\n[ClinicFlow] [2026-10-13T09:31:18.940Z] [WARN] [AllExceptionsFilter] [f00cf373-351e-42eb-a473-b58fb12a8926] Handled Exception (401): Refresh token has been revoked. All sessions invalidated.\n[ClinicFlow] [2026-10-13T09:31:18.941Z] [WARN] [HTTP] [f00cf373-351e-42eb-a473-b58fb12a8926] POST /api/v1/auth/refresh 401 \u002B130ms - IP: \n\u2026[truncated]",
+        "durationMs": 179085,
+        "testResults": {
+          "testFramework": "unknown",
+          "runnerDetectedFrom": "none",
+          "testsTotal": 0,
+          "testsPassed": 0,
+          "testsFailed": 0,
+          "testsSkipped": 0,
+          "parseFailed": true
+        }
+      },
+      {
+        "name": "backend-health-200",
+        "kind": "http-probe",
+        "verificationMethod": "http-status",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": null,
+        "outputSample": "HTTP 200\n{\u0022success\u0022:true,\u0022statusCode\u0022:200,\u0022data\u0022:{\u0022status\u0022:\u0022ok\u0022,\u0022service\u0022:\u0022mediflow-et-backend\u0022,\u0022version\u0022:\u00221.0.0\u0022,\u0022timestamp\u0022:\u00222026-10-13T09:33:40.763Z\u0022},\u0022timestamp\u0022:\u00222026-10-13T09:33:40.763Z\u0022,\u0022correlationId\u0022:\u002281582580-20ef-49bb-bdf5-216b9b84b490\u0022}",
+        "durationMs": 52
+      },
+      {
+        "name": "swagger-docs-200",
+        "kind": "http-probe",
+        "verificationMethod": "http-status",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": null,
+        "outputSample": "HTTP 200\n\n\u003C!-- HTML for static distribution bundle build --\u003E\n\u003C!DOCTYPE html\u003E\n\u003Chtml lang=\u0022en\u0022\u003E\n\u003Chead\u003E\n  \u003Cmeta charset=\u0022UTF-8\u0022\u003E\n  \n  \u003Ctitle\u003ESwagger UI\u003C/title\u003E\n  \u003Clink rel=\u0022stylesheet\u0022 type=\u0022text/css\u0022 href=\u0022./swagger-ui.css\u0022 \u003E\n  \u003Clink rel=\u0022icon\u0022 type=\u0022image/png\u0022 href=\u0022./favicon-32x32.png\u0022 sizes=\u002232x32\u0022 /\u003E\u003Clink rel=\u0022icon\u0022 type=\u0022image/png\u0022 href=\u0022./favicon-16x16.png\u0022 sizes=\u002216x16\u0022 /\u003E\n  \u003Cstyle\u003E\n    html\n    {\n      box-sizing: border-box;\n      overflow: -moz-scrollbars-vertical;\n      overflow-y: scroll;\n    }\n    *,\n    *:before,\n    *:after\n    {\n      box-sizing: inherit;\n    }\n\n    body {\n      margin:0;\n      background: #fafafa;\n    }\n  \u003C/style\u003E\n\u003C/head\u003E\n\n\u003Cbody\u003E\n\n\u003Csvg xmlns=\u0022http://www.w3.org/2000/svg\u0022 xmlns:xlink=\u0022http://www.w3.org/1999/xlink\u0022 style=\u0022position:absolute;width:0;height:0\u0022\u003E\n  \u003Cdefs\u003E\n    \u003Csymbol viewBox=\u00220 0 20 20\u0022 id=\u0022unlocked\u0022\u003E\n      \u003Cpath d=\u0022M15.8 8H14V5.6C14 2.703 12.665 1 10 1 7.334 1 6 2.703 6 5.6V6h2v-.801C8 3.754 8.797 3 10 3c1.203 0 2 .754 2 2.199V8H4c-.553 0-1 .646-1 1.199V17c0 .549.428 1.139.951 1.307l1.197.387C5.672 18.861 6.55 19 7.1 19h5.8c.549 0 1.428-.139 1.951-.307l1.196-.387c.524-.167.953-.757.953-1.306V9.199C17 8.646 16.352 8 15.8 8z\u0022\u003E\u003C/path\u003E\n    \u003C/symbol\u003E\n\n    \u003Csymbol viewBox=\u00220 0 20 20\u0022 id=\u0022locked\u0022\u003E\n      \u003Cpath d=\u0022M15.8 8H14V5.6C14 2.703 12.665 1 10 1 7.334 1 6 2.703 6 5.6V8H4c-.553 0-1 .646-1 1.199V17c0 .549.428 1.139.951 1.307l1.197.387C5.672 18.861 6.55 19 7.1 19h5.8c.549 0 1.428-.139 1.951-.307l1.196-.387c.524-.167.953-.757.953-1.306V9.199C17 8.646 16.352 8 15.8 8zM12 8H8V5.199C8 3.754 8.797 3 10 3c1.203 0 2 .754 2 2.199V8z\u0022/\u003E\n    \u003C/symbol\u003E\n\n    \u003Csymbol viewBox=\u00220 0 20 20\u0022 id=\u0022close\u0022\u003E\n      \u003Cpath d=\u0022M14.348 14.849c-.469.469-1.229.469-1.697 0L10 11.819l-2.651 3.029c-.469.469-1.229.469-1.697 0-.469-.469-.469-1.229 0-1.697l2.758-3.15-2.759-3.152c-.469-.469-.469-1.228 0-1.697.469-.469 1.228-.469 1.697 0L10 8.183l2.651-3.031c.469-.469 1.228-.469 1.697 0 .469.469.469 1.229 0 1.697l-2.758 3.152 2.758 3.15c.469.469.469 1.229 0 1.698z\u0022/\u003E\n    \u003C/symbol\u003E\n\n    \u003Csymbol viewBox=\u00220 0 20 20\u0022 id=\u0022large-arrow\u0022\u003E\n      \u003Cpath d=\u0022M13.25 10L6.109 2.58c-.268-.27-.268-.707 0-.979.268-.27.701-.27.969 0l7.83 7.908c.268.271.268.709 0 .979l-7.83 7.908c-.268.271-.701.27-.969 0-.268-.269-.268-.707 0-.979L13.25 10z\u0022/\u003E\n    \u003C/symbol\u003E\n\n    \u003Csymbol viewBox=\u00220 0 20 20\u0022 id=\u0022large-arrow-down\u0022\u003E\n      \u003Cpath d=\u0022M17.418 6.109c.272-.268.709-.268.979 0s.271.701 0 .969l-7.908 7.83c-.27.268-.707.268-.979 0l-7.908-7.83c-.27-.268-.27-.701 0-.969.271-.268.709-.268.979 0L10 13.25l7.418-7.141z\u0022/\u003E\n    \u003C/symbol\u003E\n\n\n    \u003Csymbol viewBox=\u00220 0 24 24\u0022 id=\u0022jump-to\u0022\u003E\n      \u003Cpath d=\u0022M19 7v4H5.83l3.58-3.59L8 6l-6 6 6 6 1.41-1.41L5.83 13H21V7z\u0022/\u003E\n    \u003C/symbol\u003E\n\n    \u003Csymbol viewBox=\u00220 0 24 24\u0022 id=\u0022expand\u0022\u003E\n      \u003Cpath d=\u0022M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z\u0022/\u003E\n    \u003C/symbol\u003E\n\n  \u003C/defs\u003E\n\u003C/svg\u003E\n\n\u003Cdiv id=\u0022swagger-ui\u0022\u003E\u003C/div\u003E\n\n\u003Cscript src=\u0022./swagger-ui-bundle.js\u0022\u003E \u003C/script\u003E\n\u003Cscript src=\u0022./swagger-ui-standalone-preset.js\u0022\u003E \u003C/script\u003E\n\u003Cscript src=\u0022./swagger-ui-init.js\u0022\u003E \u003C/script\u003E\n\n\n\n\u003Cstyle\u003E\n  .swagger-ui .topbar .download-url-wrapper { display: none } undefined\n\u003C/style\u003E\n\u003C/body\u003E\n\n\u003C/html\u003E\n",
+        "durationMs": 50
+      },
+      {
+        "name": "protected-profile-unauthorized",
+        "kind": "http-probe",
+        "verificationMethod": "http-status",
+        "passed": true,
+        "timedOut": false,
+        "skipped": false,
+        "skippedReason": null,
+        "exitCode": null,
+        "outputSample": "HTTP 401\n{\u0022success\u0022:false,\u0022statusCode\u0022:401,\u0022message\u0022:\u0022Unauthorized\u0022,\u0022timestamp\u0022:\u00222026-10-13T09:33:41.045Z\u0022,\u0022path\u0022:\u0022/api/v1/auth/me\u0022,\u0022correlationId\u0022:\u002239d78455-cb67-4249-a83e-c2242d2e4ea3\u0022}",
+        "durationMs": 31
+      }
+    ],
+    "executions": [
+      {
+        "source": "setup[0]",
+        "resolvedExecutable": "/Users/zeni/.nvm/versions/node/v20.20.2/bin/npm",
+        "args": [
+          "ci"
+        ],
+        "cwd": "/Users/zeni/Desktop/projects/clinic/backend",
+        "env": {},
+        "prependPath": [],
+        "platform": "darwin"
+      },
+      {
+        "source": "backend-typecheck",
+        "resolvedExecutable": "/Users/zeni/.nvm/versions/node/v20.20.2/bin/npm",
+        "args": [
+          "run",
+          "typecheck"
+        ],
+        "cwd": "/Users/zeni/Desktop/projects/clinic/backend",
+        "env": {},
+        "prependPath": [],
+        "platform": "darwin"
+      },
+      {
+        "source": "backend-build",
+        "resolvedExecutable": "/Users/zeni/.nvm/versions/node/v20.20.2/bin/npm",
+        "args": [
+          "run",
+          "build"
+        ],
+        "cwd": "/Users/zeni/Desktop/projects/clinic/backend",
+        "env": {},
+        "prependPath": [],
+        "platform": "darwin"
+      },
+      {
+        "source": "tests-pass",
+        "resolvedExecutable": "/Users/zeni/.nvm/versions/node/v20.20.2/bin/npm",
+        "args": [
+          "test"
+        ],
+        "cwd": "/Users/zeni/Desktop/projects/clinic/backend",
+        "env": {},
+        "prependPath": [],
+        "platform": "darwin"
+      },
+      {
+        "source": "backend-health-200",
+        "resolvedExecutable": "/Users/zeni/.nvm/versions/node/v20.20.2/bin/npm",
+        "args": [
+          "run",
+          "start"
+        ],
+        "cwd": "/Users/zeni/Desktop/projects/clinic/backend",
+        "env": {},
+        "prependPath": [],
+        "platform": "darwin"
+      },
+      {
+        "source": "swagger-docs-200",
+        "resolvedExecutable": "/Users/zeni/.nvm/versions/node/v20.20.2/bin/npm",
+        "args": [
+          "run",
+          "start"
+        ],
+        "cwd": "/Users/zeni/Desktop/projects/clinic/backend",
+        "env": {},
+        "prependPath": [],
+        "platform": "darwin"
+      },
+      {
+        "source": "protected-profile-unauthorized",
+        "resolvedExecutable": "/Users/zeni/.nvm/versions/node/v20.20.2/bin/npm",
+        "args": [
+          "run",
+          "start"
+        ],
+        "cwd": "/Users/zeni/Desktop/projects/clinic/backend",
+        "env": {},
+        "prependPath": [],
+        "platform": "darwin"
+      }
+    ]
   }
 }
