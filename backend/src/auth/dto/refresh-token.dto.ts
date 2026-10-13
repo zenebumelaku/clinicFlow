@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '../../common/decorators/swagger.shim';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class RefreshTokenDto {

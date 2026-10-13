@@ -1,4 +1,4 @@
-import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import { ApiPropertyOptional, PartialType } from '../../common/decorators/swagger.shim';
 import { IsBoolean, IsOptional } from 'class-validator';
 import { CreateBranchDto } from './create-branch.dto';
 

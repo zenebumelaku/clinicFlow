@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '../../common/decorators/swagger.shim';
 import { QueuePriority } from '@prisma/client';
 import { IsEnum, IsOptional, IsUUID } from 'class-validator';
 

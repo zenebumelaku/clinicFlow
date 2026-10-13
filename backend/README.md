@@ -1,6 +1,6 @@
 # ClinicFlow - Backend Foundation & Authentication
 
-**ClinicFlow** is an enterprise-grade electronic medical and clinic management system backend built with [NestJS](https://nestjs.com/), [TypeScript](https://www.typescriptlang.org/), [Prisma ORM](https://www.prisma.io/), and [PostgreSQL](https://www.postgresql.org/).
+**ClinicFlow** is an enterprise-grade electronic medical and clinic management system backend built with [Express](https://expressjs.com/), [TypeScript](https://www.typescriptlang.org/), [Prisma ORM](https://www.prisma.io/), and [PostgreSQL](https://www.postgresql.org/).
 
 ---
 
@@ -8,73 +8,26 @@
 
 ```
 clinic_project/
-├── .env.example                     # Sample environment variables
-├── .env                             # Active environment configuration
-├── docker-compose.yml               # PostgreSQL 16 container definition
-├── nest-cli.json                    # Nest CLI configuration (Swagger plugin enabled)
-├── package.json                     # Project dependencies and scripts
-├── tsconfig.json                    # Strict TypeScript compiler options
-├── tsconfig.build.json              # Production build options
-├── prisma/
-│   └── schema.prisma                # Database models (User, Role enum, Otp, RefreshToken, AuditLog)
+├── package.json                     # Express dependencies and scripts
+├── prisma/schema.prisma             # PostgreSQL data model
 ├── test/
-│   ├── auth.spec.ts                 # Automated test suite (17 comprehensive tests)
-│   └── mock-prisma.service.ts       # In-memory mock database for unit/integration tests
+│   ├── test-app.ts                  # Express integration test server
+│   ├── mock-prisma.service.ts       # In-memory Prisma test double
+│   └── *.spec.ts                    # HTTP integration and hardening tests
 └── src/
-    ├── app.controller.ts            # Health check endpoint (/api/v1/health)
-    ├── app.module.ts                # Application root module
-    ├── main.ts                      # App bootstrap (Helmet, CORS, Validation, Swagger)
-    ├── common/                      # Reusable cross-cutting concerns
-    │   ├── common.module.ts         # Common module registering global middleware
-    │   ├── config/
-    │   │   ├── configuration.ts     # Typed configuration factory
-    │   │   └── env.validation.ts    # Class-validator powered env validation
-    │   ├── constants/
-    │   │   └── index.ts             # Metadata keys and header constants
-    │   ├── decorators/
-    │   │   ├── current-user.decorator.ts  # Extracts req.user or specific user properties
-    │   │   ├── public.decorator.ts        # Bypasses JWT authentication
-    │   │   └── roles.decorator.ts         # Enforces RBAC permissions
-    │   ├── dto/
-    │   │   ├── api-response.dto.ts        # Unified JSON response & error wrappers
-    │   │   └── pagination.dto.ts          # Pagination query & metadata DTOs
-    │   ├── enums/
-    │   │   ├── environment.enum.ts        # Environment tiers (development, production, etc.)
-    │   │   └── role.enum.ts               # User roles (ADMIN, RECEPTIONIST, DOCTOR, PATIENT)
-    │   ├── filters/
-    │   │   ├── all-exceptions.filter.ts   # Catches HttpExceptions & Prisma errors
-    │   │   └── http-exception.filter.ts   # Standard HTTP error formatter
-    │   ├── interceptors/
-    │   │   ├── logging.interceptor.ts     # HTTP latency, status & agent logger
-    │   │   └── transform.interceptor.ts   # Envelopes successful data ({ success: true, ... })
-    │   └── middleware/
-    │       └── correlation-id.middleware.ts # Generates/propagates x-correlation-id
-    ├── prisma/
-    │   ├── prisma.module.ts         # Global database provider module
-    │   └── prisma.service.ts        # PrismaClient lifecycle & connection management
-    └── auth/                        # Authentication & Authorization module
-        ├── auth.controller.ts       # Endpoints: send-otp, verify-otp, login, refresh, logout, me, RBAC
-        ├── auth.module.ts           # Configures Passport, JwtModule, and providers
-        ├── auth.service.ts          # Authentication business logic
-        ├── token.service.ts         # Access token & refresh token rotation/revocation
-        ├── otp/
-        │   ├── otp-delivery.interface.ts     # Abstraction interface for SMS/Email providers
-        │   ├── console-otp-delivery.service.ts # Development/test provider implementation
-        │   └── otp.service.ts                # OTP generation, hashing, rate limiting, and verification
-        ├── dto/
-        │   ├── auth-response.dto.ts # Swagger and response schemas
-        │   ├── login.dto.ts         # Phone/email + password login
-        │   ├── logout.dto.ts        # Token revocation payload
-        │   ├── refresh-token.dto.ts # Refresh token rotation payload
-        │   ├── register.dto.ts      # Staff onboarding payload
-        │   ├── send-otp.dto.ts      # OTP request payload
-        │   └── verify-otp.dto.ts    # OTP verification payload
-        ├── guards/
-        │   ├── jwt-auth.guard.ts    # Enforces JWT unless @Public()
-        │   └── roles.guard.ts       # Enforces @Roles(...)
-        └── strategies/
-            └── jwt.strategy.ts      # Passport JWT verification strategy
+    ├── main.ts                      # Environment validation and server lifecycle
+    ├── app.ts                       # Express middleware, Swagger, routers, and error handlers
+    ├── services.ts                  # Explicit domain-service construction
+    ├── common/                      # Configuration, validation, and HTTP middleware
+    ├── auth/                        # Authentication services and Express router
+    ├── audit/                       # Audit service and Express middleware
+    ├── tenancy/                     # Clinic access middleware
+    ├── health/                      # Health endpoint
+    └── <domain>/*.router.ts         # Express routers for the domain APIs
 ```
+
+The HTTP API remains under `/api/v1`, with the established response envelopes, status codes,
+authentication, RBAC, tenant isolation, validation, audit logging, and correlation IDs.
 
 ---
 
@@ -290,6 +243,6 @@ npm run build
 npm run start:prod
 ```
 
-The built server listens on `PORT` (default `3000`). Rate limiting currently uses the Nest throttler's per-process store; deployments with multiple replicas must also apply a shared rate limit at the ingress/API gateway. Configure the trusted proxy hop count so the in-process limiter sees the actual client IP.
+The built server listens on `PORT` (default `3000`). Rate limiting uses an in-process Express store; deployments with multiple replicas must also apply a shared rate limit at the ingress/API gateway. Configure the trusted proxy hop count so the in-process limiter sees the actual client IP.
 
 Swagger URL in development (when `SWAGGER_ENABLED` is not false): `http://localhost:3000/api/docs`.

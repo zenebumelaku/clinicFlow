@@ -1,24 +1,76 @@
 import { describe, it } from 'node:test';
 import * as assert from 'node:assert';
-import {
-  BadRequestException,
-  CallHandler,
-  ExecutionContext,
-  ForbiddenException,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { firstValueFrom, of, throwError } from 'rxjs';
+import { Request, Response } from 'express';
 import { Environment } from '../src/common/enums/environment.enum';
+import { BadRequestException } from '../src/common/exceptions/http.exceptions';
 import { validate } from '../src/common/config/env.validation';
-import { AllExceptionsFilter } from '../src/common/filters/all-exceptions.filter';
-import { CorrelationIdMiddleware } from '../src/common/middleware/correlation-id.middleware';
-import { AuditInterceptor } from '../src/audit/audit.interceptor';
+import { ConfigService } from '../src/common/config/config.service';
+import { correlationIdMiddleware } from '../src/common/middleware/correlation-id.middleware';
+import { errorMiddleware } from '../src/common/middleware/error.middleware';
+import { createAuditMiddleware } from '../src/audit/audit.middleware';
 import { AuditRecord } from '../src/audit/audit.service';
 import { HttpOtpDeliveryService } from '../src/auth/otp/http-otp-delivery.service';
 import { OtpService } from '../src/auth/otp/otp.service';
 import { MockPrismaService } from './mock-prisma.service';
+import { PrismaService } from '../src/prisma/prisma.service';
+import { createTestApp } from './test-app';
+
+function captureErrorResponse(exception: unknown, request: Partial<Request>) {
+  let statusCode = 0;
+  let body: Record<string, unknown> | undefined;
+  const response = {
+    status(status: number) {
+      statusCode = status;
+      return this;
+    },
+    json(value: Record<string, unknown>) {
+      body = value;
+      return this;
+    },
+  };
+
+  errorMiddleware(
+    exception,
+    request as Request,
+    response as unknown as Response,
+    () => undefined,
+  );
+  return { statusCode, body };
+}
 
 describe('Production hardening controls', () => {
+  it('serves the health endpoint and Swagger UI through Express', async () => {
+    const app = await createTestApp({
+      mockPrisma: new MockPrismaService() as unknown as PrismaService,
+    });
+
+    try {
+      const healthResponse = await fetch(`${app.baseUrl}/health`);
+      const health = await healthResponse.json();
+      assert.strictEqual(healthResponse.status, 200);
+      assert.strictEqual(health.success, true);
+      assert.strictEqual(health.data.status, 'ok');
+
+      const docsResponse = await fetch(app.baseUrl.replace('/api/v1', '/api/docs'));
+      assert.strictEqual(docsResponse.status, 200);
+      assert.match(await docsResponse.text(), /swagger-ui/i);
+
+      const unauthorizedResponse = await fetch(`${app.baseUrl}/auth/me`);
+      assert.strictEqual(unauthorizedResponse.status, 401);
+
+      for (let request = 1; request <= 9; request++) {
+        const throttleResponse = await fetch(`${app.baseUrl}/auth/send-otp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        });
+        assert.strictEqual(throttleResponse.status, request === 9 ? 429 : 400);
+      }
+    } finally {
+      await app.close();
+    }
+  });
+
   it('requires strong OTP and explicit CORS configuration in production', () => {
     const validProduction = {
       NODE_ENV: Environment.Production,
@@ -98,7 +150,7 @@ describe('Production hardening controls', () => {
     const request = { headers: { 'x-correlation-id': 'bad\r\nforged: value' } };
     let responseId = '';
     let continued = false;
-    new CorrelationIdMiddleware().use(
+    correlationIdMiddleware(
       request as never,
       { setHeader: (_name: string, value: string) => (responseId = value) } as never,
       () => {
@@ -111,38 +163,38 @@ describe('Production hardening controls', () => {
 
   it('audits successful and failed mutating requests without recording body data', async () => {
     const records: AuditRecord[] = [];
-    const interceptor = new AuditInterceptor({
+    const middleware = createAuditMiddleware({
       record: async (record: AuditRecord) => {
         records.push(record);
       },
     } as never);
-    const request = {
-      method: 'PATCH',
-      originalUrl: '/api/v1/clinics/clinic-a/staff/staff-a?secret=query-value',
-      params: { clinicId: 'clinic-a', staffId: 'staff-a' },
-      query: { secret: 'query-value' },
-      body: { password: 'never-audit-this' },
-      user: { id: 'user-a', role: 'ADMIN' },
-      ip: '127.0.0.1',
-      get: () => 'test-agent',
-      correlationId: 'safe-correlation-id',
+    const runAudit = (statusCode: number) => {
+      let finish: (() => void) | undefined;
+      const request = {
+        method: 'PATCH',
+        originalUrl: '/api/v1/clinics/clinic-a/staff/staff-a?secret=query-value',
+        params: { clinicId: 'clinic-a', staffId: 'staff-a' },
+        query: { secret: 'query-value' },
+        body: { password: 'never-audit-this' },
+        user: { id: 'user-a', role: 'ADMIN' },
+        ip: '127.0.0.1',
+        get: () => 'test-agent',
+        correlationId: 'safe-correlation-id',
+      };
+      const response = {
+        statusCode,
+        json: () => response,
+        on: (_event: string, listener: () => void) => {
+          finish = listener;
+          return response;
+        },
+      };
+      middleware(request as never, response as never, () => undefined);
+      finish?.();
     };
-    const response = { statusCode: 201 };
-    const context = {
-      getType: () => 'http',
-      switchToHttp: () => ({ getRequest: () => request, getResponse: () => response }),
-    } as unknown as ExecutionContext;
 
-    await firstValueFrom(
-      interceptor.intercept(context, { handle: () => of({ id: 'staff-a' }) } as CallHandler),
-    );
-    await assert.rejects(
-      firstValueFrom(
-        interceptor.intercept(context, {
-          handle: () => throwError(() => new ForbiddenException()),
-        } as CallHandler),
-      ),
-    );
+    runAudit(201);
+    runAudit(403);
 
     assert.strictEqual(records.length, 2);
     assert.strictEqual(records[0].clinicId, 'clinic-a');
@@ -155,68 +207,29 @@ describe('Production hardening controls', () => {
   });
 
   it('omits query parameters from exception response paths', () => {
-    let responseBody: Record<string, unknown> | undefined;
-    const request = { url: '/api/v1/items?id=private-value', originalUrl: undefined };
-    const response = {
-      status: () => response,
-      json: (body: Record<string, unknown>) => {
-        responseBody = body;
-        return response;
-      },
-    };
-    const host = {
-      switchToHttp: () => ({ getResponse: () => response, getRequest: () => request }),
-    } as never;
-    new AllExceptionsFilter().catch(new BadRequestException('Invalid request'), host);
-    assert.strictEqual(responseBody?.path, '/api/v1/items');
+    const result = captureErrorResponse(new BadRequestException('Invalid request'), {
+      url: '/api/v1/items?id=private-value',
+    });
+    assert.strictEqual(result.body?.path, '/api/v1/items');
   });
 
   it('maps serialization conflicts and database outages to retryable statuses', () => {
-    let responseStatus = 0;
-    let responseBody: Record<string, unknown> | undefined;
-    const response = {
-      status: (status: number) => {
-        responseStatus = status;
-        return response;
-      },
-      json: (body: Record<string, unknown>) => {
-        responseBody = body;
-        return response;
-      },
-    };
-    const request = { url: '/api/v1/resource' };
-    const host = {
-      switchToHttp: () => ({ getResponse: () => response, getRequest: () => request }),
-    } as never;
     const serializationConflict = Object.assign(new Error('internal database detail'), {
       code: 'P2034',
     });
-    new AllExceptionsFilter().catch(serializationConflict, host);
-    assert.strictEqual(responseStatus, 409);
-    assert.strictEqual(responseBody?.message, 'The record changed concurrently; retry the request');
+    const result = captureErrorResponse(serializationConflict, { url: '/api/v1/resource' });
+    assert.strictEqual(result.statusCode, 409);
+    assert.strictEqual(result.body?.message, 'The record changed concurrently; retry the request');
   });
 
   it('does not expose unclassified database errors in development responses', () => {
     const details = 'Authentication failed against database server with secret credentials';
-    let responseBody: Record<string, unknown> | undefined;
-    const response = {
-      status: () => response,
-      json: (body: Record<string, unknown>) => {
-        responseBody = body;
-        return response;
-      },
-    };
-    const request = { url: '/api/v1/auth/login' };
-    const host = {
-      switchToHttp: () => ({ getResponse: () => response, getRequest: () => request }),
-    } as never;
-
-    new AllExceptionsFilter().catch(
+    const result = captureErrorResponse(
       Object.assign(new Error(details), { name: 'PrismaClientInitializationError' }),
-      host,
+      { url: '/api/v1/auth/login' },
     );
 
-    assert.strictEqual(responseBody?.message, 'Internal server error');
-    assert.ok(!JSON.stringify(responseBody).includes(details));
+    assert.strictEqual(result.body?.message, 'Internal server error');
+    assert.ok(!JSON.stringify(result.body).includes(details));
   });
 });

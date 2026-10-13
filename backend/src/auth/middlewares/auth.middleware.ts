@@ -10,6 +10,9 @@ import { AuthenticatedUser } from '../../common/interfaces/authenticated-user.in
 declare global {
   namespace Express {
     interface User extends AuthenticatedUser {}
+    interface Request {
+      user?: AuthenticatedUser;
+    }
   }
 }
 /* eslint-enable @typescript-eslint/no-namespace */

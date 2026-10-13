@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '../../common/decorators/swagger.shim';
 import { DoctorAvailabilityStatus } from '@prisma/client';
 import { UserResponseDto } from '../../auth/dto/auth-response.dto';
 import { StaffResponseDto } from '../../staff/dto/staff-response.dto';

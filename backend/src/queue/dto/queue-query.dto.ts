@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '../../common/decorators/swagger.shim';
 import { QueueTicketStatus } from '@prisma/client';
 import { IsEnum, IsOptional, IsUUID, Matches } from 'class-validator';
 import { PaginationQueryDto } from '../../common/dto/pagination.dto';

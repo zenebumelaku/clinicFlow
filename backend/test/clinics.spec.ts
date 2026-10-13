@@ -1,21 +1,13 @@
 import { describe, it, before, after } from 'node:test';
 import * as assert from 'node:assert';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule } from '@nestjs/config';
 import { DoctorAvailabilityStatus, Role } from '@prisma/client';
-import configuration from '../src/common/config/configuration';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { AuthModule } from '../src/auth/auth.module';
-import { ClinicsModule } from '../src/clinics/clinics.module';
-import { CommonModule } from '../src/common/common.module';
 import { TokenService } from '../src/auth/token.service';
-import { AllExceptionsFilter } from '../src/common/filters/all-exceptions.filter';
-import { TransformInterceptor } from '../src/common/interceptors/transform.interceptor';
 import { MockPrismaService } from './mock-prisma.service';
+import { createTestApp, TestAppInstance } from './test-app';
 
 describe('ClinicFlow Part 3: Clinics, Branches, Staff, Doctors', () => {
-  let app: INestApplication;
+  let app: TestAppInstance;
   let baseUrl: string;
   let mockPrisma: MockPrismaService;
   let tokenService: TokenService;
@@ -34,40 +26,9 @@ describe('ClinicFlow Part 3: Clinics, Branches, Staff, Doctors', () => {
   before(async () => {
     mockPrisma = new MockPrismaService();
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          load: [configuration],
-          ignoreEnvFile: true,
-        }),
-        CommonModule,
-        AuthModule,
-        ClinicsModule,
-      ],
-    })
-      .overrideProvider(PrismaService)
-      .useValue(mockPrisma)
-      .compile();
-
-    app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix('api/v1');
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        transform: true,
-      }),
-    );
-    app.useGlobalFilters(new AllExceptionsFilter());
-    app.useGlobalInterceptors(new TransformInterceptor());
-
-    await app.init();
-    await app.listen(0);
-
-    const address = app.getHttpServer().address();
-    const port = typeof address === 'string' ? 3000 : address.port;
-    baseUrl = `http://localhost:${port}/api/v1`;
-    tokenService = app.get<TokenService>(TokenService);
+    app = await createTestApp({ mockPrisma: mockPrisma as unknown as PrismaService });
+    baseUrl = app.baseUrl;
+    tokenService = app.services.token;
 
     const adminA = await mockPrisma.user.create({
       data: { phone: '+251955000001', role: Role.ADMIN, firstName: 'Admin', lastName: 'A' },

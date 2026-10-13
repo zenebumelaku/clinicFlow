@@ -55,7 +55,7 @@ export function createQueueRouter(services: AppServices): Router {
       try {
         const clinicId = req.query.clinicId as string;
         const result = await services.queue.call(clinicId, req.params.ticketId);
-        res.status(200).json(result);
+        res.status(201).json(result);
       } catch (err) {
         next(err);
       }
@@ -71,7 +71,7 @@ export function createQueueRouter(services: AppServices): Router {
       try {
         const clinicId = req.query.clinicId as string;
         const result = await services.queue.start(clinicId, req.params.ticketId);
-        res.status(200).json(result);
+        res.status(201).json(result);
       } catch (err) {
         next(err);
       }
@@ -87,7 +87,7 @@ export function createQueueRouter(services: AppServices): Router {
       try {
         const clinicId = req.query.clinicId as string;
         const result = await services.queue.complete(clinicId, req.params.ticketId);
-        res.status(200).json(result);
+        res.status(201).json(result);
       } catch (err) {
         next(err);
       }
@@ -103,7 +103,7 @@ export function createQueueRouter(services: AppServices): Router {
       try {
         const clinicId = req.query.clinicId as string;
         const result = await services.queue.skip(clinicId, req.params.ticketId);
-        res.status(200).json(result);
+        res.status(201).json(result);
       } catch (err) {
         next(err);
       }

@@ -72,7 +72,9 @@ export class HttpException extends Error {
 export class BadRequestException extends HttpException {
   constructor(objectOrError?: string | Record<string, unknown> | unknown[]) {
     super(
-      typeof objectOrError === 'object' && objectOrError !== null
+      Array.isArray(objectOrError)
+        ? { message: objectOrError, error: 'Bad Request' }
+        : typeof objectOrError === 'object' && objectOrError !== null
         ? (objectOrError as Record<string, unknown>)
         : objectOrError || 'Bad Request',
       HttpStatus.BAD_REQUEST,

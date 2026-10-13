@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '../../common/decorators/swagger.shim';
 import { IsOptional, IsString } from 'class-validator';
 
 export class LogoutDto {

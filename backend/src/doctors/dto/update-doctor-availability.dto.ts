@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '../../common/decorators/swagger.shim';
 import { DoctorAvailabilityStatus } from '@prisma/client';
 import { IsEnum, IsNotEmpty } from 'class-validator';
 

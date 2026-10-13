@@ -89,7 +89,7 @@ export function createAppointmentsRouter(services: AppServices): Router {
       try {
         const clinicId = req.query.clinicId as string;
         const result = await services.appointments.cancel(clinicId, req.params.appointmentId);
-        res.status(200).json(result);
+        res.status(201).json(result);
       } catch (err) {
         next(err);
       }
@@ -105,7 +105,7 @@ export function createAppointmentsRouter(services: AppServices): Router {
       try {
         const clinicId = req.query.clinicId as string;
         const result = await services.appointments.checkIn(clinicId, req.params.appointmentId);
-        res.status(200).json(result);
+        res.status(201).json(result);
       } catch (err) {
         next(err);
       }

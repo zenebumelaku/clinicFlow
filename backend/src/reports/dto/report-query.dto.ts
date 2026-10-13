@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '../../common/decorators/swagger.shim';
 import { IsEnum, IsOptional, IsString, IsUUID, Matches } from 'class-validator';
 
 export enum ReportRange {

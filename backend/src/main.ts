@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { createApp } from './app';
 import { Logger } from './common/utils/logger';
 import { validate } from './common/config/env.validation';

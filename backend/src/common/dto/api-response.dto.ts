@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '../decorators/swagger.shim';
 
 export class ApiResponseDto<T> {
   @ApiProperty({ example: true, description: 'Indicates if the request was successful' })
