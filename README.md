@@ -15,7 +15,7 @@ An electronic healthcare and clinic management platform for coordinating appoint
 <br />
 
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
-![NestJS](https://img.shields.io/badge/NestJS-10-E0234E?logo=nestjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma&logoColor=white)
@@ -28,7 +28,7 @@ An electronic healthcare and clinic management platform for coordinating appoint
 
 MediFlow ET brings the everyday work of a clinic into one role-aware application. Administrators and front-desk staff can coordinate clinic operations, doctors can follow appointments and patient queues, and patients have a dedicated portal for their visit information.
 
-The project is built as a full-stack application with a React and Vite frontend, a NestJS API, and PostgreSQL persistence managed through Prisma.
+The project is built as a full-stack application with a React and Vite frontend, an Express API, and PostgreSQL persistence managed through Prisma.
 
 ## What it includes
 
@@ -52,7 +52,7 @@ The project is built as a full-stack application with a React and Vite frontend,
 | Area | Tools |
 | --- | --- |
 | Frontend | React, TypeScript, Vite, TanStack Query, Tailwind CSS |
-| Backend | NestJS, TypeScript, Passport, JWT |
+| Backend | Express, TypeScript, JWT, Passport |
 | Data | PostgreSQL 16, Prisma ORM |
 | API | REST, Swagger / OpenAPI |
 | Security and validation | Helmet, class-validator, role and clinic access controls |
@@ -62,7 +62,7 @@ The project is built as a full-stack application with a React and Vite frontend,
 ```mermaid
 flowchart LR
     U[Clinic users] --> FE[React + Vite frontend]
-    FE -->|REST API| API[NestJS backend]
+    FE -->|REST API| API[Express backend]
     API --> AUTH[Authentication and access control]
     API --> DOMAIN[Clinic, patients, appointments, queue, payments, reports]
     DOMAIN --> ORM[Prisma ORM]
@@ -103,6 +103,8 @@ npm run start:dev
 Update `backend/.env` before running the seed. Use private development values for `JWT_SECRET`, `OTP_PEPPER`, and `SEED_PASSWORD`; never commit your `.env` file. The included development OTP adapter writes codes to the backend console.
 
 The API is available at `http://localhost:3000/api/v1`. The health check is `http://localhost:3000/api/v1/health`, and Swagger docs are at `http://localhost:3000/api/docs` when enabled.
+
+Note: the backend is implemented with Express rather than NestJS, so `npm run start:dev` starts the Express application directly.
 
 ### 3. Configure and start the frontend
 
@@ -156,7 +158,7 @@ For production, apply committed migrations with `npm run prisma:migrate:deploy`;
 .
 ├── backend/
 │   ├── prisma/       # Database schema, migrations, and seed
-│   ├── src/          # NestJS modules and API
+│   ├── src/          # Express routes, middleware, and domain modules
 │   └── test/         # Backend tests
 ├── frontend/
 │   └── src/          # React application
@@ -165,7 +167,7 @@ For production, apply committed migrations with `npm run prisma:migrate:deploy`;
 
 ## API modules
 
-The API is organized around the application's core domains:
+The Express API is organized around the application's core domains:
 
 `Authentication` · `Clinics` · `Branches` · `Staff` · `Doctors` · `Patients` · `Appointments` · `Queue` · `Payments` · `Notifications` · `Reports`
 
