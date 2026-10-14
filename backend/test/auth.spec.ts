@@ -283,6 +283,43 @@ describe('ClinicFlow Part 2: Authentication & Authorization Tests', () => {
       assert.strictEqual(clinicsResponse.status, 200);
       const clinics = await clinicsResponse.json();
       assert.ok(clinics.data.some((record: { id: string }) => record.id === clinic.id));
+
+      const resetOtpResponse = await fetch(`${baseUrl}/auth/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: phone, purpose: 'PASSWORD_RESET' }),
+      });
+      assert.strictEqual(resetOtpResponse.status, 200);
+      const resetCode = otpDelivery.getLatestCode(phone.toLowerCase());
+      assert.ok(resetCode);
+
+      const resetResponse = await fetch(`${baseUrl}/auth/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          identifier: phone,
+          code: resetCode,
+          password: 'new-clinic-password-456',
+        }),
+      });
+      assert.strictEqual(resetResponse.status, 200);
+
+      const userRefreshTokens = [...mockPrisma.refreshTokens.values()].filter(
+        (token) => token.userId === user.id,
+      );
+      assert.ok(userRefreshTokens.every((token) => token.isRevoked));
+      const oldPasswordLogin = await fetch(`${baseUrl}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: phone, password: 'clinic-password-123' }),
+      });
+      assert.strictEqual(oldPasswordLogin.status, 401);
+      const newPasswordLogin = await fetch(`${baseUrl}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: phone, password: 'new-clinic-password-456' }),
+      });
+      assert.strictEqual(newPasswordLogin.status, 200);
     });
   });
 

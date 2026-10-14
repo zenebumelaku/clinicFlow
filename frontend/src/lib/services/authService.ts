@@ -59,6 +59,22 @@ export const authService = {
     });
   },
 
+  async sendPasswordResetOtp(identifier: string): Promise<OtpDispatch> {
+    return apiRequest<OtpDispatch>('/auth/send-otp', {
+      method: 'POST',
+      authenticated: false,
+      body: { identifier, purpose: 'PASSWORD_RESET' },
+    });
+  },
+
+  async resetPassword(identifier: string, code: string, password: string): Promise<void> {
+    await apiRequest('/auth/reset-password', {
+      method: 'POST',
+      authenticated: false,
+      body: { identifier, code, password },
+    });
+  },
+
   async registerClinic(registration: ClinicRegistration): Promise<AuthUser> {
     const session = await apiRequest<AuthSession>('/auth/register-clinic', {
       method: 'POST',

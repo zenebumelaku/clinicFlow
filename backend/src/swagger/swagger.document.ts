@@ -103,53 +103,72 @@ export const swaggerDocument = {
                   purpose: { type: 'string', enum: ['LOGIN', 'REGISTRATION', 'PASSWORD_RESET'], default: 'LOGIN' },
                 },
               },
-              '/api/v1/auth/register-clinic': {
-                post: {
-                  tags: ['Authentication & Authorization'],
-                  summary: 'Verify a registration OTP and create a clinic administrator account',
-                  requestBody: {
-                    required: true,
-                    content: {
-                      'application/json': {
-                        schema: {
-                          type: 'object',
-                          required: [
-                            'phone',
-                            'code',
-                            'password',
-                            'firstName',
-                            'lastName',
-                            'clinicName',
-                          ],
-                          properties: {
-                            phone: { type: 'string', example: '+251911234567' },
-                            code: { type: 'string', example: '123456' },
-                            password: { type: 'string', minLength: 8 },
-                            firstName: { type: 'string', example: 'Abebe' },
-                            lastName: { type: 'string', example: 'Bekele' },
-                            email: { type: 'string', format: 'email' },
-                            clinicName: { type: 'string', example: 'Addis Health Center' },
-                            clinicPhone: { type: 'string', example: '+251911234567' },
-                            clinicAddress: { type: 'string', example: 'Bole Road' },
-                            clinicCity: { type: 'string', example: 'Addis Ababa' },
-                          },
-                        },
-                      },
-                    },
-                  },
-                  responses: {
-                    '201': { description: 'Clinic and administrator account created; session issued' },
-                    '400': { description: 'Invalid or expired registration OTP or request data' },
-                    '409': { description: 'Phone or email is already registered' },
-                  },
-                },
-              },
             },
           },
         },
         responses: {
           '200': { description: 'OTP verified and user authenticated' },
           '400': { description: 'Invalid, expired, or locked OTP code' },
+        },
+      },
+    },
+    '/api/v1/auth/register-clinic': {
+      post: {
+        tags: ['Authentication & Authorization'],
+        summary: 'Verify registration OTP and create a clinic administrator account',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['phone', 'code', 'password', 'firstName', 'lastName', 'clinicName'],
+                properties: {
+                  phone: { type: 'string', example: '+251911234567' },
+                  code: { type: 'string', example: '123456' },
+                  password: { type: 'string', minLength: 8 },
+                  firstName: { type: 'string', example: 'Abebe' },
+                  lastName: { type: 'string', example: 'Bekele' },
+                  email: { type: 'string', format: 'email' },
+                  clinicName: { type: 'string', example: 'Addis Health Center' },
+                  clinicPhone: { type: 'string', example: '+251911234567' },
+                  clinicAddress: { type: 'string', example: 'Bole Road' },
+                  clinicCity: { type: 'string', example: 'Addis Ababa' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '201': { description: 'Clinic and administrator created; session issued' },
+          '400': { description: 'Invalid or expired registration OTP or request data' },
+          '409': { description: 'Phone or email is already registered' },
+        },
+      },
+    },
+    '/api/v1/auth/reset-password': {
+      post: {
+        tags: ['Authentication & Authorization'],
+        summary: 'Reset account password using a PASSWORD_RESET OTP',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['identifier', 'code', 'password'],
+                properties: {
+                  identifier: { type: 'string', example: '+251911234567' },
+                  code: { type: 'string', example: '123456' },
+                  password: { type: 'string', minLength: 8 },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': { description: 'Generic completion message; active sessions are revoked' },
+          '400': { description: 'Invalid, expired, or locked password-reset OTP' },
         },
       },
     },
