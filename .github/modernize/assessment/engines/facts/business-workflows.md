@@ -127,7 +127,7 @@ For clinic ID resolution, a staff user loads clinic memberships and uses the fir
 
 Frontend query state is held in TanStack Query, with shared clinic data refreshed on a 30-second interval for queue, notifications, and selected statistics. Mutations invalidate the `clinic` query family so the affected views reload.
 
-The backend and PostgreSQL are a single application's persistence path, not separate business services with a gateway fallback. The health endpoint reports the HTTP process status and does not query PostgreSQL. In non-production, a failed initial database connection is logged but does not prevent the server from starting; database-backed requests can therefore fail while `/api/v1/health` still returns HTTP 200. No stale-data or circuit-breaker fallback is implemented for that case.
+The backend and PostgreSQL are a single application's persistence path, not separate business services with a gateway fallback. The health endpoint probes PostgreSQL and reports HTTP 503 with `database unavailable` when that dependency cannot be reached. In non-production, a failed initial database connection is logged but does not prevent the server from starting, so the health endpoint exposes the unavailable dependency while database-backed requests are impaired. No stale-data or circuit-breaker fallback is implemented for that case.
 
 ## Business Workflow Sequence
 

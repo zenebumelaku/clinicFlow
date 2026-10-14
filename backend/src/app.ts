@@ -103,7 +103,7 @@ export function createApp(options?: CreateAppOptions): { app: Express; services:
 
   const cleanPrefix = '/' + apiPrefix.replace(/^\//, '').replace(/\/$/, '');
 
-  app.use(cleanPrefix, createHealthRouter());
+  app.use(cleanPrefix, createHealthRouter(services.prisma));
   app.use(`${cleanPrefix}/auth`, createAuthRouter(services));
   app.use(`${cleanPrefix}/clinics`, createClinicsRouter(services));
   app.use(`${cleanPrefix}/clinics/:clinicId/branches`, createBranchesRouter(services));

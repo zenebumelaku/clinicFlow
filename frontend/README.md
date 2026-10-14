@@ -5,7 +5,7 @@
 # ClinicFlow frontend
 
 React/Vite frontend for ClinicFlow. Clinic data and authentication are served by
-the NestJS backend.
+the Express API in `../backend`.
 
 ## Run locally
 
@@ -20,3 +20,11 @@ Prerequisite: Node.js.
 
 The frontend environment contains only public configuration. Never put API
 secrets, signing keys, or database credentials in a `VITE_*` variable.
+
+## Clinic owner registration
+
+The `/register` flow sends a registration-purpose OTP to the supplied mobile
+number, then creates the administrator account and clinic through the API.
+Local development uses the backend console OTP adapter, so read the API
+terminal for the code. Production requires the backend OTP delivery provider
+and its server-side environment configuration.

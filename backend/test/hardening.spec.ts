@@ -40,8 +40,9 @@ function captureErrorResponse(exception: unknown, request: Partial<Request>) {
 
 describe('Production hardening controls', () => {
   it('serves the health endpoint and Swagger UI through Express', async () => {
+    const prisma = new MockPrismaService();
     const app = await createTestApp({
-      mockPrisma: new MockPrismaService() as unknown as PrismaService,
+      mockPrisma: prisma as unknown as PrismaService,
     });
 
     try {
@@ -50,6 +51,8 @@ describe('Production hardening controls', () => {
       assert.strictEqual(healthResponse.status, 200);
       assert.strictEqual(health.success, true);
       assert.strictEqual(health.data.status, 'ok');
+      assert.strictEqual(health.data.database, 'connected');
+      assert.strictEqual(prisma.rawQueryCalls.length, 1);
 
       const docsResponse = await fetch(app.baseUrl.replace('/api/v1', '/api/docs'));
       assert.strictEqual(docsResponse.status, 200);
@@ -66,6 +69,26 @@ describe('Production hardening controls', () => {
         });
         assert.strictEqual(throttleResponse.status, request === 9 ? 429 : 400);
       }
+    } finally {
+      await app.close();
+    }
+  });
+
+  it('reports database unavailability through the health endpoint', async () => {
+    const prisma = new MockPrismaService();
+    prisma.$queryRaw = async <T>(): Promise<T> => {
+      throw new Error('database connection failed');
+    };
+    const app = await createTestApp({
+      mockPrisma: prisma as unknown as PrismaService,
+    });
+
+    try {
+      const response = await fetch(`${app.baseUrl}/health`);
+      const body = await response.json();
+      assert.strictEqual(response.status, 503);
+      assert.strictEqual(body.success, false);
+      assert.strictEqual(body.message, 'Database unavailable');
     } finally {
       await app.close();
     }

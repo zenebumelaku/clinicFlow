@@ -221,6 +221,71 @@ describe('ClinicFlow Part 2: Authentication & Authorization Tests', () => {
     });
   });
 
+  describe('Clinic administrator registration', () => {
+    it('verifies the registration code, creates a clinic administrator, and establishes membership', async () => {
+      const phone = '+251911000050';
+      const otpResponse = await fetch(`${baseUrl}/auth/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: phone, purpose: 'REGISTRATION' }),
+      });
+      assert.strictEqual(otpResponse.status, 200);
+
+      const code = otpDelivery.getLatestCode(phone.toLowerCase());
+      assert.ok(code, 'A registration code should have been dispatched');
+      const wrongFlowResponse = await fetch(`${baseUrl}/auth/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier: phone, code, purpose: 'REGISTRATION' }),
+      });
+      assert.strictEqual(wrongFlowResponse.status, 400);
+
+      const registrationResponse = await fetch(`${baseUrl}/auth/register-clinic`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone,
+          code,
+          email: 'owner@newclinic.et',
+          password: 'clinic-password-123',
+          firstName: 'Clinic',
+          lastName: 'Owner',
+          clinicName: 'New Health Center',
+          clinicCity: 'Addis Ababa',
+        }),
+      });
+
+      assert.strictEqual(registrationResponse.status, 201);
+      const registration = await registrationResponse.json();
+      assert.strictEqual(registration.data.user.role, Role.ADMIN);
+      assert.ok(registration.data.accessToken);
+      assert.ok(registration.data.refreshToken);
+
+      const user = mockPrisma.users.get(registration.data.user.id);
+      assert.ok(user?.passwordHash, 'New accounts should have a password hash');
+      assert.notStrictEqual(user.passwordHash, 'clinic-password-123');
+
+      const clinic = [...mockPrisma.clinics.values()].find(
+        (record) => record.name === 'New Health Center',
+      );
+      assert.ok(clinic);
+      assert.strictEqual(clinic.city, 'Addis Ababa');
+      assert.ok(
+        [...mockPrisma.staffMembers.values()].some(
+          (membership) => membership.clinicId === clinic.id && membership.userId === user.id,
+        ),
+        'The new administrator should be linked to the clinic',
+      );
+
+      const clinicsResponse = await fetch(`${baseUrl}/clinics?page=1&limit=100`, {
+        headers: { Authorization: `Bearer ${registration.data.accessToken}` },
+      });
+      assert.strictEqual(clinicsResponse.status, 200);
+      const clinics = await clinicsResponse.json();
+      assert.ok(clinics.data.some((record: { id: string }) => record.id === clinic.id));
+    });
+  });
+
   // =========================================================================
   // Test 2: Invalid OTP & Brute-force Attempt Lockout
   // =========================================================================

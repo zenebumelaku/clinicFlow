@@ -39,7 +39,7 @@ export const swaggerDocument = {
         summary: 'Application health and status check',
         responses: {
           '200': {
-            description: 'Service is healthy and responding',
+            description: 'Application and PostgreSQL are healthy and responding',
             content: {
               'application/json': {
                 schema: {
@@ -47,6 +47,7 @@ export const swaggerDocument = {
                   properties: {
                     status: { type: 'string', example: 'ok' },
                     service: { type: 'string', example: 'mediflow-et-backend' },
+                    database: { type: 'string', example: 'connected' },
                     version: { type: 'string', example: '1.0.0' },
                     timestamp: { type: 'string', example: '2026-10-08T19:30:00.000Z' },
                   },
@@ -54,6 +55,7 @@ export const swaggerDocument = {
               },
             },
           },
+          '503': { description: 'PostgreSQL is unavailable' },
         },
       },
     },
@@ -99,6 +101,47 @@ export const swaggerDocument = {
                   firstName: { type: 'string', example: 'Abebe' },
                   lastName: { type: 'string', example: 'Bikila' },
                   purpose: { type: 'string', enum: ['LOGIN', 'REGISTRATION', 'PASSWORD_RESET'], default: 'LOGIN' },
+                },
+              },
+              '/api/v1/auth/register-clinic': {
+                post: {
+                  tags: ['Authentication & Authorization'],
+                  summary: 'Verify a registration OTP and create a clinic administrator account',
+                  requestBody: {
+                    required: true,
+                    content: {
+                      'application/json': {
+                        schema: {
+                          type: 'object',
+                          required: [
+                            'phone',
+                            'code',
+                            'password',
+                            'firstName',
+                            'lastName',
+                            'clinicName',
+                          ],
+                          properties: {
+                            phone: { type: 'string', example: '+251911234567' },
+                            code: { type: 'string', example: '123456' },
+                            password: { type: 'string', minLength: 8 },
+                            firstName: { type: 'string', example: 'Abebe' },
+                            lastName: { type: 'string', example: 'Bekele' },
+                            email: { type: 'string', format: 'email' },
+                            clinicName: { type: 'string', example: 'Addis Health Center' },
+                            clinicPhone: { type: 'string', example: '+251911234567' },
+                            clinicAddress: { type: 'string', example: 'Bole Road' },
+                            clinicCity: { type: 'string', example: 'Addis Ababa' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  responses: {
+                    '201': { description: 'Clinic and administrator account created; session issued' },
+                    '400': { description: 'Invalid or expired registration OTP or request data' },
+                    '409': { description: 'Phone or email is already registered' },
+                  },
                 },
               },
             },

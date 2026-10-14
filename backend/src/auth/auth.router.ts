@@ -6,6 +6,7 @@ import { validateBody } from '../common/middleware/validation.middleware';
 import { createRateLimiter } from '../common/middleware/rate-limiter.middleware';
 import { SendOtpDto } from './dto/send-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { RegisterClinicDto } from './dto/register-clinic.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LogoutDto } from './dto/logout.dto';
@@ -39,6 +40,20 @@ export function createAuthRouter(services: AppServices): Router {
       try {
         const result = await services.auth.verifyOtp(req.body);
         res.status(200).json(result);
+      } catch (err) {
+        next(err);
+      }
+    },
+  );
+
+  router.post(
+    '/register-clinic',
+    authThrottle,
+    validateBody(RegisterClinicDto),
+    async (req, res, next) => {
+      try {
+        const result = await services.auth.registerClinic(req.body);
+        res.status(201).json(result);
       } catch (err) {
         next(err);
       }

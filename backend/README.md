@@ -37,6 +37,7 @@ authentication, RBAC, tenant isolation, validation, audit logging, and correlati
 | :------------------------------------ | :----- | :---------------------- | :--------------------------------------------------------- |
 | `/api/v1/auth/send-otp`               | `POST` | Public                  | Send 6-digit OTP code with 60s cooldown rate limit         |
 | `/api/v1/auth/verify-otp`             | `POST` | Public                  | Verify OTP, auto-create patient, issue JWT & refresh token |
+| `/api/v1/auth/register-clinic`        | `POST` | Public                  | Verify registration OTP; atomically create clinic, admin, and membership |
 | `/api/v1/auth/login`                  | `POST` | Public                  | Authenticate with phone/email and password                 |
 | `/api/v1/auth/refresh`                | `POST` | Public                  | Rotate refresh token and issue new token pair              |
 | `/api/v1/auth/logout`                 | `POST` | Public / Bearer         | Revoke refresh token and terminate session                 |

@@ -10,6 +10,25 @@ export interface AuthSession {
   user: AuthUser;
 }
 
+export interface OtpDispatch {
+  success: boolean;
+  message: string;
+  cooldownSeconds: number;
+}
+
+export interface ClinicRegistration {
+  phone: string;
+  code: string;
+  email?: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  clinicName: string;
+  clinicPhone?: string;
+  clinicAddress?: string;
+  clinicCity?: string;
+}
+
 export const authService = {
   getUser(): AuthUser | null {
     const serialized = localStorage.getItem(USER_KEY);
@@ -27,6 +46,24 @@ export const authService = {
       method: 'POST',
       authenticated: false,
       body: { identifier, password },
+    });
+    this.saveSession(session);
+    return session.user;
+  },
+
+  async sendRegistrationOtp(phone: string): Promise<OtpDispatch> {
+    return apiRequest<OtpDispatch>('/auth/send-otp', {
+      method: 'POST',
+      authenticated: false,
+      body: { identifier: phone, purpose: 'REGISTRATION' },
+    });
+  },
+
+  async registerClinic(registration: ClinicRegistration): Promise<AuthUser> {
+    const session = await apiRequest<AuthSession>('/auth/register-clinic', {
+      method: 'POST',
+      authenticated: false,
+      body: registration,
     });
     this.saveSession(session);
     return session.user;

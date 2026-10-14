@@ -4,6 +4,7 @@ import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useToast } from "../../components/ui/Toast";
 import { authService } from "../../lib/services/authService";
+import medicalVisual from "../../assets/images/auth_medical_visual_1791475805267.jpg";
 
 interface LoginPageProps {
   onNavigate: (path: string) => void;
@@ -42,7 +43,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
       {/* Left Visual Column */}
       <div className="hidden lg:block lg:col-span-5 relative bg-zinc-950 overflow-hidden">
         <img
-          src="/src/assets/images/auth_medical_visual_1791475805267.jpg"
+          src={medicalVisual}
           alt="ClinicFlow Healthcare Architecture"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover opacity-75"
