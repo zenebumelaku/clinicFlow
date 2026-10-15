@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { createApp } from './app';
+import { createApp } from './application';
 import { Logger } from './common/utils/logger';
 import { validate } from './common/config/env.validation';
 

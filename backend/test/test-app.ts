@@ -2,7 +2,7 @@ import { AddressInfo } from 'node:net';
 import { Server } from 'node:http';
 import { Express } from 'express';
 import { AppServices } from '../src/services';
-import { createApp } from '../src/app';
+import { createApp } from '../src/application';
 import { PrismaService } from '../src/prisma/prisma.service';
 
 export interface TestAppInstance {
