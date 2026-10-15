@@ -180,6 +180,10 @@ Production requires a unique 32-character-or-longer `JWT_SECRET` and `OTP_PEPPER
 
 ## Database Setup
 
+For Neon or another serverless PostgreSQL provider, configure `DATABASE_URL` with the pooled connection string for application traffic and `DIRECT_URL` with the direct connection string for Prisma migrations. Keep both values private. On Vercel, add both as Production secrets; Prisma Client uses the pooled URL at runtime, while `prisma migrate deploy` uses the direct URL.
+
+The backend's Vercel build runs committed Prisma migrations only for production deployments, then builds the API. Preview builds skip production migrations.
+
 For a demo deployment, `OTP_DELIVERY_URL` and `OTP_DELIVERY_TOKEN` may both be omitted. Password registration and password login remain available; OTP requests return HTTP 503 until both provider settings are configured. `OTP_PEPPER` remains required in production, and OTP codes are never logged there.
 
 Start the local database, then generate Prisma Client:
