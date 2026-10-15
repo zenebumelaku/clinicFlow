@@ -18,7 +18,6 @@ export interface OtpDispatch {
 
 export interface ClinicRegistration {
   phone: string;
-  code: string;
   email?: string;
   password: string;
   firstName: string;
@@ -49,14 +48,6 @@ export const authService = {
     });
     this.saveSession(session);
     return session.user;
-  },
-
-  async sendRegistrationOtp(phone: string): Promise<OtpDispatch> {
-    return apiRequest<OtpDispatch>('/auth/send-otp', {
-      method: 'POST',
-      authenticated: false,
-      body: { identifier: phone, purpose: 'REGISTRATION' },
-    });
   },
 
   async sendPasswordResetOtp(identifier: string): Promise<OtpDispatch> {

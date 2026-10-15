@@ -1,8 +1,13 @@
+import 'reflect-metadata';
 import { describe, it } from 'node:test';
 import * as assert from 'node:assert';
 import { Request, Response } from 'express';
 import { Environment } from '../src/common/enums/environment.enum';
-import { BadRequestException } from '../src/common/exceptions/http.exceptions';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+} from '../src/common/exceptions/http.exceptions';
 import { validate } from '../src/common/config/env.validation';
 import { ConfigService } from '../src/common/config/config.service';
 import { correlationIdMiddleware } from '../src/common/middleware/correlation-id.middleware';
@@ -10,7 +15,9 @@ import { errorMiddleware } from '../src/common/middleware/error.middleware';
 import { createAuditMiddleware } from '../src/audit/audit.middleware';
 import { AuditRecord } from '../src/audit/audit.service';
 import { HttpOtpDeliveryService } from '../src/auth/otp/http-otp-delivery.service';
+import { UnavailableOtpDeliveryService } from '../src/auth/otp/unavailable-otp-delivery.service';
 import { OtpService } from '../src/auth/otp/otp.service';
+import { createServices } from '../src/services';
 import { MockPrismaService } from './mock-prisma.service';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { createTestApp } from './test-app';
@@ -94,7 +101,7 @@ describe('Production hardening controls', () => {
     }
   });
 
-  it('requires strong OTP and explicit CORS configuration in production', () => {
+  it('requires strong OTP pepper and explicit CORS configuration in production', () => {
     const validProduction = {
       NODE_ENV: Environment.Production,
       DATABASE_URL: 'postgresql://mediflow:secret@db.example/mediflow',
@@ -106,8 +113,16 @@ describe('Production hardening controls', () => {
       SWAGGER_ENABLED: false,
     };
     assert.doesNotThrow(() => validate(validProduction));
+    assert.doesNotThrow(() =>
+      validate({
+        ...validProduction,
+        OTP_DELIVERY_URL: undefined,
+        OTP_DELIVERY_TOKEN: undefined,
+      }),
+    );
     assert.throws(() => validate({ ...validProduction, OTP_PEPPER: undefined }));
     assert.throws(() => validate({ ...validProduction, OTP_DELIVERY_TOKEN: undefined }));
+    assert.throws(() => validate({ ...validProduction, OTP_DELIVERY_URL: undefined }));
     assert.throws(() =>
       validate({ ...validProduction, OTP_DELIVERY_URL: 'http://sms.example.test' }),
     );
@@ -120,6 +135,25 @@ describe('Production hardening controls', () => {
         JWT_SECRET: 'x'.repeat(64),
       }),
     );
+  });
+
+  it('keeps password auth available without an OTP provider and rejects OTP sends with 503', async () => {
+    const prisma = new MockPrismaService();
+    const services = createServices({
+      prisma: prisma as unknown as PrismaService,
+      config: new ConfigService({
+        nodeEnv: Environment.Production,
+        jwt: { secret: 'x'.repeat(64) },
+        otp: { deliveryUrl: '', deliveryToken: '' },
+      }),
+    });
+
+    assert.ok(services.otpDelivery instanceof UnavailableOtpDeliveryService);
+    await assert.rejects(services.otp.sendOtp('+251911000095'), (error: unknown) => {
+      assert.ok(error instanceof HttpException);
+      return error.getStatus() === HttpStatus.SERVICE_UNAVAILABLE;
+    });
+    assert.ok([...prisma.otps.values()].every((otp) => otp.isUsed));
   });
 
   it('sends production OTPs to the configured HTTPS adapter without logging the code', async () => {

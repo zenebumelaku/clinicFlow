@@ -1,13 +1,13 @@
 {
   "planHash": "b4c4db346ce41162c8473f32ce709c1976226d886e1ebc8fdf1cf9b875a2439f",
   "phase": "standalone",
-  "recordedAtUtc": "2026-10-14T10:37:58.2803800Z",
-  "retryCount": 1,
+  "recordedAtUtc": "2026-10-14T11:42:39.9675150Z",
+  "retryCount": 0,
   "resetBaseline": false,
   "complete": true,
   "result": {
     "setupSucceeded": true,
-    "setupDurationMs": 53595,
+    "setupDurationMs": 76709,
     "setupFailureOutput": null,
     "assertions": [
       {
@@ -20,7 +20,7 @@
         "skippedReason": null,
         "exitCode": 0,
         "outputSample": "\n\u003E react-example@0.0.0 lint\n\u003E tsc --noEmit\n\n",
-        "durationMs": 12350
+        "durationMs": 20114
       },
       {
         "name": "frontend-production-build",
@@ -31,8 +31,8 @@
         "skipped": false,
         "skippedReason": null,
         "exitCode": 0,
-        "outputSample": "\n\u003E react-example@0.0.0 build\n\u003E vite build\n\n(!) Your Vite config uses features that are unsupported by \u0060configLoader: \u0027native\u0027\u0060, which is planned to become the default in a future major version of Vite:\n  - \u0060__dirname\u0060 (vite.config.ts:11:27). Use \u0060import.meta.dirname\u0060 instead\nSet \u0060VITE_CONFIG_NATIVE_IGNORE_WARNING=true\u0060 to suppress this warning.\nvite v8.3.4 building client environment for production...\ntransforming...\n\u2713 2621 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                                                 1.83 kB \u2502 gzip:   0.82 kB\ndist/assets/auth_medical_visual_1791475805267-9YBwy_N4.jpg    713.37 kB\ndist/assets/index-BcNA-tWJ.css                                107.28 kB \u2502 gzip:  15.83 kB\ndist/assets/index-DspSYpi2.js                               1,039.13 kB \u2502 gzip: 272.84 kB\n\n[plugin builtin:vite-reporter] \n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n\u2713 built in 4.60s\n",
-        "durationMs": 7305
+        "outputSample": "\n\u003E react-example@0.0.0 build\n\u003E vite build\n\n(!) Your Vite config uses features that are unsupported by \u0060configLoader: \u0027native\u0027\u0060, which is planned to become the default in a future major version of Vite:\n  - \u0060__dirname\u0060 (vite.config.ts:11:27). Use \u0060import.meta.dirname\u0060 instead\nSet \u0060VITE_CONFIG_NATIVE_IGNORE_WARNING=true\u0060 to suppress this warning.\nvite v8.3.4 building client environment for production...\ntransforming...\n\u2713 2621 modules transformed.\nrendering chunks...\ncomputing gzip size...\ndist/index.html                                                 1.83 kB \u2502 gzip:   0.82 kB\ndist/assets/auth_medical_visual_1791475805267-9YBwy_N4.jpg    713.37 kB\ndist/assets/index-BcNA-tWJ.css                                107.28 kB \u2502 gzip:  15.83 kB\ndist/assets/index-CLQ1PLkC.js                               1,042.10 kB \u2502 gzip: 273.33 kB\n\n[plugin builtin:vite-reporter] \n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n\u2713 built in 8.46s\n",
+        "durationMs": 14431
       },
       {
         "name": "tests-pass",
@@ -43,8 +43,8 @@
         "skipped": false,
         "skippedReason": null,
         "exitCode": 0,
-        "outputSample": "\n\u003E react-example@0.0.0 test\n\u003E node --import tsx --test src/lib/services/apiClient.test.ts\n\nTAP version 13\n# Subtest: apiPath serializes defined query parameters and omits empty values\nok 1 - apiPath serializes defined query parameters and omits empty values\n  ---\n  duration_ms: 1.917165\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 604.942244\n",
-        "durationMs": 1250,
+        "outputSample": "\n\u003E react-example@0.0.0 test\n\u003E node --import tsx --test src/lib/services/apiClient.test.ts\n\nTAP version 13\n# Subtest: apiPath serializes defined query parameters and omits empty values\nok 1 - apiPath serializes defined query parameters and omits empty values\n  ---\n  duration_ms: 2.036002\n  ...\n1..1\n# tests 1\n# suites 0\n# pass 1\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 886.399664\n",
+        "durationMs": 2349,
         "testResults": {
           "testFramework": "unknown",
           "runnerDetectedFrom": "none",
@@ -64,8 +64,8 @@
         "skipped": false,
         "skippedReason": null,
         "exitCode": 0,
-        "outputSample": "\nRunning 1 test using 1 worker\n\n[1/1] playwright-scripts/public-to-login.spec.ts:5:1 \u203A public-to-login\n  1 passed (13.9s)\n",
-        "durationMs": 15610
+        "outputSample": "\nRunning 1 test using 1 worker\n\n[1/1] playwright-scripts/public-to-login.spec.ts:5:1 \u203A public-to-login\n  1 passed (20.0s)\n",
+        "durationMs": 22517
       }
     ],
     "executions": [

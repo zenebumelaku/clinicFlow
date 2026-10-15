@@ -5,7 +5,6 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -18,12 +17,6 @@ export class RegisterClinicDto {
   @MinLength(6)
   @MaxLength(32)
   phone!: string;
-
-  @ApiProperty({ example: '123456', description: 'Registration OTP sent to phone' })
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  @IsString()
-  @Matches(/^[0-9]{6}$/, { message: 'Code must be a 6-digit numeric code' })
-  code!: string;
 
   @ApiPropertyOptional({ example: 'owner@clinic.et' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))

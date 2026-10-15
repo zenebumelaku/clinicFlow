@@ -37,7 +37,7 @@ authentication, RBAC, tenant isolation, validation, audit logging, and correlati
 | :------------------------------------ | :----- | :---------------------- | :--------------------------------------------------------- |
 | `/api/v1/auth/send-otp`               | `POST` | Public                  | Send 6-digit OTP code with 60s cooldown rate limit         |
 | `/api/v1/auth/verify-otp`             | `POST` | Public                  | Verify OTP, auto-create patient, issue JWT & refresh token |
-| `/api/v1/auth/register-clinic`        | `POST` | Public                  | Verify registration OTP; atomically create clinic, admin, and membership |
+| `/api/v1/auth/register-clinic`        | `POST` | Public                  | Register with phone and password; atomically create clinic, admin, and membership |
 | `/api/v1/auth/login`                  | `POST` | Public                  | Authenticate with phone/email and password                 |
 | `/api/v1/auth/refresh`                | `POST` | Public                  | Rotate refresh token and issue new token pair              |
 | `/api/v1/auth/logout`                 | `POST` | Public / Bearer         | Revoke refresh token and terminate session                 |
@@ -179,6 +179,8 @@ openssl rand -hex 32
 Production requires a unique 32-character-or-longer `JWT_SECRET` and `OTP_PEPPER`, an explicit non-wildcard `CORS_ORIGIN`, and an HTTPS `OTP_DELIVERY_URL` plus `OTP_DELIVERY_TOKEN`. The production adapter POSTs `{ "recipient": "...", "code": "...", "purpose": "..." }` as JSON with a Bearer token. The console adapter is development-only. Set `SWAGGER_ENABLED=false` in production unless the documentation route is intentionally exposed. Set `TRUST_PROXY_HOPS` only to the exact number of trusted reverse proxies in front of the app; leave it at `0` when directly exposed.
 
 ## Database Setup
+
+For a demo deployment, `OTP_DELIVERY_URL` and `OTP_DELIVERY_TOKEN` may both be omitted. Password registration and password login remain available; OTP requests return HTTP 503 until both provider settings are configured. `OTP_PEPPER` remains required in production, and OTP codes are never logged there.
 
 Start the local database, then generate Prisma Client:
 

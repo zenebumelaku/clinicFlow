@@ -222,30 +222,13 @@ describe('ClinicFlow Part 2: Authentication & Authorization Tests', () => {
   });
 
   describe('Clinic administrator registration', () => {
-    it('verifies the registration code, creates a clinic administrator, and establishes membership', async () => {
+    it('registers without an OTP, creates a clinic administrator, and establishes membership', async () => {
       const phone = '+251911000050';
-      const otpResponse = await fetch(`${baseUrl}/auth/send-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: phone, purpose: 'REGISTRATION' }),
-      });
-      assert.strictEqual(otpResponse.status, 200);
-
-      const code = otpDelivery.getLatestCode(phone.toLowerCase());
-      assert.ok(code, 'A registration code should have been dispatched');
-      const wrongFlowResponse = await fetch(`${baseUrl}/auth/verify-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: phone, code, purpose: 'REGISTRATION' }),
-      });
-      assert.strictEqual(wrongFlowResponse.status, 400);
-
       const registrationResponse = await fetch(`${baseUrl}/auth/register-clinic`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phone,
-          code,
           email: 'owner@newclinic.et',
           password: 'clinic-password-123',
           firstName: 'Clinic',
@@ -260,6 +243,12 @@ describe('ClinicFlow Part 2: Authentication & Authorization Tests', () => {
       assert.strictEqual(registration.data.user.role, Role.ADMIN);
       assert.ok(registration.data.accessToken);
       assert.ok(registration.data.refreshToken);
+      assert.ok(
+        ![...mockPrisma.otps.values()].some(
+          (otp) => otp.identifier === phone.toLowerCase() && otp.purpose === 'REGISTRATION',
+        ),
+        'Password-based registration should not require or create a registration OTP',
+      );
 
       const user = mockPrisma.users.get(registration.data.user.id);
       assert.ok(user?.passwordHash, 'New accounts should have a password hash');

@@ -115,17 +115,16 @@ export const swaggerDocument = {
     '/api/v1/auth/register-clinic': {
       post: {
         tags: ['Authentication & Authorization'],
-        summary: 'Verify registration OTP and create a clinic administrator account',
+        summary: 'Create a clinic administrator account and sign in',
         requestBody: {
           required: true,
           content: {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['phone', 'code', 'password', 'firstName', 'lastName', 'clinicName'],
+                required: ['phone', 'password', 'firstName', 'lastName', 'clinicName'],
                 properties: {
                   phone: { type: 'string', example: '+251911234567' },
-                  code: { type: 'string', example: '123456' },
                   password: { type: 'string', minLength: 8 },
                   firstName: { type: 'string', example: 'Abebe' },
                   lastName: { type: 'string', example: 'Bekele' },
@@ -141,7 +140,7 @@ export const swaggerDocument = {
         },
         responses: {
           '201': { description: 'Clinic and administrator created; session issued' },
-          '400': { description: 'Invalid or expired registration OTP or request data' },
+          '400': { description: 'Invalid registration data' },
           '409': { description: 'Phone or email is already registered' },
         },
       },

@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
   Building,
   CheckCircle2,
-  Clock3,
   Hospital,
   Lock,
   MapPin,
@@ -29,7 +28,6 @@ interface RegistrationForm {
   lastName: string;
   password: string;
   confirmPassword: string;
-  code: string;
   clinicName: string;
   clinicPhone: string;
   clinicAddress: string;
@@ -43,7 +41,6 @@ const initialForm: RegistrationForm = {
   lastName: '',
   password: '',
   confirmPassword: '',
-  code: '',
   clinicName: '',
   clinicPhone: '',
   clinicAddress: '',
@@ -54,40 +51,15 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
   const { success, error } = useToast();
   const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState(initialForm);
-  const [isSending, setIsSending] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
-  useEffect(() => {
-    if (cooldownSeconds === 0) return;
-    const timer = window.setTimeout(
-      () => setCooldownSeconds((seconds) => Math.max(0, seconds - 1)),
-      1000,
-    );
-    return () => window.clearTimeout(timer);
-  }, [cooldownSeconds]);
-
-  const sendCode = async () => {
-    setIsSending(true);
-    try {
-      const result = await authService.sendRegistrationOtp(form.phone);
-      setCooldownSeconds(result.cooldownSeconds);
-      setStep(2);
-      success('Verification code sent. Check your phone for the code.');
-    } catch (sendError) {
-      error(sendError instanceof Error ? sendError.message : 'Unable to send a verification code.');
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  const handleAccountDetails = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleAccountDetails = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (form.password !== form.confirmPassword) {
       error('The passwords do not match.');
       return;
     }
-    await sendCode();
+    setStep(2);
   };
 
   const handleRegistration = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -96,7 +68,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
     try {
       await authService.registerClinic({
         phone: form.phone,
-        code: form.code,
         ...(form.email.trim() ? { email: form.email.trim() } : {}),
         password: form.password,
         firstName: form.firstName.trim(),
@@ -153,7 +124,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
             </p>
             <div className="flex items-center gap-2 text-sm text-emerald-300">
               <CheckCircle2 className="w-4 h-4" />
-              <span>Phone verification helps protect your account</span>
+              <span>Secure password-protected account</span>
             </div>
           </div>
           <p className="text-xs text-white/50">ClinicFlow · Clinic operations, brought together.</p>
@@ -190,13 +161,9 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                 <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
                   {step === 1
                     ? 'Your clinic workspace is just a few steps away.'
-                    : `We sent a verification code to ${form.phone}.`}
+                    : 'Add your clinic details to finish creating your account.'}
                 </p>
               </div>
-              <span className="hidden shrink-0 items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1.5 text-xs font-medium text-slate-600 dark:bg-zinc-800 dark:text-zinc-300 sm:inline-flex">
-                <Clock3 className="h-3.5 w-3.5" />
-                About 1 min
-              </span>
             </div>
 
             <div className="mb-7" aria-label={`Step ${step} of 2`}>
@@ -246,7 +213,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
             </div>
 
           {step === 1 ? (
-            <form onSubmit={(event) => void handleAccountDetails(event)} className="space-y-4">
+            <form onSubmit={handleAccountDetails} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
                   label="First name"
@@ -277,7 +244,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                 maxLength={32}
                 placeholder="+251 911 234567"
                 leftIcon={<Phone className="w-4 h-4" />}
-                helperText="A verification code will be sent to this number."
+                helperText="Use this number to sign in to your account."
                 value={form.phone}
                 onChange={(event) => setForm({ ...form, phone: event.target.value })}
               />
@@ -321,61 +288,13 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                 type="submit"
                 size="lg"
                 className="w-full mt-2"
-                isLoading={isSending}
                 rightIcon={<ArrowRight className="w-4 h-4" />}
               >
-                Send verification code
+                Continue
               </Button>
             </form>
           ) : (
             <form onSubmit={(event) => void handleRegistration(event)} className="space-y-4">
-              <div className="mb-5 flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-sm dark:border-emerald-900/70 dark:bg-emerald-950/30">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300">
-                    <CheckCircle2 className="h-4 w-4" />
-                  </span>
-                  <span className="font-medium text-emerald-900 dark:text-emerald-200">
-                    Mobile number added
-                  </span>
-                </div>
-                <span className="max-w-[45%] truncate text-xs text-emerald-800 dark:text-emerald-300">
-                  {form.phone}
-                </span>
-              </div>
-              <Input
-                label="Verification code"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                required
-                minLength={6}
-                maxLength={6}
-                pattern="[0-9]{6}"
-                placeholder="6-digit code"
-                helperText="In local development, the code is printed in the backend terminal."
-                value={form.code}
-                onChange={(event) => setForm({ ...form, code: event.target.value })}
-              />
-              <div className="flex items-center justify-between -mt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setStep(1);
-                    setForm({ ...form, code: '' });
-                    setCooldownSeconds(0);
-                  }}
-                  className="text-xs font-medium text-[#1D5BD8] hover:underline"
-                >
-                  Edit phone number
-                </button>
-                <button
-                  type="button"
-                  disabled={isSending || cooldownSeconds > 0}
-                  onClick={() => void sendCode()}
-                  className="text-xs font-medium text-[#1D5BD8] hover:underline disabled:text-slate-400 disabled:no-underline"
-                >
-                  {cooldownSeconds > 0 ? `Resend in ${cooldownSeconds}s` : 'Resend code'}
-                </button>
-              </div>
               <Input
                 label="Clinic name"
                 autoComplete="organization"
@@ -395,7 +314,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                 maxLength={32}
                 placeholder={form.phone}
                 leftIcon={<Phone className="w-4 h-4" />}
-                helperText="Defaults to your verified mobile number."
+                helperText="Defaults to your account phone number."
                 value={form.clinicPhone}
                 onChange={(event) => setForm({ ...form, clinicPhone: event.target.value })}
               />
@@ -444,7 +363,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
           </div>
           </section>
           <p className="mt-5 text-center text-xs text-slate-400 dark:text-zinc-500">
-            Your account is protected with verified sign-in and secure password storage.
+            Your password is securely stored. Phone verification is not required to register.
           </p>
         </div>
       </div>

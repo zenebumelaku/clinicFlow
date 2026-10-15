@@ -58,15 +58,6 @@ export class AuthService {
       throw new ConflictException('An account already exists for this phone number or email address');
     }
 
-    const verification = await this.otpService.verifyOtp(
-      phone,
-      dto.code,
-      OtpPurpose.REGISTRATION,
-    );
-    if (verification.identifier !== phone) {
-      throw new UnauthorizedException('Phone number verification failed');
-    }
-
     const passwordHash = await bcrypt.hash(dto.password, 12);
     const registration = await this.prisma
       .$transaction(async (transaction) => {
