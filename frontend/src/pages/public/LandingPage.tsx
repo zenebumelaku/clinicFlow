@@ -269,7 +269,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <img
-                          src="/src/assets/images/doctor_hana_avatar_1791475818100.jpg"
+                          src="/src/assets/images/z.jpg"
                           alt="Dr. Hana Tesfaye"
                           className="w-11 h-11 rounded-xl object-cover border border-[#E6EAF0] dark:border-zinc-700"
                         />
