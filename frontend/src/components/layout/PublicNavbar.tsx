@@ -164,7 +164,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
                 <button
                   type="button"
                   role="menuitem"
-                  onClick={() => handleNavClick("/patient")}
+                  onClick={() => handleNavClick("/portals/patient")}
                   className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left hover:bg-blue-50 hover:text-[#1D5BD8] dark:hover:bg-zinc-800 dark:hover:text-blue-300"
                 >
                   <Users className="h-4 w-4" />
@@ -173,7 +173,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
                 <button
                   type="button"
                   role="menuitem"
-                  onClick={() => handleNavClick("/doctor/overview")}
+                  onClick={() => handleNavClick("/portals/doctor")}
                   className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left hover:bg-blue-50 hover:text-[#1D5BD8] dark:hover:bg-zinc-800 dark:hover:text-blue-300"
                 >
                   <Stethoscope className="h-4 w-4" />
@@ -182,7 +182,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
                 <button
                   type="button"
                   role="menuitem"
-                  onClick={() => handleNavClick("/dashboard/overview")}
+                  onClick={() => handleNavClick("/portals/admin")}
                   className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left hover:bg-blue-50 hover:text-[#1D5BD8] dark:hover:bg-zinc-800 dark:hover:text-blue-300"
                 >
                   <Hospital className="h-4 w-4" />
@@ -393,19 +393,19 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
               Contact
             </button>
             <button
-              onClick={() => handleNavClick("/patient")}
+              onClick={() => handleNavClick("/portals/patient")}
               className="text-left px-3 py-2 rounded-lg hover:bg-[#EFF4FF] dark:hover:bg-zinc-800 text-[#1D5BD8] dark:text-[#60A5FA] font-semibold transition-colors"
             >
               Patient Portal
             </button>
             <button
-              onClick={() => handleNavClick("/doctor/overview")}
+              onClick={() => handleNavClick("/portals/doctor")}
               className="text-left px-3 py-2 rounded-lg hover:bg-[#EFF4FF] dark:hover:bg-zinc-800 hover:text-[#1D5BD8] dark:hover:text-[#60A5FA] transition-colors"
             >
               Doctor Portal
             </button>
             <button
-              onClick={() => handleNavClick("/dashboard/overview")}
+              onClick={() => handleNavClick("/portals/admin")}
               className="text-left px-3 py-2 rounded-lg hover:bg-[#EFF4FF] dark:hover:bg-zinc-800 hover:text-[#1D5BD8] dark:hover:text-[#60A5FA] transition-colors"
             >
               Admin Portal

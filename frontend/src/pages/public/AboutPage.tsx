@@ -99,7 +99,7 @@ export const AboutPage: React.FC<{ onNavigate: (path: string) => void }> = ({
           <div className="text-center pt-6">
             <Button
               size="lg"
-              onClick={() => onNavigate("/dashboard/overview")}
+              onClick={() => onNavigate("/portals/admin")}
               rightIcon={<ArrowRight className="w-4 h-4" />}
             >
               Explore Clinic Management Demo

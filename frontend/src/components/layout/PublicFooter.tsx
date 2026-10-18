@@ -117,7 +117,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => onNavigate("/dashboard/overview")}
+                  onClick={() => onNavigate("/portals/admin")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   Admin Portal
@@ -125,7 +125,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => onNavigate("/doctor/overview")}
+                  onClick={() => onNavigate("/portals/doctor")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   Doctor Portal
@@ -133,7 +133,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               </li>
               <li>
                 <button
-                  onClick={() => onNavigate("/patient/dashboard")}
+                  onClick={() => onNavigate("/portals/patient")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
                   Patient Portal

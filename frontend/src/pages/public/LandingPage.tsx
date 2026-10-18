@@ -1194,7 +1194,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   <button
                     onClick={() => {
                       setIsBookingModalOpen(false);
-                      onNavigate("/patient");
+                      onNavigate("/portals/patient");
                     }}
                     className="flex-1 py-3 rounded-xl bg-[#1D5BD8] text-white text-xs font-semibold hover:bg-[#1548B0] transition-colors cursor-pointer"
                   >

@@ -10,6 +10,7 @@ import { PublicFooter } from './components/layout/PublicFooter';
 import { LandingPage } from './pages/public/LandingPage';
 import { AboutPage } from './pages/public/AboutPage';
 import { ContactPage } from './pages/public/ContactPage';
+import { PortalAccessPage, PortalKind } from './pages/public/PortalAccessPage';
 
 // Auth pages
 import { LoginPage } from './pages/auth/LoginPage';
@@ -141,10 +142,12 @@ function MainRouter() {
     );
   }
 
+  const portalMatch = currentPath.match(/^\/portals\/(patient|doctor|admin)$/);
   const isPublicRoute =
     currentPath === '/' ||
     currentPath === '/about' ||
-    currentPath === '/contact';
+    currentPath === '/contact' ||
+    Boolean(portalMatch);
 
   const isAuthRoute =
     currentPath === '/login' ||
@@ -157,6 +160,9 @@ function MainRouter() {
     if (currentPath === '/') return <LandingPage onNavigate={navigate} />;
     if (currentPath === '/about') return <AboutPage onNavigate={navigate} />;
     if (currentPath === '/contact') return <ContactPage onNavigate={navigate} />;
+    if (portalMatch) {
+      return <PortalAccessPage portal={portalMatch[1] as PortalKind} onNavigate={navigate} />;
+    }
 
     // Auth routes
     if (currentPath === '/login') return <LoginPage onNavigate={navigate} />;

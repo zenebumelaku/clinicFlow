@@ -12,6 +12,7 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   const { success, error } = useToast();
+  const requestedPortal = new URLSearchParams(window.location.search).get("portal");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,8 +21,18 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
     setLoading(true);
     try {
       const user = await authService.login(identifier, password);
-      success(`Signed in as ${user.role}`);
       const role = user.role.toLowerCase();
+      const requestedRole = requestedPortal === "admin"
+        ? ["admin", "receptionist"].includes(role)
+        : requestedPortal === "patient" || requestedPortal === "doctor"
+          ? role === requestedPortal
+          : true;
+      if (!requestedRole) {
+        authService.clearSession();
+        error(`This account is assigned to the ${role} portal, not the ${requestedPortal} portal. Sign in with a ${requestedPortal} account.`);
+        return;
+      }
+      success(`Signed in to the ${requestedPortal || role} portal`);
       onNavigate(
         role === "doctor"
           ? "/doctor/overview"
@@ -89,10 +100,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               </span>
             </div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-              Sign in to ClinicFlow
+              {requestedPortal
+                ? `Sign in to the ${requestedPortal} portal`
+                : "Sign in to ClinicFlow"}
             </h1>
             <p className="text-xs text-slate-500 dark:text-zinc-400">
-              Sign in with your registered email or phone number and password
+              {requestedPortal
+                ? `Use the account provided for the ${requestedPortal} portal.`
+                : "Sign in with your registered email or phone number and password"}
             </p>
           </div>
 
