@@ -89,7 +89,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               </span>
             </div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-              Sign in to your clinic
+              Sign in to ClinicFlow
             </h1>
             <p className="text-xs text-slate-500 dark:text-zinc-400">
               Sign in with your registered email or phone number and password
@@ -147,7 +147,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               isLoading={loading}
               rightIcon={<ArrowRight className="w-4 h-4" />}
             >
-              Sign In to Practice
+              Sign In
             </Button>
           </form>
 
