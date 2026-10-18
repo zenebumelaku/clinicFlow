@@ -38,7 +38,8 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         { label: 'My Consultations', path: '/doctor/overview', icon: LayoutDashboard },
         { label: 'Patient Queue', path: '/doctor/queue', icon: Clock },
         { label: 'Schedule', path: '/doctor/appointments', icon: Calendar },
-        { label: 'Patients', path: '/doctor/patients', icon: Users }
+        { label: 'Patients', path: '/doctor/patients', icon: Users },
+        { label: 'Notifications', path: '/doctor/notifications', icon: Bell }
       ];
     }
 
@@ -46,7 +47,8 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       return [
         { label: 'Patient Portal', path: '/patient/dashboard', icon: LayoutDashboard },
         { label: 'Live Ticket Status', path: '/patient/queue', icon: Clock },
-        { label: 'Appointments', path: '/patient/appointments', icon: Calendar }
+        { label: 'Appointments', path: '/patient/appointments', icon: Calendar },
+        { label: 'Notifications', path: '/patient/notifications', icon: Bell }
       ];
     }
 
@@ -67,10 +69,26 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
 
   const navItems = getNavItems();
 
-  const bottomNavItems = [
-    { label: 'Notifications', path: '/dashboard/notifications', icon: Bell },
-    { label: 'Clinic Settings', path: '/dashboard/settings', icon: Settings }
-  ];
+  const bottomNavItems = role === 'admin'
+    ? [
+        { label: 'Notifications', path: '/dashboard/notifications', icon: Bell },
+        { label: 'Clinic Settings', path: '/dashboard/settings', icon: Settings }
+      ]
+    : role === 'receptionist'
+      ? [{ label: 'Notifications', path: '/dashboard/notifications', icon: Bell }]
+      : [];
+  const roleLabel = role === 'admin'
+    ? 'Clinic Admin'
+    : role === 'receptionist'
+      ? 'Reception'
+      : role === 'doctor'
+        ? 'Doctor Workspace'
+        : 'Patient Care';
+  const roleAccent = role === 'patient'
+    ? 'bg-violet-700 border-violet-800'
+    : role === 'doctor'
+      ? 'bg-emerald-800 border-emerald-900'
+      : 'bg-[#1E40AF] border-[#1E3A8A]';
 
   return (
     <>
@@ -86,7 +104,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       {/* Sidebar container: Whole Blue with White Text (Light mode) / Pure Neutral Dark (Dark mode) */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-40 w-72 sm:w-[280px] bg-[#1E40AF] text-white flex flex-col transition-all duration-200 ease-in-out border-r border-[#1E3A8A] dark:bg-[#09090b] dark:text-zinc-100 dark:border-zinc-800 lg:static lg:translate-x-0 shrink-0 shadow-xl lg:shadow-none',
+          `fixed inset-y-0 left-0 z-40 w-72 sm:w-[280px] ${roleAccent} text-white flex flex-col transition-all duration-200 ease-in-out border-r dark:bg-[#09090b] dark:text-zinc-100 dark:border-zinc-800 lg:static lg:translate-x-0 shrink-0 shadow-xl lg:shadow-none`,
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
@@ -103,7 +121,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               <div className="text-[15px] font-bold text-white tracking-tight flex items-center gap-2">
                 <span className="whitespace-nowrap">MediFlow<span className="text-blue-200 dark:text-blue-400">.ET</span></span>
                 <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-white/20 dark:bg-zinc-800 text-white dark:text-zinc-300 border border-white/30 dark:border-zinc-700 shrink-0">
-                  {role}
+                  {roleLabel}
                 </span>
               </div>
               <div className="text-[11px] font-medium text-blue-100 dark:text-zinc-400 whitespace-nowrap">Addis Ababa Clinic</div>
@@ -140,7 +158,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
             );
           })}
 
-          {role === 'admin' && (
+          {(role === 'admin' || role === 'receptionist') && (
             <div className="pt-4 mt-2 border-t border-blue-700/40 dark:border-zinc-800/80">
               <div className="px-3 pb-2 text-[10.5px] font-bold text-blue-200/90 dark:text-zinc-500 uppercase tracking-wider">
                 System
@@ -172,16 +190,21 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           )}
         </div>
 
-        {/* Live Queue Pulse box for staff */}
+        {role !== 'patient' && (
         <div className="p-3 mx-3 mb-3 rounded-2xl bg-blue-900/60 dark:bg-zinc-900/80 border border-blue-400/30 dark:border-zinc-800 text-xs text-white">
           <div className="flex items-center gap-2 text-white font-bold">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0" />
-            <span className="whitespace-nowrap">Clinic Operational</span>
+            <span className="whitespace-nowrap">
+              {role === 'doctor' ? 'Queue updates live' : 'Clinic Operational'}
+            </span>
           </div>
           <div className="mt-1 text-blue-100 dark:text-zinc-400 text-[11px] font-normal leading-relaxed">
-            All 5 consultation suites connected.
+            {role === 'doctor'
+              ? 'Your assigned queue refreshes automatically.'
+              : 'Clinic operations are ready for the day.'}
           </div>
         </div>
+        )}
 
         {/* Footer profile & exit to marketing */}
         <div className="p-3 border-t border-blue-700/60 dark:border-zinc-800">

@@ -1,198 +1,267 @@
 import React from 'react';
 import {
-  Clock,
   Calendar,
-  CreditCard,
-  User,
-  CheckCircle2,
-  AlertCircle,
+  CalendarDays,
+  Clock,
+  HeartPulse,
   MapPin,
-  Sparkles,
   Phone,
-  Building
+  TicketCheck,
+  Users,
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { StatusBadge } from '../../components/ui/StatusBadge';
 import { useClinicData } from '../../lib/hooks/useClinic';
-import { formatTimeSafe, formatDateSafe, formatETB, formatPhone } from '../../lib/utils';
+import { formatDateSafe, formatPhone, formatTimeSafe } from '../../lib/utils';
+import { QueueStatus } from '../../types';
 
-export const PatientPortalPage: React.FC<{ onNavigate: (path: string) => void }> = ({
-  onNavigate
+interface PatientPortalPageProps {
+  onNavigate: (path: string) => void;
+  currentPath: string;
+}
+
+export const PatientPortalPage: React.FC<PatientPortalPageProps> = ({
+  onNavigate,
+  currentPath,
 }) => {
-  const { patients, appointments, queue, payments } = useClinicData();
+  const { patients, appointments, queue, isLoading, errors } = useClinicData();
+  const patient = patients[0];
+  const isQueuePage = currentPath === '/patient/queue';
+  const isAppointmentsPage = currentPath === '/patient/appointments';
+  const activeTicket = queue
+    .filter(ticket => ticket.status !== 'completed' && ticket.status !== 'skipped')
+    .sort((a, b) => {
+      const rank: Record<QueueStatus, number> = {
+        in_consultation: 0,
+        called: 1,
+        waiting: 2,
+        completed: 3,
+        skipped: 4,
+      };
+      return rank[a.status] - rank[b.status];
+    })[0];
+  const patientAppointments = appointments
+    .filter(appointment => !patient || appointment.patientId === patient.id)
+    .sort((a, b) => `${a.date}T${a.time}`.localeCompare(`${b.date}T${b.time}`));
+  const nextAppointment = patientAppointments.find(
+    appointment => appointment.status !== 'completed' && appointment.status !== 'cancelled',
+  );
 
-  const myPatient = patients[0];
+  const title = isQueuePage
+    ? 'Your live queue'
+    : isAppointmentsPage
+      ? 'Your appointments'
+      : 'Your care, all in one place';
+  const subtitle = isQueuePage
+    ? 'Follow your ticket and know what to expect next.'
+    : isAppointmentsPage
+      ? 'Review your scheduled consultations and visit history.'
+      : 'A clear view of your clinic visits, appointments, and queue status.';
 
-  const myTicket = queue.find(q => q.status !== 'completed' && q.status !== 'skipped');
-  const myAppointments = myPatient ? appointments.filter(a => a.patientId === myPatient.id) : [];
-  const myPayments = myPatient ? payments.filter(p => p.patientId === myPatient.id) : [];
+  const ticketCard = (
+    <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-[#17114F] via-[#2C247D] to-[#5547C8] p-6 text-white shadow-xl shadow-violet-950/15 sm:p-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/15 pb-4">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-violet-200">
+          <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-emerald-400" />
+          Live ticket status
+        </div>
+        <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs text-violet-100">
+          Updates automatically
+        </span>
+      </div>
+      {activeTicket ? (
+        <div className="mt-6 grid gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
+          <div>
+            <p className="text-sm text-violet-200">Your ticket</p>
+            <p className="mt-1 text-5xl font-black tracking-tight sm:text-6xl">
+              {activeTicket.ticketNumber}
+            </p>
+            <div className="mt-3">
+              <StatusBadge status={activeTicket.status} type="queue" />
+            </div>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:min-w-52">
+            <p className="text-xs text-violet-200">What happens next</p>
+            <p className="mt-1 text-lg font-bold">
+              {activeTicket.status === 'in_consultation'
+                ? 'You are with your doctor'
+                : activeTicket.status === 'called'
+                  ? 'Please proceed to your doctor'
+                  : `Position ${activeTicket.position || 1} in line`}
+            </p>
+            {activeTicket.status === 'waiting' && activeTicket.estimatedWaitMinutes > 0 && (
+              <p className="mt-1 text-xs text-violet-100">
+                Estimated wait: about {activeTicket.estimatedWaitMinutes} minutes
+              </p>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-violet-100 sm:col-span-2">
+            <span className="inline-flex items-center gap-2">
+              <Users className="h-4 w-4" /> {activeTicket.doctorName}
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              {activeTicket.roomNumber || 'Ask reception for your consultation room'}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="py-9 text-center">
+          <TicketCheck className="mx-auto h-10 w-10 text-violet-200" />
+          <h2 className="mt-3 text-lg font-bold">No active ticket today</h2>
+          <p className="mx-auto mt-1 max-w-md text-sm text-violet-200">
+            When you arrive for your visit, the reception team will check you in and issue your queue ticket.
+          </p>
+        </div>
+      )}
+    </section>
+  );
+
+  const appointmentList = (
+    <Card className="space-y-4">
+      <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-zinc-800">
+        <div>
+          <h2 className="text-base font-bold text-slate-900 dark:text-white">Appointments</h2>
+          <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">
+            {patientAppointments.length} visit{patientAppointments.length === 1 ? '' : 's'} on your record
+          </p>
+        </div>
+        <CalendarDays className="h-5 w-5 text-violet-600 dark:text-violet-300" />
+      </div>
+      {patientAppointments.length === 0 ? (
+        <div className="rounded-2xl bg-slate-50 p-6 text-center dark:bg-zinc-900/60">
+          <Calendar className="mx-auto h-8 w-8 text-slate-400" />
+          <p className="mt-2 text-sm font-semibold text-slate-800 dark:text-zinc-200">
+            No appointments to show
+          </p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">
+            Contact the clinic to arrange or change a visit.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {patientAppointments.map(appointment => (
+            <article
+              key={appointment.id}
+              className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-violet-300 hover:bg-violet-50/40 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:border-violet-800 sm:flex-row sm:items-center"
+            >
+              <div className="flex items-start gap-3">
+                <div className="rounded-xl bg-violet-100 p-2.5 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300">
+                  <Calendar className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">
+                    {formatDateSafe(appointment.date)} · {formatTimeSafe(appointment.time)}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-600 dark:text-zinc-400">
+                    {appointment.doctorName} · {appointment.department}
+                  </p>
+                  {appointment.reason && (
+                    <p className="mt-1 text-xs text-slate-500 dark:text-zinc-500">
+                      {appointment.reason}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <StatusBadge status={appointment.status} type="appointment" />
+            </article>
+          ))}
+        </div>
+      )}
+    </Card>
+  );
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* 1. Greeting & Patient Card */}
-      <div className="bg-gradient-to-r from-white via-white to-blue-50/40 dark:from-[#121214] dark:to-[#121214] p-5 sm:p-6 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-full bg-[#1D5BD8] text-white font-bold flex items-center justify-center text-lg ring-2 ring-white dark:ring-zinc-800 shadow-xs">
-            {myPatient?.name ? myPatient.name.charAt(0) : 'P'}
-          </div>
+    <div className="mx-auto max-w-5xl space-y-6">
+      <header className="relative overflow-hidden rounded-3xl border border-violet-100 bg-gradient-to-br from-white via-white to-violet-100/80 p-6 shadow-sm dark:border-zinc-800 dark:from-[#121214] dark:via-[#121214] dark:to-violet-950/30 sm:p-8">
+        <div className="absolute -right-10 -top-12 h-48 w-48 rounded-full bg-violet-200/40 blur-3xl dark:bg-violet-800/20" />
+        <div className="relative flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-                {myPatient?.name || 'Patient profile'}
-              </h1>
-              <span className="text-xs bg-blue-50 dark:bg-zinc-800 text-[#1D5BD8] dark:text-[#93C5FD] font-semibold px-2.5 py-0.5 rounded-md border border-blue-200/80 dark:border-zinc-700 tabular-nums">
-                MRN: {myPatient?.mrn || 'Not assigned'}
-              </span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white/80 px-3 py-1 text-xs font-semibold text-violet-700 dark:border-violet-900 dark:bg-zinc-900/70 dark:text-violet-300">
+              <HeartPulse className="h-3.5 w-3.5" />
+              Patient care portal
             </div>
-            <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
-              {myPatient?.phone ? formatPhone(myPatient.phone) : 'Contact details unavailable'}
-              {myPatient?.age ? ` · ${myPatient.age} yrs` : ''}
-              {myPatient?.gender ? ` · ${myPatient.gender}` : ''}
-            </p>
+            <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-3xl">
+              {title}
+            </h1>
+            <p className="mt-2 max-w-xl text-sm text-slate-600 dark:text-zinc-400">{subtitle}</p>
           </div>
+          <Button
+            variant="primary"
+            onClick={() => onNavigate('/contact')}
+            leftIcon={<Phone className="h-4 w-4" />}
+            className="bg-violet-700 hover:bg-violet-800"
+          >
+            Contact the clinic
+          </Button>
         </div>
-
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => onNavigate('/dashboard/appointments')}
-        >
-          Book Appointment
-        </Button>
-      </div>
-
-      {/* 2. LIVE QUEUE TICKET TRACKER */}
-      <div className="rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white p-6 shadow-xl border border-slate-800 space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-700/80">
-          <div className="flex items-center gap-2 text-xs font-semibold text-blue-400 uppercase tracking-wider">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-            Live Clinic Queue Status
-          </div>
-          <span className="text-xs text-slate-400">Your clinic</span>
+        <div className="relative mt-6 flex flex-wrap gap-x-6 gap-y-2 border-t border-violet-100 pt-4 text-xs text-slate-600 dark:border-zinc-800 dark:text-zinc-400">
+          <span className="font-semibold text-slate-800 dark:text-zinc-200">
+            {patient?.name || 'Patient profile'}
+          </span>
+          <span>{patient?.mrn ? `MRN ${patient.mrn}` : 'Medical record number pending'}</span>
+          {patient?.phone && <span>{formatPhone(patient.phone)}</span>}
         </div>
+      </header>
 
-        {myTicket ? (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <span className="text-xs text-slate-400">Your Assigned Ticket</span>
-                <div className="text-4xl sm:text-5xl font-black text-white tabular-nums tracking-tight">
-                  {myTicket.ticketNumber}
-                </div>
-                <div className="mt-1">
-                  <StatusBadge status={myTicket.status} type="queue" />
-                </div>
-              </div>
+      {isLoading && <p role="status" className="text-sm text-slate-500">Loading your care information…</p>}
+      {errors.map(message => (
+        <p role="alert" key={message} className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+          {message}
+        </p>
+      ))}
 
-              <div className="sm:text-right bg-slate-800/80 p-4 rounded-xl border border-slate-700">
-                <span className="text-xs text-slate-400 block">Queue Position</span>
-                <div className="text-2xl font-bold text-emerald-400 tabular-nums">
-                  {myTicket.status === 'in_consultation'
-                    ? 'In Consultation Room'
-                    : myTicket.status === 'called'
-                    ? 'Entering Room Now'
-                    : `#${myTicket.position || 1} in line`}
-                </div>
-                <span className="text-xs text-slate-300">
-                  {myTicket.estimatedWaitMinutes
-                    ? `Estimated wait: ~${myTicket.estimatedWaitMinutes} minutes`
-                    : 'Wait estimate unavailable'}
-                </span>
-              </div>
+      {isQueuePage ? (
+        <>
+          {ticketCard}
+          <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">Need help with your visit?</h2>
+              <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">
+                The clinic team can help with check-in, ticket questions, and directions.
+              </p>
             </div>
-
-            <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-700/80 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>
-                  Consulting Doctor: <strong className="text-white">{myTicket.doctorName}</strong>
-                </span>
-              </div>
-              <div className="text-blue-300 font-semibold">
-                {myTicket.roomNumber
-                  ? <>Please wait in the lobby → Proceed to <strong>{myTicket.roomNumber}</strong></>
-                  : 'Please wait in the clinic lobby'}
-              </div>
+            <Button variant="outline" onClick={() => onNavigate('/contact')}>Get clinic support</Button>
+          </Card>
+        </>
+      ) : isAppointmentsPage ? (
+        appointmentList
+      ) : (
+        <>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <button
+              type="button"
+              onClick={() => onNavigate('/patient/appointments')}
+              className="rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-violet-300 dark:border-zinc-800 dark:bg-[#121214]"
+            >
+              <CalendarDays className="h-5 w-5 text-violet-600 dark:text-violet-300" />
+              <p className="mt-3 text-2xl font-bold text-slate-900 dark:text-white">{patientAppointments.length}</p>
+              <p className="text-xs text-slate-500 dark:text-zinc-400">Appointments on record</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => onNavigate('/patient/queue')}
+              className="rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-violet-300 dark:border-zinc-800 dark:bg-[#121214]"
+            >
+              <TicketCheck className="h-5 w-5 text-violet-600 dark:text-violet-300" />
+              <p className="mt-3 text-lg font-bold text-slate-900 dark:text-white">
+                {activeTicket?.ticketNumber || 'No active ticket'}
+              </p>
+              <p className="text-xs text-slate-500 dark:text-zinc-400">Today’s queue status</p>
+            </button>
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-[#121214]">
+              <Clock className="h-5 w-5 text-violet-600 dark:text-violet-300" />
+              <p className="mt-3 text-lg font-bold text-slate-900 dark:text-white">
+                {nextAppointment ? formatDateSafe(nextAppointment.date) : 'No upcoming visit'}
+              </p>
+              <p className="text-xs text-slate-500 dark:text-zinc-400">Next scheduled appointment</p>
             </div>
           </div>
-        ) : (
-          <div className="py-6 text-center text-slate-400 text-xs space-y-2">
-            <p>You do not currently have an active queue ticket today.</p>
-            <p className="text-[11px] text-slate-500">
-              When you arrive at the clinic, the receptionist will check you in and issue your ticket.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* 3. My Appointments & Past Visits */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Appointments */}
-        <Card className="space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Your Appointments</h3>
-            <span className="text-xs text-slate-400 dark:text-zinc-500">{myAppointments.length} total</span>
-          </div>
-
-          <div className="space-y-2.5">
-            {myAppointments.length === 0 ? (
-              <p className="text-xs text-slate-400 dark:text-zinc-500">No appointments scheduled.</p>
-            ) : (
-              myAppointments.map(a => (
-                <div
-                  key={a.id}
-                  className="p-3.5 rounded-xl border border-slate-200/70 dark:border-zinc-800 bg-[#F8FAFC] dark:bg-zinc-900/60 hover:bg-blue-50/40 dark:hover:bg-zinc-800/70 hover:border-blue-200/80 dark:hover:border-zinc-700 transition-all text-xs flex items-center justify-between"
-                >
-                  <div>
-                    <div className="font-semibold text-slate-900 dark:text-white">
-                      {formatDateSafe(a.date)} at {formatTimeSafe(a.time)}
-                    </div>
-                    <div className="text-[11px] text-slate-500 dark:text-zinc-400">
-                      {a.doctorName} · {a.reason}
-                    </div>
-                  </div>
-                  <StatusBadge status={a.status} type="appointment" />
-                </div>
-              ))
-            )}
-          </div>
-        </Card>
-
-        {/* Payments / Receipts */}
-        <Card className="space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Recent Payment Receipts</h3>
-            <span className="text-xs text-slate-400 dark:text-zinc-500">{myPayments.length} recorded</span>
-          </div>
-
-          <div className="space-y-2.5">
-            {myPayments.length === 0 ? (
-              <p className="text-xs text-slate-400 dark:text-zinc-500">No payment receipts found.</p>
-            ) : (
-              myPayments.map(p => (
-                <div
-                  key={p.id}
-                  className="p-3.5 rounded-xl border border-slate-200/70 dark:border-zinc-800 bg-[#F8FAFC] dark:bg-zinc-900/60 hover:bg-blue-50/40 dark:hover:bg-zinc-800/70 hover:border-blue-200/80 dark:hover:border-zinc-700 transition-all text-xs flex items-center justify-between"
-                >
-                  <div>
-                    <div className="font-bold text-slate-900 dark:text-white">
-                      {formatETB(p.amountETB)} ·{' '}
-                      <span className="uppercase text-[#1D5BD8] dark:text-[#60A5FA] font-semibold">
-                        {p.paymentMethod}
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-slate-500 dark:text-zinc-400">
-                      Receipt: {p.receiptNumber} · {formatDateSafe(p.date)}
-                    </div>
-                  </div>
-                  <StatusBadge status={p.status} type="payment" />
-                </div>
-              ))
-            )}
-          </div>
-        </Card>
-      </div>
+          {ticketCard}
+          {appointmentList}
+        </>
+      )}
     </div>
   );
 };

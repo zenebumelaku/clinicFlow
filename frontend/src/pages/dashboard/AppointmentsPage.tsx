@@ -22,6 +22,8 @@ import { useAppointmentsPage, useClinicData } from '../../lib/hooks/useClinic';
 import { useToast } from '../../components/ui/Toast';
 import { Appointment, AppointmentStatus } from '../../types';
 import { formatTimeSafe, formatDateSafe, clinicDateInputValue } from '../../lib/utils';
+import { authService } from '../../lib/services/authService';
+import { clinicService } from '../../lib/services/clinicService';
 
 export const AppointmentsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
   onNavigate
@@ -33,13 +35,16 @@ export const AppointmentsPage: React.FC<{ onNavigate: (path: string) => void }> 
   const [currentPage, setCurrentPage] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const today = clinicDateInputValue();
+  const isDoctor = clinicService.getActiveRole() === 'doctor';
+  const currentUser = authService.getUser();
   const { doctors, patients, createAppointment, updateAppointmentStatus } =
     useClinicData({ includeAppointmentList: false });
+  const myDoctor = isDoctor ? doctors.find(doctor => doctor.userId === currentUser?.id) : undefined;
   const appointmentsQuery = useAppointmentsPage({
-    doctorId: filterDoctor === 'all' ? undefined : filterDoctor,
+    doctorId: isDoctor ? myDoctor?.id : filterDoctor === 'all' ? undefined : filterDoctor,
     status: filterStatus === 'all' ? undefined : filterStatus,
     search: searchQuery,
-  }, currentPage);
+  }, currentPage, !isDoctor || Boolean(myDoctor));
   const appointments = appointmentsQuery.data?.data || [];
   const { success, error } = useToast();
 
@@ -132,6 +137,102 @@ export const AppointmentsPage: React.FC<{ onNavigate: (path: string) => void }> 
     }
     return true;
   });
+
+  if (isDoctor) {
+    const todaysSchedule = filteredAppointments.filter(appointment => appointment.date === today);
+    const upcomingCount = filteredAppointments.filter(
+      appointment =>
+        appointment.date >= today &&
+        appointment.status !== 'completed' &&
+        appointment.status !== 'cancelled',
+    ).length;
+
+    return (
+      <div className="space-y-6">
+        <header className="overflow-hidden rounded-3xl border border-emerald-100 bg-gradient-to-br from-white via-white to-emerald-50 p-6 shadow-sm dark:border-zinc-800 dark:from-[#121214] dark:to-emerald-950/20 sm:p-8">
+          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-700 dark:text-emerald-300">
+                Doctor workspace · {myDoctor?.department || 'My clinic'}
+              </p>
+              <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-950 dark:text-white sm:text-3xl">
+                My consultation schedule
+              </h1>
+              <p className="mt-2 text-sm text-slate-600 dark:text-zinc-400">
+                Your appointments and patient details, in one focused view.
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              onClick={() => onNavigate('/doctor/queue')}
+              leftIcon={<Clock className="h-4 w-4" />}
+              className="bg-emerald-700 hover:bg-emerald-800"
+            >
+              Open my queue
+            </Button>
+          </div>
+        </header>
+
+        {appointmentsQuery.isLoading && <p role="status" className="text-sm text-slate-500">Loading your schedule…</p>}
+        {appointmentsQuery.error instanceof Error && (
+          <p role="alert" className="text-sm text-red-600">{appointmentsQuery.error.message}</p>
+        )}
+        {!myDoctor && !appointmentsQuery.isLoading ? (
+          <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            No doctor profile is linked to this account. Contact a clinic administrator to connect your schedule.
+          </p>
+        ) : (
+          <>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-zinc-800 dark:bg-[#121214]">
+                <p className="text-xs font-semibold text-slate-500 dark:text-zinc-400">Today</p>
+                <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{todaysSchedule.length}</p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">appointments on your schedule</p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-zinc-800 dark:bg-[#121214]">
+                <p className="text-xs font-semibold text-slate-500 dark:text-zinc-400">Upcoming</p>
+                <p className="mt-2 text-3xl font-bold text-emerald-700 dark:text-emerald-300">{upcomingCount}</p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">not yet completed or cancelled</p>
+              </div>
+            </div>
+
+            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-[#121214]">
+              <div className="border-b border-slate-100 px-5 py-4 dark:border-zinc-800">
+                <h2 className="font-bold text-slate-900 dark:text-white">Scheduled patients</h2>
+                <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">Only appointments assigned to your doctor profile are shown.</p>
+              </div>
+              {filteredAppointments.length === 0 ? (
+                <p className="p-10 text-center text-sm text-slate-500 dark:text-zinc-400">No appointments match your schedule.</p>
+              ) : (
+                <div className="divide-y divide-slate-100 dark:divide-zinc-800">
+                  {filteredAppointments.map(appointment => (
+                    <article key={appointment.id} className="flex flex-col justify-between gap-3 px-5 py-4 sm:flex-row sm:items-center">
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-xl bg-emerald-50 p-2.5 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                          <CalendarDays className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-slate-900 dark:text-white">{appointment.patientName}</p>
+                          <p className="mt-1 text-xs text-slate-600 dark:text-zinc-400">
+                            {formatDateSafe(appointment.date)} · {formatTimeSafe(appointment.time)}
+                            {appointment.patientPhone ? ` · ${appointment.patientPhone}` : ''}
+                          </p>
+                          {appointment.reason && (
+                            <p className="mt-1 text-xs text-slate-500 dark:text-zinc-500">{appointment.reason}</p>
+                          )}
+                        </div>
+                      </div>
+                      <StatusBadge status={appointment.status} type="appointment" />
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

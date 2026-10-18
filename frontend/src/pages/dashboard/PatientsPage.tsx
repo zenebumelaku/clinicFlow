@@ -21,9 +21,13 @@ import { useClinicData, usePatientsPage } from '../../lib/hooks/useClinic';
 import { useToast } from '../../components/ui/Toast';
 import { Patient } from '../../types';
 import { formatPhone, formatDateSafe, formatTimeSafe, formatETB } from '../../lib/utils';
+import { clinicService } from '../../lib/services/clinicService';
 
 export const PatientsPage: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const isDoctor = clinicService.getActiveRole() === 'doctor';
+  const [searchQuery, setSearchQuery] = useState(
+    () => new URLSearchParams(window.location.search).get('search') || '',
+  );
   const [selectedGender, setSelectedGender] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddDrawerOpen, setIsAddDrawerOpen] = useState(false);
@@ -92,21 +96,23 @@ export const PatientsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
       <div className="bg-gradient-to-r from-white via-white to-blue-50/40 dark:from-[#121214] dark:to-[#121214] p-5 sm:p-6 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Patient Registry
+            {isDoctor ? 'Patient Directory' : 'Patient Registry'}
           </h1>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
-            Centralized directory of registered clinic patients, contact details, and visit tallies
+            {isDoctor
+              ? 'Review patient profiles and visit history for clinical care.'
+              : 'Centralized directory of registered clinic patients, contact details, and visit tallies'}
           </p>
         </div>
 
-        <Button
+        {!isDoctor && <Button
           size="md"
           variant="primary"
           onClick={() => setIsAddDrawerOpen(true)}
           leftIcon={<Plus className="w-4 h-4" />}
         >
           Register New Patient
-        </Button>
+        </Button>}
       </div>
 
       {/* 2. Search & Filters */}
@@ -201,15 +207,17 @@ export const PatientsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
                       >
                         Profile
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() =>
-                          onNavigate(`/dashboard/check-in?patientId=${patient.id}`)
-                        }
-                      >
-                        Check In
-                      </Button>
+                      {!isDoctor && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            onNavigate(`/dashboard/check-in?patientId=${patient.id}`)
+                          }
+                        >
+                          Check In
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 ))
@@ -231,7 +239,7 @@ export const PatientsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
       </div>
 
       {/* 4. ADD PATIENT DRAWER */}
-      <Drawer
+      {!isDoctor && <Drawer
         isOpen={isAddDrawerOpen}
         onClose={() => setIsAddDrawerOpen(false)}
         title="Register New Clinic Patient"
@@ -317,7 +325,7 @@ export const PatientsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
             <Button type="submit">Complete Registration</Button>
           </div>
         </form>
-      </Drawer>
+      </Drawer>}
 
       {/* 5. PATIENT PROFILE OPERATIONS DRAWER */}
       {selectedPatientForView && (
@@ -353,23 +361,24 @@ export const PatientsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
               </div>
             </div>
 
-            {/* Quick check-in action */}
-            <div className="flex items-center justify-between p-3.5 rounded-xl bg-blue-50/70 dark:bg-[#1D5BD8]/15 border border-blue-200/80 dark:border-[#1D5BD8]/30 text-xs">
-              <span className="text-blue-900 dark:text-[#93C5FD] font-medium">
-                Arrived at clinic? Issue today's queue ticket immediately.
-              </span>
-              <Button
-                size="sm"
-                variant="primary"
-                onClick={() => {
-                  const patId = selectedPatientForView.id;
-                  setSelectedPatientForView(null);
-                  onNavigate(`/dashboard/check-in?patientId=${patId}`);
-                }}
-              >
-                Rapid Check-In
-              </Button>
-            </div>
+            {!isDoctor && (
+              <div className="flex items-center justify-between p-3.5 rounded-xl bg-blue-50/70 dark:bg-[#1D5BD8]/15 border border-blue-200/80 dark:border-[#1D5BD8]/30 text-xs">
+                <span className="text-blue-900 dark:text-[#93C5FD] font-medium">
+                  Arrived at clinic? Issue today's queue ticket immediately.
+                </span>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  onClick={() => {
+                    const patId = selectedPatientForView.id;
+                    setSelectedPatientForView(null);
+                    onNavigate(`/dashboard/check-in?patientId=${patId}`);
+                  }}
+                >
+                  Rapid Check-In
+                </Button>
+              </div>
+            )}
 
             {/* Emergency & Allergies */}
             <div className="space-y-2 text-xs">
@@ -423,8 +432,7 @@ export const PatientsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
               </div>
             </div>
 
-            {/* Payments */}
-            <div className="space-y-3">
+            {!isDoctor && <div className="space-y-3">
               <h4 className="font-semibold text-slate-900 dark:text-white text-xs uppercase tracking-wider">
                 Billing Receipts ({patientPayments.length})
               </h4>
@@ -451,7 +459,7 @@ export const PatientsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
                   ))
                 )}
               </div>
-            </div>
+            </div>}
 
             {/* Notes */}
             {selectedPatientForView.notes && (

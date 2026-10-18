@@ -257,9 +257,11 @@ export function usePatientsPage(search: string, page: number, gender: string) {
 export function useAppointmentsPage(
   filters: { doctorId?: string; status?: string; search?: string },
   page: number,
+  enabled = true,
 ) {
   return useQuery({
     queryKey: ['clinic', 'appointments', 'page', filters, page],
     queryFn: () => clinicService.getAppointmentsPage(filters, page),
+    enabled,
   });
 }

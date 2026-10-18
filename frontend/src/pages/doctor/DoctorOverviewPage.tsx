@@ -4,7 +4,6 @@ import {
   Clock,
   Play,
   CheckCircle2,
-  Volume2,
   AlertCircle,
   Users,
   Calendar,
@@ -22,7 +21,7 @@ import { DoctorAvailability } from '../../types';
 export const DoctorOverviewPage: React.FC<{ onNavigate: (path: string) => void }> = ({
   onNavigate
 }) => {
-  const { doctors, queue, appointments, updateQueueStatus, updateDoctorAvailability, callNextPatient } =
+  const { doctors, queue, appointments, updateQueueStatus, updateDoctorAvailability } =
     useClinicData();
   const { success, error } = useToast();
   const currentUser = authService.getUser();
@@ -54,16 +53,6 @@ export const DoctorOverviewPage: React.FC<{ onNavigate: (path: string) => void }
     const mins = Math.floor(secs / 60);
     const remainder = secs % 60;
     return `${mins.toString().padStart(2, '0')}:${remainder.toString().padStart(2, '0')}`;
-  };
-
-  const handleCallNext = async () => {
-    if (!myDoctor) return;
-    try {
-      const called = await callNextPatient(myDoctor.id);
-      if (called) success(`Patient ${called.patientName} (${called.ticketNumber}) called.`);
-    } catch (actionError) {
-      error(actionError instanceof Error ? actionError.message : 'Could not call the next patient');
-    }
   };
 
   const handleStartConsultation = async (id: string, ticket: string, patientName: string) => {
@@ -143,15 +132,9 @@ export const DoctorOverviewPage: React.FC<{ onNavigate: (path: string) => void }
             ))}
           </div>
 
-          <Button
-            size="md"
-            variant="navy"
-            onClick={handleCallNext}
-            disabled={myWaiting.length === 0}
-            leftIcon={<Volume2 className="w-4 h-4 text-emerald-400" />}
-          >
-            Call Next Patient
-          </Button>
+          <span className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+            Reception calls the next patient
+          </span>
         </div>
       </div>
 
@@ -184,7 +167,7 @@ export const DoctorOverviewPage: React.FC<{ onNavigate: (path: string) => void }
               </div>
             ) : (
               <div className="mt-1 text-slate-500 dark:text-zinc-400 text-sm italic">
-                No active consultation in progress. Press "Call Next Patient" when ready.
+                No active consultation. Reception will call the next patient when ready.
               </div>
             )}
           </div>
@@ -274,14 +257,9 @@ export const DoctorOverviewPage: React.FC<{ onNavigate: (path: string) => void }
 
                   <div className="flex items-center gap-2">
                     <StatusBadge status={item.priority} type="priority" />
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleCallNext()}
-                      leftIcon={<Volume2 className="w-3.5 h-3.5" />}
-                    >
-                      Call
-                    </Button>
+                    <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                      Waiting for call
+                    </span>
                   </div>
                 </div>
               ))

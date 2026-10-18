@@ -91,10 +91,13 @@ function MainRouter() {
       return;
     }
 
-    if (window.location.pathname !== path) {
-      window.history.pushState({}, '', path);
+    const target = new URL(path, window.location.origin);
+    const targetPath = target.pathname || '/';
+    const targetUrl = `${targetPath}${target.search}${target.hash}`;
+    if (`${window.location.pathname}${window.location.search}${window.location.hash}` !== targetUrl) {
+      window.history.pushState({}, '', targetUrl);
     }
-    setCurrentPath(path);
+    setCurrentPath(targetPath);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -165,13 +168,14 @@ function MainRouter() {
       if (currentPath === '/doctor/appointments') return <AppointmentsPage onNavigate={navigate} />;
       if (currentPath === '/doctor/queue') return <QueuePage onNavigate={navigate} />;
       if (currentPath === '/doctor/patients') return <PatientsPage onNavigate={navigate} />;
+      if (currentPath === '/doctor/notifications') return <NotificationsPage onNavigate={navigate} />;
       return <DoctorOverviewPage onNavigate={navigate} />;
     }
 
     // Patient specific routes
     if (currentPath.startsWith('/patient')) {
-      if (currentPath === '/patient/queue') return <PatientPortalPage onNavigate={navigate} />;
-      return <PatientPortalPage onNavigate={navigate} />;
+      if (currentPath === '/patient/notifications') return <NotificationsPage onNavigate={navigate} />;
+      return <PatientPortalPage onNavigate={navigate} currentPath={currentPath} />;
     }
 
     // Admin & Receptionist Dashboard routes
@@ -230,6 +234,13 @@ function MainRouter() {
 
   const actualRole = user.role.toLowerCase() as Role;
   const canOpenAdminPortal = actualRole === 'admin' || actualRole === 'receptionist';
+  const portalLabel = actualRole === 'patient'
+    ? 'Patient Portal'
+    : actualRole === 'doctor'
+      ? 'Doctor Portal'
+      : actualRole === 'receptionist'
+        ? 'Reception Workspace'
+        : 'Admin Portal';
   if (
     (currentPath.startsWith('/dashboard') && !canOpenAdminPortal) ||
     (currentPath.startsWith('/doctor') && actualRole !== 'doctor') ||
@@ -265,6 +276,16 @@ function MainRouter() {
         />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+          <div className="mb-5 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-zinc-400">
+            <span className={`h-2 w-2 rounded-full ${
+              actualRole === 'patient'
+                ? 'bg-violet-500'
+                : actualRole === 'doctor'
+                  ? 'bg-emerald-500'
+                  : 'bg-blue-600'
+            }`} />
+            {portalLabel}
+          </div>
           <DashboardDataStatus />
           <div key={currentPath} className="animate-in fade-in duration-300 slide-in-from-bottom-2 ease-out">
             {renderPageContent()}

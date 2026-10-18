@@ -42,6 +42,21 @@ export const TopBar: React.FC<TopBarProps> = ({
   const themeRef = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
+  const workspaceLabel = role === "patient"
+    ? "Your care"
+    : role === "doctor"
+      ? "Clinical workspace"
+      : role === "receptionist"
+        ? "Front desk"
+        : "Clinic administration";
+  const patientSearchPath = role === "doctor"
+    ? "/doctor/patients"
+    : "/dashboard/patients";
+  const notificationsPath = role === "patient"
+    ? "/patient/notifications"
+    : role === "doctor"
+      ? "/doctor/notifications"
+      : "/dashboard/notifications";
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -78,25 +93,26 @@ export const TopBar: React.FC<TopBarProps> = ({
             </span>
             <span className="text-[#667085] dark:text-zinc-500 mx-1.5">·</span>
             <span className="text-[#667085] dark:text-zinc-400 font-medium">
-              Clinic workspace
+              {workspaceLabel}
             </span>
           </div>
         </div>
       </div>
 
       {/* Middle: Search bar */}
+      {role !== "patient" && (
       <div className="flex-1 max-w-md mx-4 hidden md:block">
         <div className="relative">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search patient MRN, phone, doctor or ticket..."
+            placeholder={role === "doctor" ? "Search clinic patients..." : "Search patient MRN, phone or name..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && searchQuery.trim()) {
                 onNavigate(
-                  `/dashboard/patients?search=${encodeURIComponent(searchQuery)}`,
+                  `${patientSearchPath}?search=${encodeURIComponent(searchQuery)}`,
                 );
               }
             }}
@@ -107,6 +123,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           </kbd>
         </div>
       </div>
+      )}
 
       {/* Right actions: Theme Toggle, Notifications, Account */}
       <div className="flex items-center gap-2 sm:gap-3">
@@ -227,7 +244,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-[#121214] rounded-xl shadow-xl border border-slate-200 dark:border-zinc-800 p-0 z-50 animate-in fade-in zoom-in-95 duration-100">
               <div className="p-3 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between bg-slate-50/70 dark:bg-zinc-900/70 rounded-t-xl">
                 <div className="text-xs font-semibold text-slate-800 dark:text-white flex items-center gap-2">
-                  <span>Clinic Notifications</span>
+                  <span>{role === "patient" ? "Your Care Updates" : "Notifications"}</span>
                   {unreadCount > 0 && (
                     <span className="text-[10px] px-1.5 py-0.2 bg-[#EFF4FF] dark:bg-blue-950/30 text-[#1D5BD8] dark:text-[#93C5FD] border border-[#BFDBFE] dark:border-blue-800/40 rounded font-semibold">
                       {unreadCount} new
@@ -278,7 +295,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 <button
                   onClick={() => {
                     setShowNotifications(false);
-                    onNavigate("/dashboard/notifications");
+                    onNavigate(notificationsPath);
                   }}
                   className="text-xs text-[#1D5BD8] dark:text-[#60A5FA] font-medium hover:text-[#1548B0] cursor-pointer"
                 >

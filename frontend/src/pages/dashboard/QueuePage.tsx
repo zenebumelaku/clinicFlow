@@ -23,10 +23,14 @@ import { useClinicData } from '../../lib/hooks/useClinic';
 import { useToast } from '../../components/ui/Toast';
 import { QueueItem, QueueStatus } from '../../types';
 import { formatTimeSafe } from '../../lib/utils';
+import { authService } from '../../lib/services/authService';
 
 export const QueuePage: React.FC<{ onNavigate: (path: string) => void }> = ({ onNavigate }) => {
   const { queue, doctors, clinicProfile, updateQueueStatus, callNextPatient, isLoading, errors } = useClinicData();
   const { success, info, error } = useToast();
+  const currentUser = authService.getUser();
+  const isDoctor = authService.getUser()?.role === 'DOCTOR';
+  const myDoctor = isDoctor ? doctors.find(doctor => doctor.userId === currentUser?.id) : undefined;
   const [selectedDoctorFilter, setSelectedDoctorFilter] = useState<string>('all');
   const [lastAnnouncedTicket, setLastAnnouncedTicket] = useState<{
     ticket: string;
@@ -111,6 +115,7 @@ export const QueuePage: React.FC<{ onNavigate: (path: string) => void }> = ({ on
   };
 
   const filteredQueue = queue.filter(item => {
+    if (isDoctor && item.doctorId !== myDoctor?.id) return false;
     if (selectedDoctorFilter !== 'all' && item.doctorId !== selectedDoctorFilter) {
       return false;
     }
@@ -126,23 +131,30 @@ export const QueuePage: React.FC<{ onNavigate: (path: string) => void }> = ({ on
     <div className="space-y-6">
       {isLoading && <p role="status" className="text-sm text-slate-500">Loading queue…</p>}
       {errors.map(message => <p role="alert" key={message} className="text-sm text-red-600">{message}</p>)}
+      {isDoctor && !myDoctor && !isLoading && (
+        <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          No doctor profile is linked to this account. Contact a clinic administrator to connect your schedule.
+        </p>
+      )}
       {/* 1. TOP HEADER & PROMINENT CALL NEXT ACTION */}
       <div className="bg-gradient-to-r from-white via-white to-blue-50/40 dark:from-[#121214] dark:to-[#121214] p-5 sm:p-6 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
             <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-              Today's Live Queue Board
+              {isDoctor ? 'My Consultation Queue' : "Today's Live Queue Board"}
             </h1>
           </div>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
-            Real-time outpatient consultation sequencing · Audible chime & voice announcements
+            {isDoctor
+              ? 'Patients assigned to your suite. Reception announces tickets; you start and complete consultations.'
+              : 'Real-time outpatient consultation sequencing · Audible chime & voice announcements'}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Doctor filter */}
-          <div className="flex items-center gap-1.5 bg-[#F8FAFC] dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-xl px-3 py-1.5 text-xs">
+          {!isDoctor && <div className="flex items-center gap-1.5 bg-[#F8FAFC] dark:bg-zinc-800 border border-slate-200/80 dark:border-zinc-700 rounded-xl px-3 py-1.5 text-xs">
             <Filter className="w-3.5 h-3.5 text-slate-500 dark:text-zinc-400" />
             <select
               value={selectedDoctorFilter}
@@ -156,27 +168,27 @@ export const QueuePage: React.FC<{ onNavigate: (path: string) => void }> = ({ on
                 </option>
               ))}
             </select>
-          </div>
+          </div>}
 
-          <Button
+          {!isDoctor && <Button
             size="md"
             variant="outline"
             onClick={() => setIsLobbyTotemOpen(true)}
             leftIcon={<Tv className="w-4 h-4 text-[#1D5BD8]" />}
           >
             Lobby Totem View
-          </Button>
+          </Button>}
 
-          <Button
+          {!isDoctor && <Button
             size="md"
             variant="outline"
             onClick={() => onNavigate('/dashboard/check-in')}
             leftIcon={<UserCheck className="w-4 h-4 text-[#1D5BD8]" />}
           >
             Check In
-          </Button>
+          </Button>}
 
-          <Button
+          {!isDoctor && <Button
             size="md"
             variant="primary"
             onClick={handleCallNext}
@@ -185,7 +197,7 @@ export const QueuePage: React.FC<{ onNavigate: (path: string) => void }> = ({ on
             className="shadow-sm font-semibold"
           >
             Call Next Patient
-          </Button>
+          </Button>}
         </div>
       </div>
 
@@ -227,7 +239,7 @@ export const QueuePage: React.FC<{ onNavigate: (path: string) => void }> = ({ on
       </div>
 
       {/* 3. DYNAMIC SOUND ANNOUNCEMENT BANNER */}
-      {lastAnnouncedTicket && (
+      {!isDoctor && lastAnnouncedTicket && (
         <div className="p-4 rounded-xl bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 text-white flex items-center justify-between text-xs shadow-lg animate-in slide-in-from-top-3">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-emerald-500 text-slate-900 flex items-center justify-center font-bold shrink-0 animate-bounce">
@@ -309,8 +321,8 @@ export const QueuePage: React.FC<{ onNavigate: (path: string) => void }> = ({ on
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="grid grid-cols-2 gap-2 pt-1">
+                  {/* Reception calls and triages patients before the doctor starts a visit. */}
+                  {!isDoctor ? <div className="grid grid-cols-2 gap-2 pt-1">
                     <Button
                       size="sm"
                       variant="primary"
@@ -327,7 +339,11 @@ export const QueuePage: React.FC<{ onNavigate: (path: string) => void }> = ({ on
                     >
                       Skip
                     </Button>
-                  </div>
+                  </div> : (
+                    <p className="pt-1 text-xs font-medium text-slate-500 dark:text-zinc-400">
+                      Waiting for reception to call this ticket
+                    </p>
+                  )}
                 </div>
               ))
             )}
@@ -375,7 +391,7 @@ export const QueuePage: React.FC<{ onNavigate: (path: string) => void }> = ({ on
                     <strong className="text-slate-900 dark:text-white">{item.doctorName}</strong>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div className={isDoctor ? 'pt-1' : 'grid grid-cols-2 gap-2 pt-1'}>
                     <Button
                       size="sm"
                       variant="primary"
@@ -384,7 +400,7 @@ export const QueuePage: React.FC<{ onNavigate: (path: string) => void }> = ({ on
                     >
                       Start Visit
                     </Button>
-                    <Button
+                    {!isDoctor && <Button
                       size="sm"
                       variant="outline"
                       onClick={() => {
@@ -400,7 +416,7 @@ export const QueuePage: React.FC<{ onNavigate: (path: string) => void }> = ({ on
                       leftIcon={<Volume2 className="w-3.5 h-3.5" />}
                     >
                       Re-Call
-                    </Button>
+                    </Button>}
                   </div>
                 </div>
               ))
@@ -507,12 +523,12 @@ export const QueuePage: React.FC<{ onNavigate: (path: string) => void }> = ({ on
 
                   <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-zinc-400 pt-1 border-t border-slate-100 dark:border-zinc-800">
                     <span>{item.doctorName}</span>
-                    <button
+                    {!isDoctor && <button
                       onClick={() => onNavigate(`/dashboard/payments?patientName=${encodeURIComponent(item.patientName)}`)}
                       className="text-blue-600 dark:text-blue-400 font-semibold hover:underline cursor-pointer"
                     >
                       Billing Receipt →
-                    </button>
+                    </button>}
                   </div>
                 </div>
               ))
