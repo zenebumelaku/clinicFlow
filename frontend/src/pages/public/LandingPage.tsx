@@ -186,20 +186,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-4 pt-2">
                 <button
-                  onClick={() => handleOpenBooking()}
+                  onClick={() => onNavigate("/register")}
                   className="px-6 sm:px-7 py-3.5 rounded-xl bg-[#1D5BD8] text-white font-semibold text-sm hover:bg-[#1548B0] hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all duration-200 cursor-pointer shadow-sm flex items-center gap-2 group"
                 >
-                  <span>Book Appointment</span>
+                  <span>Create Clinic Account</span>
                   <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
                 </button>
                 <button
-                  onClick={() => {
-                    const el = document.getElementById("services");
-                    if (el) el.scrollIntoView({ behavior: "smooth" });
-                  }}
+                  onClick={() => onNavigate("/login")}
                   className="px-6 py-3.5 rounded-xl bg-white dark:bg-zinc-900 text-[#172033] dark:text-zinc-200 font-semibold text-sm hover:bg-[#F7FAFC] dark:hover:bg-zinc-800 hover:border-[#1D5BD8]/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 border border-[#E6EAF0] dark:border-zinc-700 cursor-pointer shadow-xs flex items-center gap-2"
                 >
-                  <span>Explore Services</span>
+                  <span>Clinic Sign In</span>
                 </button>
               </div>
 
@@ -990,16 +987,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 pt-3">
               <button
-                onClick={() => handleOpenBooking()}
+                onClick={() => onNavigate("/register")}
                 className="px-7 py-3.5 rounded-xl bg-white text-[#1D5BD8] font-bold text-sm hover:bg-[#EFF4FF] hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all cursor-pointer shadow-md"
               >
-                Book An Appointment
+                Create Clinic Account
               </button>
               <button
-                onClick={() => onNavigate("/dashboard/overview")}
+                onClick={() => onNavigate("/login")}
                 className="px-7 py-3.5 rounded-xl bg-white/15 text-white font-semibold text-sm hover:bg-white/25 hover:-translate-y-0.5 active:scale-95 transition-all border border-white/30 cursor-pointer backdrop-blur-xs"
               >
-                Launch Clinic Management App
+                Sign In to Clinic App
               </button>
             </div>
           </div>

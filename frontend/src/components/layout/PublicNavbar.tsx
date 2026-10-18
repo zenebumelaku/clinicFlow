@@ -262,10 +262,10 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
             Sign In
           </button>
           <button
-            onClick={() => handleNavClick("/dashboard/overview")}
+            onClick={() => handleNavClick("/register")}
             className="text-xs sm:text-[13px] font-semibold px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl bg-[#1D5BD8] text-white hover:bg-[#1548B0] transition-all duration-200 cursor-pointer shadow-xs hover:shadow-md hover:-translate-y-0.5 active:scale-95 flex items-center gap-1.5 whitespace-nowrap"
           >
-            <span>Launch Clinic App</span>
+            <span>Register Clinic</span>
             <span className="hidden md:inline-block w-1.5 h-1.5 rounded-full bg-white/70 animate-pulse" />
           </button>
 
@@ -401,10 +401,10 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
                 Sign In
               </button>
               <button
-                onClick={() => handleNavClick("/dashboard/overview")}
+                onClick={() => handleNavClick("/register")}
                 className="w-1/2 text-xs font-bold py-2 rounded-lg bg-[#1D5BD8] text-white text-center shadow-xs"
               >
-                Launch App
+                Register Clinic
               </button>
             </div>
           </div>
