@@ -19,7 +19,7 @@ export const INITIAL_DOCTORS: Doctor[] = [
     department: "Adult Care & Chronic Diseases",
     roomNumber: "Room 102",
     availability: "available",
-    avatarUrl: "/src/assets/images/doctor_hana_avatar_1791475818100.jpg",
+    avatarUrl: doctorHanaAvatar,
     consultationFeeETB: 800,
     todayAppointmentsCount: 14,
     averageConsultationMinutes: 18,
@@ -37,7 +37,7 @@ export const INITIAL_DOCTORS: Doctor[] = [
     department: "Pediatrics & Family Medicine",
     roomNumber: "Room 104",
     availability: "busy",
-    avatarUrl: "/src/assets/images/doctor_dawit_avatar_1791475828562.jpg",
+    avatarUrl: doctorDawitAvatar,
     consultationFeeETB: 950,
     todayAppointmentsCount: 11,
     averageConsultationMinutes: 22,
@@ -55,7 +55,7 @@ export const INITIAL_DOCTORS: Doctor[] = [
     department: "Outpatient Clinic",
     roomNumber: "Room 101",
     availability: "available",
-    avatarUrl: "/src/assets/images/doctor_samuel_avatar_1791477120159.jpg",
+    avatarUrl: doctorSamuelAvatar,
     consultationFeeETB: 600,
     todayAppointmentsCount: 9,
     averageConsultationMinutes: 15,
@@ -73,7 +73,7 @@ export const INITIAL_DOCTORS: Doctor[] = [
     department: "Women’s Outpatient Suite",
     roomNumber: "Room 105",
     availability: "available",
-    avatarUrl: "/src/assets/images/doctor_rahel_avatar_1791477130880.jpg",
+    avatarUrl: doctorRahelAvatar,
     consultationFeeETB: 1100,
     todayAppointmentsCount: 8,
     averageConsultationMinutes: 25,
@@ -647,3 +647,7 @@ export const CLINIC_PROFILE = {
     "Commercial Bank Transfers",
   ],
 };
+import doctorDawitAvatar from '../assets/images/doctor_dawit_avatar_1791475828562.jpg';
+import doctorHanaAvatar from '../assets/images/doctor_hana_avatar_1791475818100.jpg';
+import doctorRahelAvatar from '../assets/images/doctor_rahel_avatar_1791477130880.jpg';
+import doctorSamuelAvatar from '../assets/images/doctor_samuel_avatar_1791477120159.jpg';

@@ -28,6 +28,17 @@ import {
 } from "lucide-react";
 import { ScrollReveal } from "../../components/ui/ScrollReveal";
 import { AnimatedCounter } from "../../components/ui/AnimatedCounter";
+import doctorDawitAvatar from "../../assets/images/doctor_dawit_avatar_1791475828562.jpg";
+import doctorHanaAvatar from "../../assets/images/doctor_hana_avatar_1791475818100.jpg";
+import doctorRahelAvatar from "../../assets/images/doctor_rahel_avatar_1791477130880.jpg";
+import doctorSamuelAvatar from "../../assets/images/doctor_samuel_avatar_1791477120159.jpg";
+import heroDoctorPortrait from "../../assets/images/hero_doctor_lead_portrait_1791478205198.jpg";
+import procedureCareImage from "../../assets/images/clinic_procedure_care_1791478215526.jpg";
+import internalSuiteImage from "../../assets/images/room_internal_suite_1791479207782.jpg";
+import pediatricSuiteImage from "../../assets/images/room_pediatric_suite_1791479224760.jpg";
+import physiciansTeamImage from "../../assets/images/physicians_team_tablet_1791477807468.jpg";
+import womensSuiteImage from "../../assets/images/room_womens_suite_1791479241424.jpg";
+import hanaProfileImage from "../../assets/images/z.jpg";
 
 interface LandingPageProps {
   onNavigate: (path: string) => void;
@@ -83,8 +94,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       experience: "14 Years Exp.",
       rating: "4.95",
       reviews: "340 reviews",
-      avatar: "/src/assets/images/doctor_hana_avatar_1791475818100.jpg",
-      image: "/src/assets/images/room_internal_suite_1791479207782.jpg",
+      avatar: doctorHanaAvatar,
+      image: internalSuiteImage,
       hours: "Mon - Fri · 08:30 - 17:00 EAT",
       fee: "800 ETB",
       status: "Available Today",
@@ -100,8 +111,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       experience: "11 Years Exp.",
       rating: "4.92",
       reviews: "280 reviews",
-      avatar: "/src/assets/images/doctor_dawit_avatar_1791475828562.jpg",
-      image: "/src/assets/images/room_pediatric_suite_1791479224760.jpg",
+      avatar: doctorDawitAvatar,
+      image: pediatricSuiteImage,
       hours: "Mon - Sat · 09:00 - 17:30 EAT",
       fee: "950 ETB",
       status: "Available Today",
@@ -117,8 +128,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       experience: "12 Years Exp.",
       rating: "4.98",
       reviews: "410 reviews",
-      avatar: "/src/assets/images/doctor_rahel_avatar_1791477130880.jpg",
-      image: "/src/assets/images/room_womens_suite_1791479241424.jpg",
+      avatar: doctorRahelAvatar,
+      image: womensSuiteImage,
       hours: "Mon - Fri · 10:00 - 18:00 EAT",
       fee: "1,100 ETB",
       status: "Available Today",
@@ -134,8 +145,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       experience: "16 Years Exp.",
       rating: "4.91",
       reviews: "215 reviews",
-      avatar: "/src/assets/images/doctor_samuel_avatar_1791477120159.jpg",
-      image: "/src/assets/images/clinic_procedure_care_1791478215526.jpg",
+      avatar: doctorSamuelAvatar,
+      image: procedureCareImage,
       hours: "Mon - Fri · 08:00 - 16:30 EAT",
       fee: "1,250 ETB",
       status: "Available Today",
@@ -204,22 +215,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               <div className="pt-4 flex flex-wrap items-center gap-4 border-t border-[#E6EAF0] dark:border-zinc-800">
                 <div className="flex -space-x-2.5">
                   <img
-                    src="/src/assets/images/doctor_hana_avatar_1791475818100.jpg"
+                    src={doctorHanaAvatar}
                     alt="Doctor"
                     className="w-10 h-10 rounded-full border-2 border-white dark:border-zinc-800 object-cover shadow-xs"
                   />
                   <img
-                    src="/src/assets/images/doctor_samuel_avatar_1791477120159.jpg"
+                    src={doctorSamuelAvatar}
                     alt="Doctor"
                     className="w-10 h-10 rounded-full border-2 border-white dark:border-zinc-800 object-cover shadow-xs"
                   />
                   <img
-                    src="/src/assets/images/doctor_rahel_avatar_1791477130880.jpg"
+                    src={doctorRahelAvatar}
                     alt="Doctor"
                     className="w-10 h-10 rounded-full border-2 border-white dark:border-zinc-800 object-cover shadow-xs"
                   />
                   <img
-                    src="/src/assets/images/doctor_dawit_avatar_1791475828562.jpg"
+                    src={doctorDawitAvatar}
                     alt="Doctor"
                     className="w-10 h-10 rounded-full border-2 border-white dark:border-zinc-800 object-cover shadow-xs"
                   />
@@ -248,7 +259,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 {/* Image Frame */}
                 <div className="relative rounded-3xl overflow-hidden border border-[#E6EAF0] dark:border-zinc-800 shadow-xl bg-slate-50 dark:bg-zinc-900 group">
                   <img
-                    src="/src/assets/images/hero_doctor_lead_portrait_1791478205198.jpg"
+                    src={heroDoctorPortrait}
                     alt="Professional Ethiopian Physician in Consultation"
                     className="w-full h-[520px] object-cover object-center transition-transform duration-700 ease-out group-hover:scale-103"
                   />
@@ -269,7 +280,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <img
-                          src="/src/assets/images/z.jpg"
+                          src={hanaProfileImage}
                           alt="Dr. Hana Tesfaye"
                           className="w-11 h-11 rounded-xl object-cover border border-[#E6EAF0] dark:border-zinc-700"
                         />
@@ -713,7 +724,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               <ScrollReveal animation="fade-up">
                 <div className="relative rounded-3xl overflow-hidden border border-[#E6EAF0] dark:border-zinc-800 shadow-xl">
                   <img
-                    src="/src/assets/images/physicians_team_tablet_1791477807468.jpg"
+                    src={physiciansTeamImage}
                     alt="Physician Care Team"
                     className="w-full h-[440px] object-cover"
                   />
