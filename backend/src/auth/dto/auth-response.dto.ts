@@ -47,16 +47,6 @@ export class AuthResponseDto {
   user!: UserResponseDto;
 }
 
-export class SendOtpResponseDto {
-  @ApiProperty({ example: true })
-  success!: boolean;
-
-  @ApiProperty({ example: 'OTP sent successfully. Valid for 5 minutes.' })
-  message!: string;
-
-  @ApiProperty({ example: 60, description: 'Seconds to wait before requesting another OTP' })
-  cooldownSeconds!: number;
-}
 
 export class MessageResponseDto {
   @ApiProperty({ example: true })

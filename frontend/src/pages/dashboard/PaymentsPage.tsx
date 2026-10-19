@@ -43,7 +43,7 @@ export const PaymentsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
     patientId: '',
     appointmentId: '',
     amountETB: 0,
-    paymentMethod: 'telebirr' as PaymentMethod,
+    paymentMethod: 'chapa' as PaymentMethod,
     referenceNumber: '',
     status: 'confirmed' as PaymentStatus,
     description: ''
@@ -76,7 +76,7 @@ export const PaymentsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
       );
       setIsRecordDrawerOpen(false);
       setNewPayment({
-        patientId: '', appointmentId: '', amountETB: 0, paymentMethod: 'telebirr',
+        patientId: '', appointmentId: '', amountETB: 0, paymentMethod: 'chapa',
         referenceNumber: '', status: 'confirmed', description: '',
       });
     } catch (paymentError) {
@@ -122,7 +122,7 @@ export const PaymentsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
             Clinic Billing & Payment Records
           </h1>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
-            Collect Telebirr, CBE Birr, and cash payments in Ethiopian Birr (ETB) with instant receipts
+            Collect Chapa digital payments and cash in Ethiopian Birr (ETB) with instant receipts
           </p>
         </div>
 
@@ -152,7 +152,7 @@ export const PaymentsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
         </Card>
 
         <Card>
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Digital (Telebirr / M-Pesa / CBE)</span>
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Digital (Chapa Gateway)</span>
           <div className="text-2xl font-bold text-blue-700 dark:text-[#93C5FD] tabular-nums mt-1">
             {formatETB(digitalTotal)}
           </div>
@@ -184,7 +184,7 @@ export const PaymentsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
       <div className="bg-white dark:bg-[#121214] p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 shadow-xs flex flex-wrap items-center gap-3 text-xs">
         <div className="flex-1 min-w-[220px]">
           <Input
-            placeholder="Search by patient, receipt number, or Telebirr reference..."
+            placeholder="Search by patient, receipt number, or Chapa reference..."
             leftIcon={<Search className="w-4 h-4" />}
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
@@ -199,11 +199,8 @@ export const PaymentsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
             className="rounded-xl border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800/90 px-3 py-2 text-xs text-slate-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
           >
             <option value="all" className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white">All Methods</option>
-            <option value="chapa" className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white">Chapa (Test Mode)</option>
-            <option value="telebirr" className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white">Telebirr</option>
+            <option value="chapa" className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white">Chapa Digital Gateway</option>
             <option value="cash" className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white">Cash</option>
-            <option value="cbe_birr" className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white">CBE Birr</option>
-            <option value="mpesa" className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white">M-Pesa</option>
             <option value="bank_transfer" className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white">Bank Transfer</option>
           </select>
         </div>
@@ -351,11 +348,8 @@ export const PaymentsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
                 setNewPayment({ ...newPayment, paymentMethod: e.target.value as PaymentMethod })
               }
             >
-              <option value="chapa">Chapa Payment Gateway (Online Test)</option>
-              <option value="telebirr">Telebirr (Ethio Telecom)</option>
+              <option value="chapa">Chapa Payment Gateway (Digital Payments)</option>
               <option value="cash">Cash Collection</option>
-              <option value="cbe_birr">Commercial Bank of Ethiopia (CBE Birr)</option>
-              <option value="mpesa">Safaricom M-Pesa</option>
               <option value="bank_transfer">Direct Bank Transfer</option>
             </Select>
           </div>

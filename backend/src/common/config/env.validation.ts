@@ -44,28 +44,6 @@ export class EnvironmentVariables {
 
   @ValidateIf((env: EnvironmentVariables) => env.NODE_ENV === Environment.Production)
   @IsString()
-  @MinLength(32, { message: 'OTP_PEPPER must be at least 32 characters long in production' })
-  @IsNotEmpty()
-  OTP_PEPPER?: string;
-
-  @ValidateIf(
-    (env: EnvironmentVariables) =>
-      env.NODE_ENV === Environment.Production && env.OTP_DELIVERY_URL !== undefined,
-  )
-  @IsUrl({ protocols: ['https'], require_protocol: true })
-  OTP_DELIVERY_URL?: string;
-
-  @ValidateIf(
-    (env: EnvironmentVariables) =>
-      env.NODE_ENV === Environment.Production && env.OTP_DELIVERY_TOKEN !== undefined,
-  )
-  @IsString()
-  @MinLength(32, { message: 'OTP_DELIVERY_TOKEN must be at least 32 characters long' })
-  @IsNotEmpty()
-  OTP_DELIVERY_TOKEN?: string;
-
-  @ValidateIf((env: EnvironmentVariables) => env.NODE_ENV === Environment.Production)
-  @IsString()
   @IsNotEmpty({ message: 'CORS_ORIGIN must be set to explicit origins in production' })
   @IsOptional()
   CORS_ORIGIN: string = '*';
@@ -130,20 +108,6 @@ export function validate(config: Record<string, unknown>) {
     );
   }
 
-  if (validatedConfig.NODE_ENV === Environment.Production && !validatedConfig.OTP_PEPPER) {
-    throw new Error(
-      'Environment validation failed: production requires OTP_PEPPER',
-    );
-  }
-
-  if (
-    validatedConfig.NODE_ENV === Environment.Production &&
-    Boolean(validatedConfig.OTP_DELIVERY_URL) !== Boolean(validatedConfig.OTP_DELIVERY_TOKEN)
-  ) {
-    throw new Error(
-      'Environment validation failed: OTP_DELIVERY_URL and OTP_DELIVERY_TOKEN must be configured together',
-    );
-  }
 
   const errors = validateSync(validatedConfig, {
     skipMissingProperties: false,

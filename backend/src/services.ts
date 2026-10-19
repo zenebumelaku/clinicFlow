@@ -3,11 +3,6 @@ import { ConfigService } from './common/config/config.service';
 import { AuditService } from './audit/audit.service';
 import { JwtService } from './auth/jwt.service';
 import { TokenService } from './auth/token.service';
-import { IOtpDeliveryService } from './auth/otp/otp-delivery.interface';
-import { ConsoleOtpDeliveryService } from './auth/otp/console-otp-delivery.service';
-import { HttpOtpDeliveryService } from './auth/otp/http-otp-delivery.service';
-import { UnavailableOtpDeliveryService } from './auth/otp/unavailable-otp-delivery.service';
-import { OtpService } from './auth/otp/otp.service';
 import { AuthService } from './auth/auth.service';
 import { BranchesService } from './branches/branches.service';
 import { StaffService } from './staff/staff.service';
@@ -27,8 +22,6 @@ export interface AppServices {
   audit: AuditService;
   jwt: JwtService;
   token: TokenService;
-  otpDelivery: IOtpDeliveryService;
-  otp: OtpService;
   auth: AuthService;
   branches: BranchesService;
   staff: StaffService;
@@ -46,26 +39,15 @@ export interface AppServices {
 export function createServices(overrides?: {
   prisma?: PrismaService;
   config?: ConfigService;
-  otpDelivery?: IOtpDeliveryService;
 }): AppServices {
   const prisma = overrides?.prisma || new PrismaService();
   const config = overrides?.config || new ConfigService();
-  const nodeEnv = config.get<string>('nodeEnv', 'development');
 
   const audit = new AuditService(prisma);
   const jwt = new JwtService({ secret: config.get<string>('jwt.secret') });
   const token = new TokenService(jwt, prisma, config);
 
-  const otpDelivery =
-    overrides?.otpDelivery ||
-    (nodeEnv !== 'production'
-      ? new ConsoleOtpDeliveryService()
-      : config.get<string>('otp.deliveryUrl') && config.get<string>('otp.deliveryToken')
-        ? new HttpOtpDeliveryService(config)
-        : new UnavailableOtpDeliveryService());
-
-  const otp = new OtpService(prisma, config, otpDelivery);
-  const auth = new AuthService(prisma, otp, token, audit);
+  const auth = new AuthService(prisma, token, audit);
 
   const branches = new BranchesService(prisma);
   const staff = new StaffService(prisma, branches);
@@ -85,8 +67,6 @@ export function createServices(overrides?: {
     audit,
     jwt,
     token,
-    otpDelivery,
-    otp,
     auth,
     branches,
     staff,

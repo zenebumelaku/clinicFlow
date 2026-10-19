@@ -47,8 +47,8 @@ export const AboutPage: React.FC<{ onNavigate: (path: string) => void }> = ({
             <p className="text-sm text-slate-600 dark:text-zinc-400 leading-relaxed">
               ClinicFlow replaces that friction with digital queue numbers,
               transparent wait estimations, real-time doctor availability
-              indicators, and streamlined local payment tracking via Telebirr,
-              CBE Birr, and cash.
+              indicators, and streamlined digital payment processing via Chapa
+              and cash.
             </p>
           </div>
         </ScrollReveal>
@@ -88,7 +88,7 @@ export const AboutPage: React.FC<{ onNavigate: (path: string) => void }> = ({
                 Local Ethiopian Design
               </h3>
               <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed">
-                Designed around local payment behaviors (Telebirr & cash),
+                Designed around local Ethiopian digital payments (Chapa & cash),
                 Ethiopian phone standards, and fast front desk check-in habits.
               </p>
             </div>

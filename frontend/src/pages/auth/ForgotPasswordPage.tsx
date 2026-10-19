@@ -10,41 +10,10 @@ export const ForgotPasswordPage: React.FC<{
 }> = ({ onNavigate }) => {
   const { success, error } = useToast();
   const [identifier, setIdentifier] = useState('');
-  const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [isSending, setIsSending] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
-  const [cooldownSeconds, setCooldownSeconds] = useState(0);
-
-  useEffect(() => {
-    if (cooldownSeconds === 0) return;
-    const timer = window.setTimeout(
-      () => setCooldownSeconds((seconds) => Math.max(0, seconds - 1)),
-      1000,
-    );
-    return () => window.clearTimeout(timer);
-  }, [cooldownSeconds]);
-
-  const sendCode = async () => {
-    setIsSending(true);
-    try {
-      const result = await authService.sendPasswordResetOtp(identifier);
-      setCooldownSeconds(result.cooldownSeconds);
-      setStep(2);
-      success('If an account matches, a password reset code has been sent.');
-    } catch (sendError) {
-      error(sendError instanceof Error ? sendError.message : 'Unable to send a reset code.');
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  const handleRequestCode = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    void sendCode();
-  };
+  const [isDone, setIsDone] = useState(false);
 
   const handleResetPassword = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -54,9 +23,9 @@ export const ForgotPasswordPage: React.FC<{
     }
     setIsResetting(true);
     try {
-      await authService.resetPassword(identifier, code, password);
-      setStep(3);
-      success('Password reset complete. Sign in with your new password.');
+      await authService.resetPassword(identifier, password);
+      setIsDone(true);
+      success('Password reset complete. You can now sign in with your new password.');
     } catch (resetError) {
       error(resetError instanceof Error ? resetError.message : 'Unable to reset your password.');
     } finally {
@@ -79,23 +48,17 @@ export const ForgotPasswordPage: React.FC<{
             Account recovery
           </p>
           <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">
-            {step === 1
-              ? 'Reset your password'
-              : step === 2
-                ? 'Choose a new password'
-                : 'Password updated'}
+            {isDone ? 'Password updated' : 'Reset your password'}
           </h1>
           <p className="mt-1.5 text-sm text-slate-500 dark:text-zinc-400">
-            {step === 1
-              ? 'We’ll send a one-time code to your registered phone or email.'
-              : step === 2
-                ? `Enter the verification code sent to ${identifier}.`
-                : 'You can now sign in using your new password.'}
+            {isDone
+              ? 'You can now sign in using your new password.'
+              : 'Enter your registered phone or email along with your new password.'}
           </p>
         </div>
 
-        {step === 1 && (
-          <form onSubmit={handleRequestCode} className="space-y-4">
+        {!isDone ? (
+          <form onSubmit={(event) => void handleResetPassword(event)} className="space-y-4">
             <Input
               label="Phone number or email"
               type="text"
@@ -108,44 +71,6 @@ export const ForgotPasswordPage: React.FC<{
               value={identifier}
               onChange={(event) => setIdentifier(event.target.value)}
             />
-            <Button type="submit" className="w-full" isLoading={isSending}>
-              Send reset code
-            </Button>
-          </form>
-        )}
-
-        {step === 2 && (
-          <form onSubmit={(event) => void handleResetPassword(event)} className="space-y-4">
-            <Input
-              label="Verification code"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              required
-              minLength={6}
-              maxLength={6}
-              pattern="[0-9]{6}"
-              placeholder="6-digit code"
-              helperText="In local development, check the backend terminal for the code."
-              value={code}
-              onChange={(event) => setCode(event.target.value)}
-            />
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="text-xs font-medium text-[#1D5BD8] hover:underline"
-              >
-                Edit phone or email
-              </button>
-              <button
-                type="button"
-                disabled={isSending || cooldownSeconds > 0}
-                onClick={() => void sendCode()}
-                className="text-xs font-medium text-[#1D5BD8] hover:underline disabled:text-slate-400 disabled:no-underline"
-              >
-                {cooldownSeconds > 0 ? `Resend in ${cooldownSeconds}s` : 'Resend code'}
-              </button>
-            </div>
             <Input
               label="New password"
               type="password"
@@ -176,9 +101,7 @@ export const ForgotPasswordPage: React.FC<{
               Reset password
             </Button>
           </form>
-        )}
-
-        {step === 3 && (
+        ) : (
           <div className="space-y-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center dark:border-emerald-900/70 dark:bg-emerald-950/30">
             <CheckCircle2 className="mx-auto h-9 w-9 text-emerald-600 dark:text-emerald-400" />
             <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">

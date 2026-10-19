@@ -59,59 +59,6 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/auth/send-otp': {
-      post: {
-        tags: ['Authentication & Authorization'],
-        summary: 'Send 6-digit OTP code to phone number or email',
-        requestBody: {
-          required: true,
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                required: ['identifier'],
-                properties: {
-                  identifier: { type: 'string', example: '+251911000001' },
-                  purpose: { type: 'string', enum: ['LOGIN', 'REGISTRATION', 'PASSWORD_RESET'], default: 'LOGIN' },
-                },
-              },
-            },
-          },
-        },
-        responses: {
-          '200': { description: 'OTP dispatched successfully' },
-          '400': { description: 'Rate limit cooldown active or invalid identifier' },
-        },
-      },
-    },
-    '/api/v1/auth/verify-otp': {
-      post: {
-        tags: ['Authentication & Authorization'],
-        summary: 'Verify OTP code and authenticate (issues JWT & Refresh Token)',
-        requestBody: {
-          required: true,
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                required: ['identifier', 'code'],
-                properties: {
-                  identifier: { type: 'string', example: '+251911000001' },
-                  code: { type: 'string', example: '123456' },
-                  firstName: { type: 'string', example: 'Abebe' },
-                  lastName: { type: 'string', example: 'Bikila' },
-                  purpose: { type: 'string', enum: ['LOGIN', 'REGISTRATION', 'PASSWORD_RESET'], default: 'LOGIN' },
-                },
-              },
-            },
-          },
-        },
-        responses: {
-          '200': { description: 'OTP verified and user authenticated' },
-          '400': { description: 'Invalid, expired, or locked OTP code' },
-        },
-      },
-    },
     '/api/v1/auth/register-clinic': {
       post: {
         tags: ['Authentication & Authorization'],
@@ -148,17 +95,16 @@ export const swaggerDocument = {
     '/api/v1/auth/reset-password': {
       post: {
         tags: ['Authentication & Authorization'],
-        summary: 'Reset account password using a PASSWORD_RESET OTP',
+        summary: 'Reset account password using registered phone or email',
         requestBody: {
           required: true,
           content: {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['identifier', 'code', 'password'],
+                required: ['identifier', 'password'],
                 properties: {
                   identifier: { type: 'string', example: '+251911234567' },
-                  code: { type: 'string', example: '123456' },
                   password: { type: 'string', minLength: 8 },
                 },
               },
@@ -167,7 +113,7 @@ export const swaggerDocument = {
         },
         responses: {
           '200': { description: 'Generic completion message; active sessions are revoked' },
-          '400': { description: 'Invalid, expired, or locked password-reset OTP' },
+          '400': { description: 'Invalid request data' },
         },
       },
     },

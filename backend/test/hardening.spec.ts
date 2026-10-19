@@ -14,9 +14,6 @@ import { correlationIdMiddleware } from '../src/common/middleware/correlation-id
 import { errorMiddleware } from '../src/common/middleware/error.middleware';
 import { createAuditMiddleware } from '../src/audit/audit.middleware';
 import { AuditRecord } from '../src/audit/audit.service';
-import { HttpOtpDeliveryService } from '../src/auth/otp/http-otp-delivery.service';
-import { UnavailableOtpDeliveryService } from '../src/auth/otp/unavailable-otp-delivery.service';
-import { OtpService } from '../src/auth/otp/otp.service';
 import { createServices } from '../src/services';
 import { MockPrismaService } from './mock-prisma.service';
 import { PrismaService } from '../src/prisma/prisma.service';
@@ -69,7 +66,7 @@ describe('Production hardening controls', () => {
       assert.strictEqual(unauthorizedResponse.status, 401);
 
       for (let request = 1; request <= 9; request++) {
-        const throttleResponse = await fetch(`${app.baseUrl}/auth/send-otp`, {
+        const throttleResponse = await fetch(`${app.baseUrl}/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({}),
@@ -101,31 +98,15 @@ describe('Production hardening controls', () => {
     }
   });
 
-  it('requires strong OTP pepper and explicit CORS configuration in production', () => {
+  it('requires explicit CORS configuration and JWT secret in production', () => {
     const validProduction = {
       NODE_ENV: Environment.Production,
       DATABASE_URL: 'postgresql://mediflow:secret@db.example/mediflow',
       JWT_SECRET: 'x'.repeat(64),
-      OTP_PEPPER: 'p'.repeat(64),
-      OTP_DELIVERY_URL: 'https://sms.example.test/v1/send',
-      OTP_DELIVERY_TOKEN: 't'.repeat(64),
       CORS_ORIGIN: 'https://clinic.example.test',
       SWAGGER_ENABLED: false,
     };
     assert.doesNotThrow(() => validate(validProduction));
-    assert.doesNotThrow(() =>
-      validate({
-        ...validProduction,
-        OTP_DELIVERY_URL: undefined,
-        OTP_DELIVERY_TOKEN: undefined,
-      }),
-    );
-    assert.throws(() => validate({ ...validProduction, OTP_PEPPER: undefined }));
-    assert.throws(() => validate({ ...validProduction, OTP_DELIVERY_TOKEN: undefined }));
-    assert.throws(() => validate({ ...validProduction, OTP_DELIVERY_URL: undefined }));
-    assert.throws(() =>
-      validate({ ...validProduction, OTP_DELIVERY_URL: 'http://sms.example.test' }),
-    );
     assert.throws(() => validate({ ...validProduction, CORS_ORIGIN: '*' }));
     assert.throws(() => validate({ ...validProduction, TRUST_PROXY_HOPS: 9 }));
     assert.doesNotThrow(() =>
@@ -135,72 +116,6 @@ describe('Production hardening controls', () => {
         JWT_SECRET: 'x'.repeat(64),
       }),
     );
-  });
-
-  it('keeps password auth available without an OTP provider and rejects OTP sends with 503', async () => {
-    const prisma = new MockPrismaService();
-    const services = createServices({
-      prisma: prisma as unknown as PrismaService,
-      config: new ConfigService({
-        nodeEnv: Environment.Production,
-        jwt: { secret: 'x'.repeat(64) },
-        otp: { deliveryUrl: '', deliveryToken: '' },
-      }),
-    });
-
-    assert.ok(services.otpDelivery instanceof UnavailableOtpDeliveryService);
-    await assert.rejects(services.otp.sendOtp('+251911000095'), (error: unknown) => {
-      assert.ok(error instanceof HttpException);
-      return error.getStatus() === HttpStatus.SERVICE_UNAVAILABLE;
-    });
-    assert.ok([...prisma.otps.values()].every((otp) => otp.isUsed));
-  });
-
-  it('sends production OTPs to the configured HTTPS adapter without logging the code', async () => {
-    const originalFetch = global.fetch;
-    let capturedUrl = '';
-    let capturedAuthorization = '';
-    let capturedBody = '';
-    global.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
-      capturedUrl = String(input);
-      capturedAuthorization = new Headers(init?.headers).get('authorization') || '';
-      capturedBody = String(init?.body);
-      return new Response(null, { status: 202 });
-    }) as typeof fetch;
-
-    try {
-      const service = new HttpOtpDeliveryService(
-        new ConfigService({
-          otp: {
-            deliveryUrl: 'https://sms.example.test/v1/send',
-            deliveryToken: 'provider-secret',
-          },
-        }),
-      );
-      assert.strictEqual(await service.send('+251911000000', '812345', 'LOGIN'), true);
-      assert.strictEqual(capturedUrl, 'https://sms.example.test/v1/send');
-      assert.strictEqual(capturedAuthorization, 'Bearer provider-secret');
-      assert.deepStrictEqual(JSON.parse(capturedBody), {
-        recipient: '+251911000000',
-        code: '812345',
-        purpose: 'LOGIN',
-      });
-    } finally {
-      global.fetch = originalFetch;
-    }
-  });
-
-  it('invalidates an OTP when the delivery provider fails', async () => {
-    const prisma = new MockPrismaService();
-    const service = new OtpService(
-      prisma as never,
-      new ConfigService({ otp: { pepper: 'test-only-pepper' } }),
-      { send: async () => false },
-    );
-    await assert.rejects(service.sendOtp('+251911000096'));
-    const storedOtp = [...prisma.otps.values()][0];
-    assert.ok(storedOtp);
-    assert.strictEqual(storedOtp.isUsed, true);
   });
 
   it('sanitizes untrusted correlation IDs before returning them to callers', () => {

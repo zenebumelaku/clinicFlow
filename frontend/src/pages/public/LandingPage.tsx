@@ -190,8 +190,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 <p className="text-base sm:text-lg text-[#667085] dark:text-zinc-300 leading-relaxed max-w-xl font-normal pt-1">
                   Connect with licensed Ethiopian medical specialists in Bole &
                   Kazanchis. Experience punctual consultations, verified digital
-                  appointments, zero waiting room chaos, and seamless Telebirr
-                  payments.
+                  appointments, zero waiting room chaos, and seamless Chapa
+                  digital payments.
                 </p>
               </div>
 
@@ -204,30 +204,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   <span>Create Clinic Account</span>
                   <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
                 </button>
-                <button
-                  onClick={() => onNavigate("/login?portal=doctor")}
-                  className="px-5 sm:px-6 py-3.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 font-semibold text-sm border border-emerald-200 dark:border-emerald-800 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 cursor-pointer shadow-xs flex items-center gap-2"
-                >
-                  <Stethoscope className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                  <span>Doctor Portal</span>
-                </button>
-                <button
-                  onClick={() => onNavigate("/login")}
-                  className="px-5 py-3.5 rounded-xl bg-white dark:bg-zinc-900 text-[#172033] dark:text-zinc-200 font-semibold text-sm hover:bg-[#F7FAFC] dark:hover:bg-zinc-800 hover:border-[#1D5BD8]/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 border border-[#E6EAF0] dark:border-zinc-700 cursor-pointer shadow-xs flex items-center gap-2"
-                >
-                  <span>Sign In Options</span>
-                </button>
 
                 {/* Portal Sign-In Options Pills */}
                 <div className="w-full flex flex-wrap items-center gap-2 pt-1 text-xs">
-                  <span className="font-semibold text-slate-500 dark:text-zinc-400">Sign In to Portal:</span>
+                  <span className="font-semibold text-slate-500 dark:text-zinc-400">
+                    Sign In to Portal:
+                  </span>
                   <button
                     type="button"
                     onClick={() => onNavigate("/login?portal=patient")}
                     className="px-2.5 py-1 rounded-lg bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 dark:bg-violet-950/40 dark:border-violet-900/60 dark:text-violet-300 font-semibold transition cursor-pointer flex items-center gap-1 shadow-2xs"
                   >
                     <span>Patient Portal</span>
-                    <span className="text-[10px] text-violet-500 font-bold">→</span>
+                    <span className="text-[10px] text-violet-500 font-bold">
+                      →
+                    </span>
                   </button>
                   <button
                     type="button"
@@ -235,7 +226,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-900/60 dark:text-emerald-300 font-semibold transition cursor-pointer flex items-center gap-1 shadow-2xs"
                   >
                     <span>Doctor Workspace</span>
-                    <span className="text-[10px] text-emerald-500 font-bold">→</span>
+                    <span className="text-[10px] text-emerald-500 font-bold">
+                      →
+                    </span>
                   </button>
                   <button
                     type="button"
@@ -243,7 +236,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     className="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#1D5BD8] border border-blue-200 dark:bg-blue-950/40 dark:border-blue-900/60 dark:text-blue-300 font-semibold transition cursor-pointer flex items-center gap-1 shadow-2xs"
                   >
                     <span>Clinic Admin</span>
-                    <span className="text-[10px] text-blue-500 font-bold">→</span>
+                    <span className="text-[10px] text-blue-500 font-bold">
+                      →
+                    </span>
                   </button>
                 </div>
               </div>
@@ -722,8 +717,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               },
               {
                 step: "04",
-                title: "Digital Records & Telebirr",
-                desc: "Access doctor notes and prescriptions in your patient portal. Settle fees effortlessly via Telebirr, CBE, or cash.",
+                title: "Digital Records & Chapa Payments",
+                desc: "Access doctor notes and prescriptions in your patient portal. Settle fees effortlessly via Chapa digital payments or cash.",
               },
             ].map((item, idx) => (
               <ScrollReveal key={idx} animation="fade-up" delay={idx * 80}>
@@ -816,8 +811,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                       desc: "Say goodbye to 3-hour waiting lobby queues. Consultation slots are tracked to start within 15 minutes of scheduled time.",
                     },
                     {
-                      title: "Local Telebirr & CBE Birr Payment",
-                      desc: "Instant QR code or transaction reference payment in ETB with immediate receipt issuance.",
+                      title: "Chapa Digital Payment Gateway",
+                      desc: "Instant QR code or transaction reference payment via Chapa in ETB with immediate receipt issuance.",
                     },
                     {
                       title: "Secure Digital Health Records",
@@ -893,7 +888,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 doctor: "Dr. Hana Tesfaye (Internal Medicine)",
                 rating: 5,
                 comment:
-                  "I booked an appointment for 10:30 AM and was actually in Dr. Hana’s room at 10:35 AM! In other clinics I used to wait for 3 hours. The Telebirr payment took 10 seconds. Outstanding care!",
+                  "I booked an appointment for 10:30 AM and was actually in Dr. Hana’s room at 10:35 AM! In other clinics I used to wait for 3 hours. The Chapa digital payment took 10 seconds. Outstanding care!",
               },
               {
                 name: "Dawit Girma",
@@ -973,7 +968,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               },
               {
                 q: "What payment methods do you accept?",
-                a: "We accept Telebirr, CBE Birr, commercial bank mobile transfers, M-Pesa, and cash payments at reception. All fees are transparently shown in Ethiopian Birr (ETB).",
+                a: "We accept Chapa digital payments (online and mobile) as well as cash payments at reception. All fees are transparently shown in Ethiopian Birr (ETB).",
               },
               {
                 q: "Can I do a walk-in consultation without an appointment?",
@@ -1125,7 +1120,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   {/* Phone */}
                   <div>
                     <label className="block text-xs font-semibold text-[#172033] dark:text-zinc-200 mb-1">
-                      Phone Number (for SMS & Telebirr)
+                      Phone Number (for SMS & Chapa payments)
                     </label>
                     <input
                       type="tel"

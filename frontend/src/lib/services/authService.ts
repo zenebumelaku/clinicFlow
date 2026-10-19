@@ -10,11 +10,6 @@ export interface AuthSession {
   user: AuthUser;
 }
 
-export interface OtpDispatch {
-  success: boolean;
-  message: string;
-  cooldownSeconds: number;
-}
 
 export interface ClinicRegistration {
   phone: string;
@@ -206,19 +201,11 @@ export const authService = {
     }
   },
 
-  async sendPasswordResetOtp(identifier: string): Promise<OtpDispatch> {
-    return apiRequest<OtpDispatch>('/auth/send-otp', {
-      method: 'POST',
-      authenticated: false,
-      body: { identifier, purpose: 'PASSWORD_RESET' },
-    });
-  },
-
-  async resetPassword(identifier: string, code: string, password: string): Promise<void> {
+  async resetPassword(identifier: string, password: string): Promise<void> {
     await apiRequest('/auth/reset-password', {
       method: 'POST',
       authenticated: false,
-      body: { identifier, code, password },
+      body: { identifier, password },
     });
   },
 

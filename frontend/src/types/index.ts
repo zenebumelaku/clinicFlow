@@ -109,7 +109,7 @@ export interface PaymentRecord {
   appointmentId?: string;
   amountETB: number;
   paymentMethod: PaymentMethod;
-  referenceNumber: string; // e.g. Telebirr Txn ID
+  referenceNumber: string; // e.g. Chapa Txn Ref
   status: PaymentStatus;
   date: string;
   description: string;

@@ -630,6 +630,25 @@ export class MockPrismaService {
       }
       return null;
     },
+    findFirst: async (params?: { where?: Record<string, unknown>; orderBy?: Record<string, 'asc' | 'desc'> }) => {
+      for (const clinic of this.clinics.values()) {
+        if (!params?.where || matchesWhere(clinic as unknown as Record<string, unknown>, params.where)) {
+          return clinic;
+        }
+      }
+      return null;
+    },
+    findMany: async (params?: {
+      where?: Record<string, unknown>;
+      skip?: number;
+      take?: number;
+      orderBy?: Record<string, 'asc' | 'desc'>;
+    }) => {
+      const matches = [...this.clinics.values()].filter((clinic) =>
+        !params?.where || matchesWhere(clinic as unknown as Record<string, unknown>, params.where),
+      );
+      return paginate(matches, params);
+    },
     create: async (params: { data: Partial<MockClinic> }) => {
       if ([...this.clinics.values()].some((c) => c.slug === params.data.slug)) {
         uniqueError(['slug']);

@@ -191,7 +191,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
               Patient Rights
             </span>
             <span className="hover:text-zinc-300 transition-colors cursor-pointer">
-              Telebirr Integration
+              Chapa Payment Gateway
             </span>
           </div>
         </div>

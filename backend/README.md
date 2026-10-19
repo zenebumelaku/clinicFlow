@@ -35,9 +35,10 @@ authentication, RBAC, tenant isolation, validation, audit logging, and correlati
 
 | Endpoint                              | Method | Auth                    | Description                                                |
 | :------------------------------------ | :----- | :---------------------- | :--------------------------------------------------------- |
-| `/api/v1/auth/send-otp`               | `POST` | Public                  | Send 6-digit OTP code with 60s cooldown rate limit         |
-| `/api/v1/auth/verify-otp`             | `POST` | Public                  | Verify OTP, auto-create patient, issue JWT & refresh token |
 | `/api/v1/auth/register-clinic`        | `POST` | Public                  | Register with phone and password; atomically create clinic, admin, and membership |
+| `/api/v1/auth/register-patient`       | `POST` | Public                  | Register patient with phone and password                   |
+| `/api/v1/auth/register-doctor`        | `POST` | Public                  | Register doctor with phone, password, and specialization   |
+| `/api/v1/auth/reset-password`         | `POST` | Public                  | Reset account password using phone/email and new password  |
 | `/api/v1/auth/login`                  | `POST` | Public                  | Authenticate with phone/email and password                 |
 | `/api/v1/auth/refresh`                | `POST` | Public                  | Rotate refresh token and issue new token pair              |
 | `/api/v1/auth/logout`                 | `POST` | Public / Bearer         | Revoke refresh token and terminate session                 |
@@ -93,7 +94,7 @@ Payments are records only: creating one stores its amount, currency, method, sta
 
 | Endpoint                                                  | Method  | Access                  | Description                                                                        |
 | :-------------------------------------------------------- | :------ | :---------------------- | :--------------------------------------------------------------------------------- |
-| `/api/v1/payments`                                        | `POST`  | `ADMIN`, `RECEPTIONIST` | Record a clinic payment (`CASH`, `TELEBIRR`, `MPESA`, `BANK_TRANSFER`, or `OTHER`) |
+| `/api/v1/payments`                                        | `POST`  | `ADMIN`, `RECEPTIONIST` | Record a clinic payment (`CASH`, `CHAPA`, `BANK_TRANSFER`, or `OTHER`) |
 | `/api/v1/payments?clinicId=...`                           | `GET`   | `ADMIN`, `RECEPTIONIST` | Paginate and filter records by status, patient, or appointment                     |
 | `/api/v1/notifications?clinicId=...`                      | `GET`   | Authenticated user      | List only the current user's clinic notifications; optionally filter unread        |
 | `/api/v1/notifications/:notificationId/read?clinicId=...` | `PATCH` | Authenticated user      | Mark only the current user's notification as read                                  |

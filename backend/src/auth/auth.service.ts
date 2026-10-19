@@ -6,14 +6,11 @@ import {
 } from '../common/exceptions/http.exceptions';
 import * as bcrypt from 'bcryptjs';
 import { randomBytes, randomUUID } from 'crypto';
-import { DoctorAvailabilityStatus, OtpPurpose, Prisma, Role } from '@prisma/client';
+import { DoctorAvailabilityStatus, Prisma, Role } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
 import { slugify } from '../common/utils/slug.util';
-import { OtpService } from './otp/otp.service';
 import { TokenService } from './token.service';
-import { SendOtpDto } from './dto/send-otp.dto';
-import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { RegisterClinicDto } from './dto/register-clinic.dto';
 import { RegisterPatientDto } from './dto/register-patient.dto';
 import { RegisterDoctorDto } from './dto/register-doctor.dto';
@@ -24,7 +21,6 @@ import { LogoutDto } from './dto/logout.dto';
 import {
   AuthResponseDto,
   MessageResponseDto,
-  SendOtpResponseDto,
   UserResponseDto,
 } from './dto/auth-response.dto';
 
@@ -35,18 +31,9 @@ export class AuthService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly otpService: OtpService,
     private readonly tokenService: TokenService,
     private readonly auditService: AuditService,
   ) {}
-
-  /**
-   * Dispatches OTP for phone/email authentication
-   */
-  async sendOtp(dto: SendOtpDto): Promise<SendOtpResponseDto> {
-    const result = await this.otpService.sendOtp(dto.identifier, dto.purpose || OtpPurpose.LOGIN);
-    return result;
-  }
 
   async registerClinic(dto: RegisterClinicDto): Promise<AuthResponseDto> {
     const phone = dto.phone.trim().toLowerCase();
@@ -332,7 +319,6 @@ export class AuthService {
 
   async resetPassword(dto: ResetPasswordDto): Promise<MessageResponseDto> {
     const identifier = dto.identifier.trim().toLowerCase();
-    await this.otpService.verifyOtp(identifier, dto.code, OtpPurpose.PASSWORD_RESET);
 
     const user = await this.prisma.user.findFirst({
       where: { OR: [{ phone: identifier }, { email: identifier }] },
@@ -361,81 +347,6 @@ export class AuthService {
     return {
       success: true,
       message: 'If the account is active, its password has been reset. You can now sign in.',
-    };
-  }
-
-  /**
-   * Verifies OTP, auto-creates patient if new, and issues JWT + Refresh tokens
-   */
-  async verifyOtp(dto: VerifyOtpDto): Promise<AuthResponseDto> {
-    const purpose = dto.purpose || OtpPurpose.LOGIN;
-    if (purpose !== OtpPurpose.LOGIN) {
-      throw new BadRequestException(
-        'Use the appropriate account flow to complete this verification',
-      );
-    }
-
-    const verification = await this.otpService.verifyOtp(
-      dto.identifier,
-      dto.code,
-      purpose,
-    );
-
-    const normalizedId = verification.identifier;
-
-    // Locate existing user by phone or email
-    let user = await this.prisma.user.findFirst({
-      where: {
-        OR: [{ phone: normalizedId }, { email: normalizedId }],
-      },
-    });
-
-    if (!user) {
-      // Auto-register new patient user upon first OTP verification
-      const isEmail = normalizedId.includes('@');
-      const phone = isEmail
-        ? dto.identifier.startsWith('+')
-          ? dto.identifier
-          : `phone-${Date.now()}`
-        : normalizedId;
-      const email = isEmail ? normalizedId : dto.email || null;
-
-      user = await this.prisma.user.create({
-        data: {
-          phone,
-          email,
-          firstName: dto.firstName || 'Patient',
-          lastName: dto.lastName || 'User',
-          role: Role.PATIENT,
-          isActive: true,
-        },
-      });
-
-      this.logger.log('Created new PATIENT account after OTP verification');
-    } else if (!user.isActive) {
-      throw new UnauthorizedException('User account has been deactivated');
-    }
-
-    const tokens = await this.tokenService.generateTokens({
-      id: user.id,
-      phone: user.phone,
-      email: user.email,
-      role: user.role,
-    });
-
-    await this.auditService.record({
-      userId: user.id,
-      action: 'AUTH_VERIFY_OTP',
-      entity: 'User',
-      entityId: user.id,
-      details: JSON.stringify({ purpose, role: user.role }),
-    });
-
-    return {
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-      expiresIn: tokens.expiresIn,
-      user: this.mapUserResponse(user),
     };
   }
 

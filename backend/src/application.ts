@@ -27,19 +27,16 @@ import { createNotificationsRouter } from './notifications/notifications.router'
 import { createReportsRouter } from './reports/reports.router';
 import { PrismaService } from './prisma/prisma.service';
 import { ConfigService } from './common/config/config.service';
-import { IOtpDeliveryService } from './auth/otp/otp-delivery.interface';
 
 export interface CreateAppOptions {
   prisma?: PrismaService;
   configService?: ConfigService;
-  otpDelivery?: IOtpDeliveryService;
 }
 
 export function createApp(options?: CreateAppOptions): { app: Express; services: AppServices } {
   const services = createServices({
     prisma: options?.prisma,
     config: options?.configService,
-    otpDelivery: options?.otpDelivery,
   });
   const config = services.config;
 

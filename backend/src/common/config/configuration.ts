@@ -15,11 +15,6 @@ export default () => ({
     expiresIn: process.env.JWT_EXPIRES_IN || '15m',
     refreshExpiresDays: parseInt(process.env.JWT_REFRESH_EXPIRES_DAYS || '7', 10),
   },
-  otp: {
-    pepper: process.env.OTP_PEPPER,
-    deliveryUrl: process.env.OTP_DELIVERY_URL,
-    deliveryToken: process.env.OTP_DELIVERY_TOKEN,
-  },
   throttle: {
     ttl: parseInt(process.env.THROTTLE_TTL || '60000', 10),
     limit: parseInt(process.env.THROTTLE_LIMIT || '100', 10),

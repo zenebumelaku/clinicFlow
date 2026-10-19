@@ -629,7 +629,7 @@ export const QueuePage: React.FC<{ onNavigate: (path: string) => void }> = ({ on
                 <p>• Please watch the screen for your ticket number announcement.</p>
                 <p>• When your number chimes, proceed immediately to the assigned room.</p>
                 <p>• Urgent triage cases are prioritized automatically.</p>
-                <p>• Digital fee settlement is available via Telebirr at the front counter.</p>
+                <p>• Digital fee settlement is available via Chapa at the front counter.</p>
               </div>
             </div>
           </div>

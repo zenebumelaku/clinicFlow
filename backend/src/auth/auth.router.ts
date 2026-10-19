@@ -4,8 +4,6 @@ import { AppServices } from '../services';
 import { createAuthMiddleware, requireRoles } from './middlewares/auth.middleware';
 import { validateBody } from '../common/middleware/validation.middleware';
 import { createRateLimiter } from '../common/middleware/rate-limiter.middleware';
-import { SendOtpDto } from './dto/send-otp.dto';
-import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { RegisterClinicDto } from './dto/register-clinic.dto';
 import { RegisterPatientDto } from './dto/register-patient.dto';
 import { RegisterDoctorDto } from './dto/register-doctor.dto';
@@ -18,36 +16,7 @@ export function createAuthRouter(services: AppServices): Router {
   const router = Router();
   const authenticate = createAuthMiddleware(services.prisma, services.config);
 
-  const otpThrottle = createRateLimiter({ limit: 8, ttl: 60000 });
-  const authThrottle = createRateLimiter({ limit: 10, ttl: 60000 });
-
-  router.post(
-    '/send-otp',
-    otpThrottle,
-    validateBody(SendOtpDto),
-    async (req, res, next) => {
-      try {
-        const result = await services.auth.sendOtp(req.body);
-        res.status(200).json(result);
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
-
-  router.post(
-    '/verify-otp',
-    authThrottle,
-    validateBody(VerifyOtpDto),
-    async (req, res, next) => {
-      try {
-        const result = await services.auth.verifyOtp(req.body);
-        res.status(200).json(result);
-      } catch (err) {
-        next(err);
-      }
-    },
-  );
+  const authThrottle = createRateLimiter({ limit: 8, ttl: 60000 });
 
   router.post(
     '/register-clinic',

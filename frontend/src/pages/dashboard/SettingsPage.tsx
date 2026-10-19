@@ -102,7 +102,7 @@ export const SettingsPage: React.FC<{
             Clinic Settings & Configuration
           </h1>
           <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
-            Operational policies, Telebirr integration, queue parameters, and
+            Operational policies, Chapa payment gateway, queue parameters, and
             facility profile
           </p>
         </div>

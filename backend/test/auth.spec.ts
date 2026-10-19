@@ -2,7 +2,6 @@ import { describe, it, before, after } from 'node:test';
 import * as assert from 'node:assert';
 import { Role } from '@prisma/client';
 import { PrismaService } from '../src/prisma/prisma.service';
-import { ConsoleOtpDeliveryService } from '../src/auth/otp/console-otp-delivery.service';
 import { TokenService } from '../src/auth/token.service';
 import { MockPrismaService } from './mock-prisma.service';
 import { createTestApp, TestAppInstance } from './test-app';
@@ -11,15 +10,22 @@ describe('ClinicFlow Part 2: Authentication & Authorization Tests', () => {
   let app: TestAppInstance;
   let baseUrl: string;
   let mockPrisma: MockPrismaService;
-  let otpDelivery: ConsoleOtpDeliveryService;
   let tokenService: TokenService;
 
   before(async () => {
     mockPrisma = new MockPrismaService();
 
+    await mockPrisma.clinic.create({
+      data: {
+        name: 'Addis Health Center',
+        slug: 'addis-health-center',
+        phone: '+251911000000',
+        isActive: true,
+      },
+    });
+
     app = await createTestApp({ mockPrisma: mockPrisma as unknown as PrismaService });
     baseUrl = app.baseUrl;
-    otpDelivery = app.services.otpDelivery as ConsoleOtpDeliveryService;
     tokenService = app.services.token;
   });
 
@@ -28,41 +34,48 @@ describe('ClinicFlow Part 2: Authentication & Authorization Tests', () => {
   });
 
   // =========================================================================
-  // Test 1: Successful Authentication (OTP flow, me, refresh, logout)
+  // Test 1: Successful Authentication (registration, login, me, refresh, logout)
   // =========================================================================
   describe('1. Successful Authentication', () => {
     const testPhone = '+251911000001';
     let receivedAccessToken: string;
     let receivedRefreshToken: string;
 
-    it('should send an OTP code successfully', async () => {
-      const res = await fetch(`${baseUrl}/auth/send-otp`, {
+    it('should register a patient account and return access token + refresh token + user profile', async () => {
+      const res = await fetch(`${baseUrl}/auth/register-patient`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: testPhone }),
+        body: JSON.stringify({
+          phone: testPhone,
+          password: 'patient-password-123',
+          firstName: 'Abebe',
+          lastName: 'Bikila',
+        }),
       });
 
-      assert.strictEqual(res.status, 200);
+      assert.strictEqual(res.status, 201);
       const json = await res.json();
       assert.strictEqual(json.success, true);
-      assert.ok(json.data.cooldownSeconds > 0);
+      assert.ok(json.data.accessToken);
+      assert.ok(json.data.refreshToken);
+      assert.strictEqual(json.data.user.phone, testPhone.toLowerCase());
+      assert.strictEqual(json.data.user.role, Role.PATIENT);
+      assert.ok(
+        [...mockPrisma.auditLogs.values()].some((log) => log.action === 'AUTH_REGISTER_PATIENT'),
+        'Successful registration should be audited',
+      );
 
-      const dispatchedCode = otpDelivery.getLatestCode(testPhone.toLowerCase());
-      assert.ok(dispatchedCode, 'An OTP code should have been dispatched');
-      assert.strictEqual(dispatchedCode.length, 6);
+      receivedAccessToken = json.data.accessToken;
+      receivedRefreshToken = json.data.refreshToken;
     });
 
-    it('should verify OTP and return access token + refresh token + user profile', async () => {
-      const code = otpDelivery.getLatestCode(testPhone.toLowerCase())!;
-
-      const res = await fetch(`${baseUrl}/auth/verify-otp`, {
+    it('should log in using password and return new session tokens', async () => {
+      const res = await fetch(`${baseUrl}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           identifier: testPhone,
-          code,
-          firstName: 'Abebe',
-          lastName: 'Bikila',
+          password: 'patient-password-123',
         }),
       });
 
@@ -72,11 +85,6 @@ describe('ClinicFlow Part 2: Authentication & Authorization Tests', () => {
       assert.ok(json.data.accessToken);
       assert.ok(json.data.refreshToken);
       assert.strictEqual(json.data.user.phone, testPhone.toLowerCase());
-      assert.strictEqual(json.data.user.role, Role.PATIENT);
-      assert.ok(
-        [...mockPrisma.auditLogs.values()].some((log) => log.action === 'AUTH_VERIFY_OTP'),
-        'Successful OTP authentication should be audited',
-      );
 
       receivedAccessToken = json.data.accessToken;
       receivedRefreshToken = json.data.refreshToken;
@@ -167,42 +175,8 @@ describe('ClinicFlow Part 2: Authentication & Authorization Tests', () => {
     });
   });
 
-  describe('OTP request concurrency', () => {
-    it('enforces one cooldown winner and one successful verification', async () => {
-      const identifier = '+251911000099';
-      const sendResults = await Promise.all([
-        fetch(`${baseUrl}/auth/send-otp`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ identifier }),
-        }),
-        fetch(`${baseUrl}/auth/send-otp`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ identifier }),
-        }),
-      ]);
-      assert.deepStrictEqual(sendResults.map((response) => response.status).sort(), [200, 400]);
-
-      const code = otpDelivery.getLatestCode(identifier)!;
-      const verifyResults = await Promise.all([
-        fetch(`${baseUrl}/auth/verify-otp`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ identifier, code }),
-        }),
-        fetch(`${baseUrl}/auth/verify-otp`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ identifier, code }),
-        }),
-      ]);
-      assert.deepStrictEqual(verifyResults.map((response) => response.status).sort(), [200, 400]);
-    });
-  });
-
   describe('Password login enumeration protection', () => {
-    it('returns the same unauthorized response for unknown and OTP-only accounts', async () => {
+    it('returns the same unauthorized response for known and unknown accounts', async () => {
       const known = await fetch(`${baseUrl}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -222,7 +196,7 @@ describe('ClinicFlow Part 2: Authentication & Authorization Tests', () => {
   });
 
   describe('Clinic administrator registration', () => {
-    it('registers without an OTP, creates a clinic administrator, and establishes membership', async () => {
+    it('creates a clinic administrator and establishes membership', async () => {
       const phone = '+251911000050';
       const registrationResponse = await fetch(`${baseUrl}/auth/register-clinic`, {
         method: 'POST',
@@ -243,12 +217,6 @@ describe('ClinicFlow Part 2: Authentication & Authorization Tests', () => {
       assert.strictEqual(registration.data.user.role, Role.ADMIN);
       assert.ok(registration.data.accessToken);
       assert.ok(registration.data.refreshToken);
-      assert.ok(
-        ![...mockPrisma.otps.values()].some(
-          (otp) => otp.identifier === phone.toLowerCase() && otp.purpose === 'REGISTRATION',
-        ),
-        'Password-based registration should not require or create a registration OTP',
-      );
 
       const user = mockPrisma.users.get(registration.data.user.id);
       assert.ok(user?.passwordHash, 'New accounts should have a password hash');
@@ -273,21 +241,11 @@ describe('ClinicFlow Part 2: Authentication & Authorization Tests', () => {
       const clinics = await clinicsResponse.json();
       assert.ok(clinics.data.some((record: { id: string }) => record.id === clinic.id));
 
-      const resetOtpResponse = await fetch(`${baseUrl}/auth/send-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: phone, purpose: 'PASSWORD_RESET' }),
-      });
-      assert.strictEqual(resetOtpResponse.status, 200);
-      const resetCode = otpDelivery.getLatestCode(phone.toLowerCase());
-      assert.ok(resetCode);
-
       const resetResponse = await fetch(`${baseUrl}/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           identifier: phone,
-          code: resetCode,
           password: 'new-clinic-password-456',
         }),
       });
@@ -313,99 +271,9 @@ describe('ClinicFlow Part 2: Authentication & Authorization Tests', () => {
   });
 
   // =========================================================================
-  // Test 2: Invalid OTP & Brute-force Attempt Lockout
+  // Test 2: Unauthorized Requests
   // =========================================================================
-  describe('2. Invalid OTP Handling & Rate Limiting', () => {
-    const testPhone = '+251922000002';
-
-    it('should reject incorrect OTP code and report remaining attempts', async () => {
-      await fetch(`${baseUrl}/auth/send-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: testPhone }),
-      });
-
-      // Submit incorrect code (attempt 1)
-      const res1 = await fetch(`${baseUrl}/auth/verify-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: testPhone, code: '000000' }),
-      });
-
-      assert.strictEqual(res1.status, 400);
-      const json1 = await res1.json();
-      assert.match(json1.message, /Incorrect verification code/);
-    });
-
-    it('should invalidate OTP after 3 consecutive wrong attempts', async () => {
-      // Attempt 2
-      await fetch(`${baseUrl}/auth/verify-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: testPhone, code: '111111' }),
-      });
-
-      // Attempt 3
-      const res3 = await fetch(`${baseUrl}/auth/verify-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: testPhone, code: '222222' }),
-      });
-
-      assert.strictEqual(res3.status, 400);
-      const json3 = await res3.json();
-      assert.match(json3.message, /Maximum attempts reached/);
-
-      // Even the correct code now fails because code is locked
-      const validCode = otpDelivery.getLatestCode(testPhone.toLowerCase())!;
-      const resAfterLock = await fetch(`${baseUrl}/auth/verify-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: testPhone, code: validCode }),
-      });
-
-      assert.strictEqual(resAfterLock.status, 400);
-    });
-  });
-
-  // =========================================================================
-  // Test 3: Expired OTP
-  // =========================================================================
-  describe('3. Expired OTP Rejection', () => {
-    const testPhone = '+251933000003';
-
-    it('should reject verification if the OTP has expired', async () => {
-      await fetch(`${baseUrl}/auth/send-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: testPhone }),
-      });
-
-      const code = otpDelivery.getLatestCode(testPhone.toLowerCase())!;
-
-      // Manually simulate expiration by setting expiresAt to the past in the database
-      for (const otp of mockPrisma.otps.values()) {
-        if (otp.identifier === testPhone.toLowerCase()) {
-          otp.expiresAt = new Date(Date.now() - 10000); // 10 seconds ago
-        }
-      }
-
-      const res = await fetch(`${baseUrl}/auth/verify-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: testPhone, code }),
-      });
-
-      assert.strictEqual(res.status, 400);
-      const json = await res.json();
-      assert.match(json.message, /expired/i);
-    });
-  });
-
-  // =========================================================================
-  // Test 4: Unauthorized Requests
-  // =========================================================================
-  describe('4. Unauthorized Request Protection', () => {
+  describe('2. Unauthorized Request Protection', () => {
     it('should reject request without Authorization header with 401', async () => {
       const res = await fetch(`${baseUrl}/auth/me`);
       assert.strictEqual(res.status, 401);
