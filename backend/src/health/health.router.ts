@@ -13,16 +13,13 @@ export function createHealthRouter(prisma: PrismaService): Router {
       await prisma.$queryRaw(Prisma.sql`SELECT 1`);
       res.json({
         status: 'ok',
-        service: 'mediflow-et-backend',
+        service: 'ClinicFlow-et-backend',
         database: 'connected',
         version: '1.0.0',
         timestamp: new Date().toISOString(),
       });
     } catch (error) {
-      logger.error(
-        'Database health check failed',
-        error instanceof Error ? error.message : error,
-      );
+      logger.error('Database health check failed', error instanceof Error ? error.message : error);
       next(new ServiceUnavailableException('Database unavailable'));
     }
   });

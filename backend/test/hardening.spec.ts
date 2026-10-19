@@ -33,12 +33,7 @@ function captureErrorResponse(exception: unknown, request: Partial<Request>) {
     },
   };
 
-  errorMiddleware(
-    exception,
-    request as Request,
-    response as unknown as Response,
-    () => undefined,
-  );
+  errorMiddleware(exception, request as Request, response as unknown as Response, () => undefined);
   return { statusCode, body };
 }
 
@@ -101,7 +96,7 @@ describe('Production hardening controls', () => {
   it('requires explicit CORS configuration and JWT secret in production', () => {
     const validProduction = {
       NODE_ENV: Environment.Production,
-      DATABASE_URL: 'postgresql://mediflow:secret@db.example/mediflow',
+      DATABASE_URL: 'postgresql://ClinicFlow:secret@db.example/ClinicFlow',
       JWT_SECRET: 'x'.repeat(64),
       CORS_ORIGIN: 'https://clinic.example.test',
       SWAGGER_ENABLED: false,
@@ -112,7 +107,7 @@ describe('Production hardening controls', () => {
     assert.doesNotThrow(() =>
       validate({
         NODE_ENV: Environment.Development,
-        DATABASE_URL: 'postgresql://mediflow:secret@localhost/mediflow',
+        DATABASE_URL: 'postgresql://ClinicFlow:secret@localhost/ClinicFlow',
         JWT_SECRET: 'x'.repeat(64),
       }),
     );

@@ -30,15 +30,15 @@ export class ApiError extends Error {
     readonly correlationId?: string,
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 
-const ACCESS_TOKEN_KEY = 'mediflow_access_token';
-const REFRESH_TOKEN_KEY = 'mediflow_refresh_token';
-const SESSION_EVENT = 'mediflow-auth-change';
+const ACCESS_TOKEN_KEY = "ClinicFlow_access_token";
+const REFRESH_TOKEN_KEY = "ClinicFlow_refresh_token";
+const SESSION_EVENT = "ClinicFlow-auth-change";
 
-type ApiRequestOptions = Omit<RequestInit, 'body'> & {
+type ApiRequestOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
   authenticated?: boolean;
   retryUnauthorized?: boolean;
@@ -62,30 +62,37 @@ export const tokenStore = {
 function apiBaseUrl(): string {
   const configured = import.meta.env.VITE_API_BASE_URL?.trim();
   if (!configured) {
-    throw new Error('VITE_API_BASE_URL is not configured. Set it in the frontend environment.');
+    throw new Error(
+      "VITE_API_BASE_URL is not configured. Set it in the frontend environment.",
+    );
   }
-  return configured.replace(/\/+$/, '');
+  return configured.replace(/\/+$/, "");
 }
 
-function toQueryString(params?: Record<string, string | number | boolean | undefined>): string {
-  if (!params) return '';
+function toQueryString(
+  params?: Record<string, string | number | boolean | undefined>,
+): string {
+  if (!params) return "";
   const query = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
-    if (value !== undefined && value !== '') query.set(key, String(value));
+    if (value !== undefined && value !== "") query.set(key, String(value));
   }
   const serialized = query.toString();
-  return serialized ? `?${serialized}` : '';
+  return serialized ? `?${serialized}` : "";
 }
 
 async function readPayload<T>(response: Response): Promise<ApiEnvelope<T>> {
   const payload = (await response.json().catch(() => null)) as
-    | (Partial<ApiEnvelope<T>> & { message?: string | string[]; error?: unknown })
+    | (Partial<ApiEnvelope<T>> & {
+        message?: string | string[];
+        error?: unknown;
+      })
     | null;
 
   if (!response.ok) {
     const message = Array.isArray(payload?.message)
-      ? payload.message.join('. ')
-      : payload?.message || response.statusText || 'The request failed';
+      ? payload.message.join(". ")
+      : payload?.message || response.statusText || "The request failed";
     throw new ApiError(
       message,
       response.status,
@@ -94,8 +101,11 @@ async function readPayload<T>(response: Response): Promise<ApiEnvelope<T>> {
     );
   }
 
-  if (!payload || payload.success !== true || !('data' in payload)) {
-    throw new ApiError('The server returned an invalid response.', response.status);
+  if (!payload || payload.success !== true || !("data" in payload)) {
+    throw new ApiError(
+      "The server returned an invalid response.",
+      response.status,
+    );
   }
   return payload as ApiEnvelope<T>;
 }
@@ -109,23 +119,25 @@ async function rotateRefreshToken(): Promise<boolean> {
   refreshInFlight = (async () => {
     try {
       const response = await fetch(`${apiBaseUrl()}/auth/refresh`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refreshToken }),
       });
-      const result = (await readPayload<{
-        accessToken: string;
-        refreshToken: string;
-        user: AuthUser;
-      }>(response)).data;
+      const result = (
+        await readPayload<{
+          accessToken: string;
+          refreshToken: string;
+          user: AuthUser;
+        }>(response)
+      ).data;
       tokenStore.setTokens(result.accessToken, result.refreshToken);
-      localStorage.setItem('mediflow_user', JSON.stringify(result.user));
+      localStorage.setItem("ClinicFlow_user", JSON.stringify(result.user));
       window.dispatchEvent(new Event(SESSION_EVENT));
       return true;
     } catch (error) {
       if (!(error instanceof ApiError) || error.status !== 401) throw error;
       tokenStore.clear();
-      localStorage.removeItem('mediflow_user');
+      localStorage.removeItem("ClinicFlow_user");
       window.dispatchEvent(new Event(SESSION_EVENT));
       return false;
     } finally {
@@ -141,7 +153,7 @@ export interface AuthUser {
   email: string | null;
   firstName: string;
   lastName: string;
-  role: 'ADMIN' | 'RECEPTIONIST' | 'DOCTOR' | 'PATIENT';
+  role: "ADMIN" | "RECEPTIONIST" | "DOCTOR" | "PATIENT";
   isActive: boolean;
   createdAt: string;
 }
@@ -162,12 +174,13 @@ async function apiFetch(
 
   const send = () => {
     const headers = new Headers(init.headers);
-    if (init.body !== undefined) headers.set('Content-Type', 'application/json');
+    if (init.body !== undefined)
+      headers.set("Content-Type", "application/json");
 
     if (authenticated) {
       const accessToken = tokenStore.getAccessToken();
       if (accessToken) {
-        headers.set('Authorization', `Bearer ${accessToken}`);
+        headers.set("Authorization", `Bearer ${accessToken}`);
       }
     }
 
@@ -183,14 +196,17 @@ async function apiFetch(
     if (await rotateRefreshToken()) {
       response = await send();
     } else {
-      window.location.assign('/login');
+      window.location.assign("/login");
     }
   }
 
   return response;
 }
 
-export function apiPath(path: string, params?: Record<string, string | number | boolean | undefined>) {
+export function apiPath(
+  path: string,
+  params?: Record<string, string | number | boolean | undefined>,
+) {
   return `${path}${toQueryString(params)}`;
 }
 
@@ -198,9 +214,14 @@ export async function apiPaginated<T>(
   path: string,
   params?: Record<string, string | number | boolean | undefined>,
 ): Promise<PaginatedData<T>> {
-  const response = await readPayload<T[]>(await apiFetch(apiPath(path, params)));
+  const response = await readPayload<T[]>(
+    await apiFetch(apiPath(path, params)),
+  );
   if (!Array.isArray(response.data)) {
-    throw new ApiError('The server returned an invalid paginated response.', 200);
+    throw new ApiError(
+      "The server returned an invalid paginated response.",
+      200,
+    );
   }
   return {
     data: response.data,

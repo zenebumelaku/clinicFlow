@@ -8,7 +8,7 @@ export class UserResponseDto {
   @ApiProperty({ example: '+251911234567' })
   phone!: string;
 
-  @ApiPropertyOptional({ example: 'doctor@mediflow.et', nullable: true })
+  @ApiPropertyOptional({ example: 'doctor@ClinicFlow.et', nullable: true })
   email?: string | null;
 
   @ApiProperty({ example: 'Abebe' })
@@ -46,7 +46,6 @@ export class AuthResponseDto {
   @ApiProperty({ type: () => UserResponseDto })
   user!: UserResponseDto;
 }
-
 
 export class MessageResponseDto {
   @ApiProperty({ example: true })

@@ -1,6 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '../../common/decorators/swagger.shim';
 import { Transform } from 'class-transformer';
-import { IsDateString, IsEmail, IsNotEmpty, IsOptional, IsString, IsUUID, MinLength } from 'class-validator';
+import {
+  IsDateString,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MinLength,
+} from 'class-validator';
 
 export class RegisterPatientDto {
   @ApiProperty({
@@ -13,7 +21,7 @@ export class RegisterPatientDto {
   phone!: string;
 
   @ApiPropertyOptional({
-    example: 'patient@mediflow.et',
+    example: 'patient@ClinicFlow.et',
     description: 'Email address for communication',
   })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))

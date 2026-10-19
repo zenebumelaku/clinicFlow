@@ -2,7 +2,8 @@ export const swaggerDocument = {
   openapi: '3.0.0',
   info: {
     title: 'ClinicFlow API',
-    description: 'ClinicFlow - Electronic Healthcare & Clinic Management System Backend API Documentation',
+    description:
+      'ClinicFlow - Electronic Healthcare & Clinic Management System Backend API Documentation',
     version: '1.0.0',
   },
   servers: [{ url: '/' }],
@@ -49,7 +50,7 @@ export const swaggerDocument = {
                   type: 'object',
                   properties: {
                     status: { type: 'string', example: 'ok' },
-                    service: { type: 'string', example: 'mediflow-et-backend' },
+                    service: { type: 'string', example: 'ClinicFlow-et-backend' },
                     database: { type: 'string', example: 'connected' },
                     version: { type: 'string', example: '1.0.0' },
                     timestamp: { type: 'string', example: '2026-10-08T19:30:00.000Z' },

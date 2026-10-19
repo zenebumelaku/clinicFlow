@@ -14,7 +14,7 @@ export class RegisterDto {
   phone!: string;
 
   @ApiPropertyOptional({
-    example: 'doctor@mediflow.et',
+    example: 'doctor@ClinicFlow.et',
     description: 'Email address for communication',
   })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
@@ -55,6 +55,6 @@ export class RegisterDto {
     description: 'Role within the clinic (ADMIN, RECEPTIONIST, DOCTOR, PATIENT)',
   })
   @IsOptional()
-  @IsEnum(Role, { message: 'Role must be a valid MediFlow system role' })
+  @IsEnum(Role, { message: 'Role must be a valid ClinicFlow system role' })
   role?: Role;
 }

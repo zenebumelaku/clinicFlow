@@ -1,41 +1,41 @@
 # Core Business Workflows
 
-ClinicFlow (also branded MediFlow ET in parts of the UI) coordinates a clinic's staff, patient records, appointments, walk-in check-in, queues, payments, and operational reporting. Each account is assigned a role, and clinic membership determines which clinic's data the account can access.
+ClinicFlow (also branded ClinicFlow ET in parts of the UI) coordinates a clinic's staff, patient records, appointments, walk-in check-in, queues, payments, and operational reporting. Each account is assigned a role, and clinic membership determines which clinic's data the account can access.
 
 ## Domain Entities
 
-| Entity | Service / Bounded Context | Description | Key Relationships |
-|---|---|---|---|
-| User | Identity and Access | A person who signs in as an administrator, receptionist, doctor, or patient. | Can have clinic staff membership, doctor and/or patient profiles, refresh tokens, notifications, and audit entries. |
-| Clinic | Clinic Operations | A healthcare organization and principal tenant boundary for operational records. | Owns branches, staff, doctors, patients, appointments, queue tickets, payments, and notifications. |
-| Branch | Clinic Operations | A physical clinic location within a clinic. | Belongs to a clinic; staff may be assigned to a branch. |
-| StaffMember | Workforce Management | A user's active membership and job identity at a clinic. | Links a user to a clinic and optionally to a branch; a doctor profile is attached to its staff record. |
-| Doctor | Care Delivery | A clinician identity and availability at a clinic. | Linked to a user and clinic; receives appointments and queue tickets. |
-| Patient | Patient Management | A clinic-specific patient record, medical record number, and contact/profile details. | Linked to a user and clinic; owns appointments, queue tickets, and payments. |
-| Appointment | Scheduling | A planned patient visit with an assigned doctor and time interval. | Belongs to a clinic, patient, and doctor; can have one queue ticket and associated payments and notifications. |
-| QueueTicket | Check-In and Queue | A same-day visit's position and progress through the clinic. | Belongs to a clinic and patient; can reference a doctor and appointment. |
-| QueueDailyCounter | Check-In and Queue | A per-clinic, per-day counter that allocates unique sequential queue numbers. | Owned by a clinic and used when issuing queue tickets. |
-| Payment | Billing | A record of an amount collected or recorded for a patient, optionally tied to an appointment. | Belongs to a clinic and patient; may reference an appointment. |
-| Notification | Patient and Staff Communications | A user-specific record of queue or appointment updates, with a read state. | Belongs to a clinic and user; may reference an appointment. |
-| RefreshToken | Identity and Access | Revocable long-lived session credentials. | Associated with a user and stored as a token hash. |
-| AuditLog | Audit | A record of clinic data mutations and request context. | May identify the acting user and clinic, plus the action and target entity. |
+| Entity            | Service / Bounded Context        | Description                                                                                   | Key Relationships                                                                                                   |
+| ----------------- | -------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| User              | Identity and Access              | A person who signs in as an administrator, receptionist, doctor, or patient.                  | Can have clinic staff membership, doctor and/or patient profiles, refresh tokens, notifications, and audit entries. |
+| Clinic            | Clinic Operations                | A healthcare organization and principal tenant boundary for operational records.              | Owns branches, staff, doctors, patients, appointments, queue tickets, payments, and notifications.                  |
+| Branch            | Clinic Operations                | A physical clinic location within a clinic.                                                   | Belongs to a clinic; staff may be assigned to a branch.                                                             |
+| StaffMember       | Workforce Management             | A user's active membership and job identity at a clinic.                                      | Links a user to a clinic and optionally to a branch; a doctor profile is attached to its staff record.              |
+| Doctor            | Care Delivery                    | A clinician identity and availability at a clinic.                                            | Linked to a user and clinic; receives appointments and queue tickets.                                               |
+| Patient           | Patient Management               | A clinic-specific patient record, medical record number, and contact/profile details.         | Linked to a user and clinic; owns appointments, queue tickets, and payments.                                        |
+| Appointment       | Scheduling                       | A planned patient visit with an assigned doctor and time interval.                            | Belongs to a clinic, patient, and doctor; can have one queue ticket and associated payments and notifications.      |
+| QueueTicket       | Check-In and Queue               | A same-day visit's position and progress through the clinic.                                  | Belongs to a clinic and patient; can reference a doctor and appointment.                                            |
+| QueueDailyCounter | Check-In and Queue               | A per-clinic, per-day counter that allocates unique sequential queue numbers.                 | Owned by a clinic and used when issuing queue tickets.                                                              |
+| Payment           | Billing                          | A record of an amount collected or recorded for a patient, optionally tied to an appointment. | Belongs to a clinic and patient; may reference an appointment.                                                      |
+| Notification      | Patient and Staff Communications | A user-specific record of queue or appointment updates, with a read state.                    | Belongs to a clinic and user; may reference an appointment.                                                         |
+| RefreshToken      | Identity and Access              | Revocable long-lived session credentials.                                                     | Associated with a user and stored as a token hash.                                                                  |
+| AuditLog          | Audit                            | A record of clinic data mutations and request context.                                        | May identify the acting user and clinic, plus the action and target entity.                                         |
 
 ## Service-to-Domain Mapping
 
 This is a modular Express monolith, not a set of independently deployed services. The modules below share one Prisma client and PostgreSQL database; the browser communicates with them through the versioned REST API.
 
-| Service / Module | Domain Context | Owned Entities | External Dependencies |
-|---|---|---|---|
-| `auth` | Identity and Access | Password authentication and refresh tokens | PostgreSQL through Prisma; JWT signing |
-| `clinics`, `branches` | Clinic Operations | Clinic and branch records | Prisma; staff membership for tenant access |
-| `staff`, `doctors` | Workforce Management | Staff membership and doctor profiles | Prisma; clinic and branch records |
-| `patients` | Patient Management | Patient profiles and clinic-scoped MRNs | Prisma; shared user identity |
-| `appointments` | Scheduling | Appointment lifecycle and conflict checks | Prisma; patient and doctor records in the same database |
-| `queue` | Check-In and Queue | Queue tickets, daily counters, queue transitions | Prisma; appointment and patient records; writes user notifications |
-| `payments` | Billing | Payment records and Chapa checkout verification | Prisma; patient and optional appointment records; Chapa API |
-| `notifications` | Patient and Staff Communications | User-scoped notification retrieval and read state | Prisma; user, clinic, and optional appointment records |
-| `reports` | Clinic Analytics | Aggregated operational measures (not a separate reporting store) | PostgreSQL queries through Prisma |
-| `audit` | Audit | Audit log records | Prisma; Express request/response lifecycle |
+| Service / Module      | Domain Context                   | Owned Entities                                                   | External Dependencies                                              |
+| --------------------- | -------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `auth`                | Identity and Access              | Password authentication and refresh tokens                       | PostgreSQL through Prisma; JWT signing                             |
+| `clinics`, `branches` | Clinic Operations                | Clinic and branch records                                        | Prisma; staff membership for tenant access                         |
+| `staff`, `doctors`    | Workforce Management             | Staff membership and doctor profiles                             | Prisma; clinic and branch records                                  |
+| `patients`            | Patient Management               | Patient profiles and clinic-scoped MRNs                          | Prisma; shared user identity                                       |
+| `appointments`        | Scheduling                       | Appointment lifecycle and conflict checks                        | Prisma; patient and doctor records in the same database            |
+| `queue`               | Check-In and Queue               | Queue tickets, daily counters, queue transitions                 | Prisma; appointment and patient records; writes user notifications |
+| `payments`            | Billing                          | Payment records and Chapa checkout verification                  | Prisma; patient and optional appointment records; Chapa API        |
+| `notifications`       | Patient and Staff Communications | User-scoped notification retrieval and read state                | Prisma; user, clinic, and optional appointment records             |
+| `reports`             | Clinic Analytics                 | Aggregated operational measures (not a separate reporting store) | PostgreSQL queries through Prisma                                  |
+| `audit`               | Audit                            | Audit log records                                                | Prisma; Express request/response lifecycle                         |
 
 There is no service-to-service REST or event-bus flow in this repository. Cross-domain work is performed by modules calling shared services or by transactional Prisma operations against the same database.
 
@@ -131,6 +131,7 @@ The backend and PostgreSQL are a single application's persistence path, not sepa
 ## Business Workflow Sequence
 
 <!-- mermaid-checked: every participant uses `participant Id as "Label"`, no \n in aliases/messages/notes, every alt/opt/loop closed by end, no `:` inside any alias -->
+
 ```mermaid
 sequenceDiagram
     participant Patient as "Patient"
@@ -194,12 +195,12 @@ sequenceDiagram
 
 ### Roles and access
 
-| Role | Intended user journey | Backend permissions relevant to that journey |
-|---|---|---|
-| ADMIN | Owns clinic setup, workforce configuration, and clinic oversight. | Can create/update/deactivate clinics; manage branches, staff, doctors; manage patient, appointment, queue, and payment operations; view reports. |
-| RECEPTIONIST | Handles patient intake, appointment scheduling, check-in, queue desk, and payments. | Can create/update patients and appointments; check patients in; call or skip queue tickets; start/complete tickets; record/list payments; view reports. Does not have ADMIN-only clinic/staff/doctor management permissions. |
-| DOCTOR | Runs consultations and updates their availability/profile. | Can list clinic doctors, patients, appointments, and queue; update their own doctor profile/availability subject to field-level service checks; start and complete queue tickets. Cannot call or skip tickets in the current route guards. |
-| PATIENT | Follows their own clinic profile, appointments, queue, and notifications. | Can read their own patient profile, appointment list, queue, and notifications. Cannot create appointments, check in, or use payment endpoints under the current route guards. |
+| Role         | Intended user journey                                                               | Backend permissions relevant to that journey                                                                                                                                                                                               |
+| ------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ADMIN        | Owns clinic setup, workforce configuration, and clinic oversight.                   | Can create/update/deactivate clinics; manage branches, staff, doctors; manage patient, appointment, queue, and payment operations; view reports.                                                                                           |
+| RECEPTIONIST | Handles patient intake, appointment scheduling, check-in, queue desk, and payments. | Can create/update patients and appointments; check patients in; call or skip queue tickets; start/complete tickets; record/list payments; view reports. Does not have ADMIN-only clinic/staff/doctor management permissions.               |
+| DOCTOR       | Runs consultations and updates their availability/profile.                          | Can list clinic doctors, patients, appointments, and queue; update their own doctor profile/availability subject to field-level service checks; start and complete queue tickets. Cannot call or skip tickets in the current route guards. |
+| PATIENT      | Follows their own clinic profile, appointments, queue, and notifications.           | Can read their own patient profile, appointment list, queue, and notifications. Cannot create appointments, check in, or use payment endpoints under the current route guards.                                                             |
 
 Frontend portal checks select which pages a user sees, but backend route guards are the actual enforcement boundary. Clinic operations additionally require the user to have an active staff membership or active patient profile in the requested clinic.
 

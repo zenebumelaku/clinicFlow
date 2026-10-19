@@ -63,7 +63,7 @@ export class CreateClinicDto {
   @MaxLength(80)
   licenseNumber?: string;
 
-  @ApiPropertyOptional({ example: 'https://cdn.mediflow.et/logos/addis.png' })
+  @ApiPropertyOptional({ example: 'https://cdn.ClinicFlow.et/logos/addis.png' })
   @IsOptional()
   @IsUrl({}, { message: 'logoUrl must be a valid URL' })
   logoUrl?: string;

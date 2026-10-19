@@ -22,7 +22,7 @@ export class RegisterDoctorDto {
   phone!: string;
 
   @ApiPropertyOptional({
-    example: 'doctor.hana@mediflow.et',
+    example: 'doctor.hana@ClinicFlow.et',
     description: 'Email address for communication and login',
   })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
@@ -84,7 +84,8 @@ export class RegisterDoctorDto {
   consultationFee?: number;
 
   @ApiPropertyOptional({
-    example: 'Consultant Internist with 12+ years experience in chronic care and cardiology triage.',
+    example:
+      'Consultant Internist with 12+ years experience in chronic care and cardiology triage.',
     description: 'Doctor bio or profile statement',
   })
   @IsOptional()

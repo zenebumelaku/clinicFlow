@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AppointmentStatus,
   DoctorAvailability,
@@ -7,10 +7,10 @@ import {
   QueueItem,
   QueueStatus,
   Role,
-} from '../../types';
-import { authService } from '../services/authService';
-import { clinicService } from '../services/clinicService';
-import { ReportRange } from '../services/clinicService';
+} from "../../types";
+import { authService } from "../services/authService";
+import { clinicService } from "../services/clinicService";
+import { ReportRange } from "../services/clinicService";
 
 interface ClinicDataFilters {
   patientSearch?: string;
@@ -34,9 +34,12 @@ const emptyStats = {
 
 export function useAuth() {
   const [user, setUser] = useState(() => authService.getUser());
-  const [isLoading, setIsLoading] = useState(() => Boolean(
-    localStorage.getItem('mediflow_access_token') || localStorage.getItem('mediflow_refresh_token'),
-  ));
+  const [isLoading, setIsLoading] = useState(() =>
+    Boolean(
+      localStorage.getItem("ClinicFlow_access_token") ||
+      localStorage.getItem("ClinicFlow_refresh_token"),
+    ),
+  );
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -46,17 +49,22 @@ export function useAuth() {
         const restoredUser = await authService.restoreSession();
         if (isActive) setUser(restoredUser);
       } catch (restoreError) {
-        if (isActive) setError(restoreError instanceof Error ? restoreError : new Error('Session restore failed'));
+        if (isActive)
+          setError(
+            restoreError instanceof Error
+              ? restoreError
+              : new Error("Session restore failed"),
+          );
       } finally {
         if (isActive) setIsLoading(false);
       }
     };
     void restore();
     const sync = () => setUser(authService.getUser());
-    window.addEventListener('mediflow-auth-change', sync);
+    window.addEventListener("ClinicFlow-auth-change", sync);
     return () => {
       isActive = false;
-      window.removeEventListener('mediflow-auth-change', sync);
+      window.removeEventListener("ClinicFlow-auth-change", sync);
     };
   }, []);
 
@@ -68,8 +76,8 @@ export function useActiveRole() {
 
   useEffect(() => {
     const sync = () => setRole(clinicService.getActiveRole());
-    window.addEventListener('mediflow-auth-change', sync);
-    return () => window.removeEventListener('mediflow-auth-change', sync);
+    window.addEventListener("ClinicFlow-auth-change", sync);
+    return () => window.removeEventListener("ClinicFlow-auth-change", sync);
   }, []);
 
   return role;
@@ -80,60 +88,65 @@ export function useClinicData(filters: ClinicDataFilters = {}) {
   const patientSearch = filters.patientSearch?.trim() || undefined;
   const appointmentSearch = filters.appointmentSearch?.trim() || undefined;
   const role = clinicService.getActiveRole();
-  const isPatient = role === 'patient';
-  const canViewPayments = role === 'admin' || role === 'receptionist';
+  const isPatient = role === "patient";
+  const canViewPayments = role === "admin" || role === "receptionist";
   const canViewReports = canViewPayments;
 
   const doctorsQuery = useQuery({
-    queryKey: ['clinic', 'doctors'],
+    queryKey: ["clinic", "doctors"],
     queryFn: () => clinicService.getDoctors(),
     enabled: true,
   });
   const patientsQuery = useQuery({
-    queryKey: ['clinic', 'patients', patientSearch || ''],
+    queryKey: ["clinic", "patients", patientSearch || ""],
     queryFn: () => clinicService.getPatients(patientSearch),
     enabled: filters.includePatientList !== false,
   });
   const appointmentsQuery = useQuery({
-    queryKey: ['clinic', 'appointments', appointmentSearch || ''],
+    queryKey: ["clinic", "appointments", appointmentSearch || ""],
     queryFn: () => clinicService.getAppointments({ search: appointmentSearch }),
     enabled: filters.includeAppointmentList !== false,
   });
   const queueQuery = useQuery({
-    queryKey: ['clinic', 'queue'],
+    queryKey: ["clinic", "queue"],
     queryFn: () => clinicService.getQueue(),
     enabled: true,
     refetchInterval: 30_000,
   });
   const paymentsQuery = useQuery({
-    queryKey: ['clinic', 'payments'],
+    queryKey: ["clinic", "payments"],
     queryFn: () => clinicService.getPayments(),
     enabled: canViewPayments || isPatient,
   });
   const notificationsQuery = useQuery({
-    queryKey: ['clinic', 'notifications'],
+    queryKey: ["clinic", "notifications"],
     queryFn: () => clinicService.getNotifications(),
     refetchInterval: 30_000,
   });
   const statsQuery = useQuery({
-    queryKey: ['clinic', 'stats'],
+    queryKey: ["clinic", "stats"],
     queryFn: () => clinicService.getStats(),
     enabled: canViewReports,
     refetchInterval: 30_000,
   });
   const clinicProfileQuery = useQuery({
-    queryKey: ['clinic', 'profile'],
+    queryKey: ["clinic", "profile"],
     queryFn: () => clinicService.getClinicProfile(),
     enabled: true,
   });
 
   const invalidateClinic = useCallback(() => {
-    return queryClient.invalidateQueries({ queryKey: ['clinic'] });
+    return queryClient.invalidateQueries({ queryKey: ["clinic"] });
   }, [queryClient]);
 
   const updateDoctorAvailabilityMutation = useMutation({
-    mutationFn: ({ id, availability }: { id: string; availability: DoctorAvailability }) =>
-      clinicService.updateDoctorAvailability(id, availability),
+    mutationFn: ({
+      id,
+      availability,
+    }: {
+      id: string;
+      availability: DoctorAvailability;
+    }) => clinicService.updateDoctorAvailability(id, availability),
     onSuccess: invalidateClinic,
   });
   const checkInMutation = useMutation({
@@ -141,7 +154,7 @@ export function useClinicData(filters: ClinicDataFilters = {}) {
       patientId: string;
       doctorId: string;
       appointmentId?: string;
-      priority?: QueueItem['priority'];
+      priority?: QueueItem["priority"];
     }) => clinicService.checkInPatient(params),
     onSuccess: invalidateClinic,
   });
@@ -188,8 +201,9 @@ export function useClinicData(filters: ClinicDataFilters = {}) {
     onSuccess: invalidateClinic,
   });
   const updateClinicProfileMutation = useMutation({
-    mutationFn: (data: Parameters<typeof clinicService.updateClinicProfile>[0]) =>
-      clinicService.updateClinicProfile(data),
+    mutationFn: (
+      data: Parameters<typeof clinicService.updateClinicProfile>[0],
+    ) => clinicService.updateClinicProfile(data),
     onSuccess: invalidateClinic,
   });
 
@@ -202,7 +216,7 @@ export function useClinicData(filters: ClinicDataFilters = {}) {
     notificationsQuery,
     statsQuery,
     clinicProfileQuery,
-  ].filter(query => query.isEnabled);
+  ].filter((query) => query.isEnabled);
 
   return {
     doctors: doctorsQuery.data || [],
@@ -213,14 +227,18 @@ export function useClinicData(filters: ClinicDataFilters = {}) {
     notifications: notificationsQuery.data || [],
     stats: statsQuery.data || emptyStats,
     clinicProfile: clinicProfileQuery.data,
-    isLoading: activeQueries.some(query => query.isLoading),
+    isLoading: activeQueries.some((query) => query.isLoading),
     errors: activeQueries
-      .filter(query => query.isError)
-      .map(query => query.error instanceof Error ? query.error.message : 'Unable to load clinic data'),
+      .filter((query) => query.isError)
+      .map((query) =>
+        query.error instanceof Error
+          ? query.error.message
+          : "Unable to load clinic data",
+      ),
     refetch: invalidateClinic,
     updateDoctorAvailability: updateDoctorAvailabilityMutation.mutateAsync,
     createDoctor: (data: Parameters<typeof clinicService.createDoctor>[0]) =>
-      clinicService.createDoctor(data).then(async result => {
+      clinicService.createDoctor(data).then(async (result) => {
         await invalidateClinic();
         return result;
       }),
@@ -231,7 +249,9 @@ export function useClinicData(filters: ClinicDataFilters = {}) {
     updateAppointmentStatus: updateAppointmentStatusMutation.mutateAsync,
     createPatient: createPatientMutation.mutateAsync,
     recordPayment: recordPaymentMutation.mutateAsync,
-    initializeChapaPayment: async (params: Parameters<typeof clinicService.initializeChapaPayment>[0]) => {
+    initializeChapaPayment: async (
+      params: Parameters<typeof clinicService.initializeChapaPayment>[0],
+    ) => {
       const result = await clinicService.initializeChapaPayment(params);
       await invalidateClinic();
       return result;
@@ -249,9 +269,11 @@ export function useClinicData(filters: ClinicDataFilters = {}) {
 }
 
 export function useClinicReports(range: ReportRange) {
-  const enabled = ['admin', 'receptionist'].includes(clinicService.getActiveRole());
+  const enabled = ["admin", "receptionist"].includes(
+    clinicService.getActiveRole(),
+  );
   return useQuery({
-    queryKey: ['clinic', 'reports', range],
+    queryKey: ["clinic", "reports", range],
     queryFn: () => clinicService.getReportSeries(range),
     enabled,
   });
@@ -260,17 +282,17 @@ export function useClinicReports(range: ReportRange) {
 export function usePatientsPage(
   search?: string,
   page: number = 1,
-  gender: string = 'all',
+  gender: string = "all",
   limit?: number,
 ) {
-  const trimmed = search?.trim() || '';
+  const trimmed = search?.trim() || "";
   return useQuery({
-    queryKey: ['clinic', 'patients', 'page', trimmed, gender, page, limit],
+    queryKey: ["clinic", "patients", "page", trimmed, gender, page, limit],
     queryFn: () =>
       clinicService.getPatientsPage(
         trimmed || undefined,
         page,
-        !gender || gender === 'all' ? undefined : gender,
+        !gender || gender === "all" ? undefined : gender,
         limit,
       ),
   });
@@ -282,7 +304,7 @@ export function useAppointmentsPage(
   enabled = true,
 ) {
   return useQuery({
-    queryKey: ['clinic', 'appointments', 'page', filters, page],
+    queryKey: ["clinic", "appointments", "page", filters, page],
     queryFn: () => clinicService.getAppointmentsPage(filters, page),
     enabled,
   });

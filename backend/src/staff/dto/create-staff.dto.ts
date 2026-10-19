@@ -33,7 +33,7 @@ export class CreateStaffDto {
   @IsNotEmpty({ message: 'Phone is required when userId is not provided' })
   phone?: string;
 
-  @ApiPropertyOptional({ example: 'staff@mediflow.et' })
+  @ApiPropertyOptional({ example: 'staff@ClinicFlow.et' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim().toLowerCase() : value))
   @IsOptional()
   @IsEmail()

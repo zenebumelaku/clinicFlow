@@ -1,6 +1,6 @@
 <div align="center">
 
-# MediFlow ET
+# ClinicFlow
 
 ### Clinic operations, brought together.
 
@@ -10,7 +10,7 @@ An electronic healthcare and clinic management platform for coordinating appoint
 
 <br />
 
-<img src="./frontend/src/assets/images/hero_clinic_reception_1791475794007.jpg" alt="Illustrative clinic reception for MediFlow ET" width="100%" />
+<img src="./frontend/src/assets/images/hero_clinic_reception_1791475794007.jpg" alt="Illustrative clinic reception for ClinicFlow ET" width="100%" />
 
 <br />
 
@@ -26,19 +26,19 @@ An electronic healthcare and clinic management platform for coordinating appoint
 
 ## Overview
 
-MediFlow ET brings the everyday work of a clinic into one role-aware application. Administrators and front-desk staff can coordinate clinic operations, doctors can follow appointments and patient queues, and patients have a dedicated portal for their visit information.
+ClinicFlow brings the everyday work of a clinic into one role-aware application. Administrators and front-desk staff can coordinate clinic operations, doctors can follow appointments and patient queues, and patients have a dedicated portal for their visit information.
 
 The project is built as a full-stack application with a React and Vite frontend, an Express API, and PostgreSQL persistence managed through Prisma.
 
 ## What it includes
 
-| Clinic operations | Patient care | Platform foundation |
-| --- | --- | --- |
-| Clinics and branches | Patient records | Role-based access |
-| Staff and doctor management | Appointment workflows | JWT authentication |
-| Check-in and queue management | Patient portal | Clinic-scoped access |
-| Payment records | Visit status | Request validation |
-| Reports and analytics | Notifications | Swagger API docs |
+| Clinic operations             | Patient care          | Platform foundation  |
+| ----------------------------- | --------------------- | -------------------- |
+| Clinics and branches          | Patient records       | Role-based access    |
+| Staff and doctor management   | Appointment workflows | JWT authentication   |
+| Check-in and queue management | Patient portal        | Clinic-scoped access |
+| Payment records               | Visit status          | Request validation   |
+| Reports and analytics         | Notifications         | Swagger API docs     |
 
 ### Role-focused experiences
 
@@ -49,12 +49,12 @@ The project is built as a full-stack application with a React and Vite frontend,
 
 ## Technology
 
-| Area | Tools |
-| --- | --- |
-| Frontend | React, TypeScript, Vite, TanStack Query, Tailwind CSS |
-| Backend | Express, TypeScript, JWT, Passport |
-| Data | PostgreSQL 16, Prisma ORM |
-| API | REST, Swagger / OpenAPI |
+| Area                    | Tools                                                    |
+| ----------------------- | -------------------------------------------------------- |
+| Frontend                | React, TypeScript, Vite, TanStack Query, Tailwind CSS    |
+| Backend                 | Express, TypeScript, JWT, Passport                       |
+| Data                    | PostgreSQL 16, Prisma ORM                                |
+| API                     | REST, Swagger / OpenAPI                                  |
 | Security and validation | Helmet, class-validator, role and clinic access controls |
 
 ## Architecture
@@ -131,26 +131,26 @@ Run commands from the corresponding `backend/` or `frontend/` directory.
 
 ### Backend
 
-| Command | Purpose |
-| --- | --- |
-| `npm run start:dev` | Start the API in watch mode |
-| `npm run build` | Build the API |
-| `npm run test` | Run backend test suites |
-| `npm run lint` | Lint backend TypeScript |
-| `npm run typecheck` | Type-check the backend |
-| `npm run prisma:studio` | Open Prisma Studio |
+| Command                 | Purpose                     |
+| ----------------------- | --------------------------- |
+| `npm run start:dev`     | Start the API in watch mode |
+| `npm run build`         | Build the API               |
+| `npm run test`          | Run backend test suites     |
+| `npm run lint`          | Lint backend TypeScript     |
+| `npm run typecheck`     | Type-check the backend      |
+| `npm run prisma:studio` | Open Prisma Studio          |
 
 For production, apply committed migrations with `npm run prisma:migrate:deploy`; see [backend/README.md](./backend/README.md) for environment and deployment guidance.
 
 ### Frontend
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Start the Vite development server |
-| `npm run build` | Build the frontend |
-| `npm run preview` | Preview the production build |
-| `npm run lint` | Type-check the frontend |
-| `npm run test` | Run frontend tests |
+| Command           | Purpose                           |
+| ----------------- | --------------------------------- |
+| `npm run dev`     | Start the Vite development server |
+| `npm run build`   | Build the frontend                |
+| `npm run preview` | Preview the production build      |
+| `npm run lint`    | Type-check the frontend           |
+| `npm run test`    | Run frontend tests                |
 
 ## Project layout
 
@@ -183,7 +183,7 @@ Explore endpoints interactively through Swagger at `/api/docs` while the backend
 
 ## About the developer
 
-**Zenebu Melaku** is a Fullstack Developer interested in building practical, reliable, and user-centered software. MediFlow ET demonstrates full-stack development across frontend experiences, API design, authentication, and data persistence.
+**Zenebu Melaku** is a Fullstack Developer interested in building practical, reliable, and user-centered software. ClinicFlow ET demonstrates full-stack development across frontend experiences, API design, authentication, and data persistence.
 
 ## License
 
@@ -191,6 +191,6 @@ This repository is marked `UNLICENSED` in the backend package. Contact the proje
 
 <div align="center">
 
-**MediFlow ET · Built with care for better-organized clinic workflows.**
+**ClinicFlow ET · Built with care for better-organized clinic workflows.**
 
 </div>

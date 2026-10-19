@@ -1,7 +1,7 @@
-import { apiRequest, ApiError, AuthUser, tokenStore } from './apiClient';
+import { apiRequest, ApiError, AuthUser, tokenStore } from "./apiClient";
 
-const USER_KEY = 'mediflow_user';
-const AUTH_EVENT = 'mediflow-auth-change';
+const USER_KEY = "ClinicFlow_user";
+const AUTH_EVENT = "ClinicFlow-auth-change";
 
 export interface AuthSession {
   accessToken: string;
@@ -9,7 +9,6 @@ export interface AuthSession {
   expiresIn: string;
   user: AuthUser;
 }
-
 
 export interface ClinicRegistration {
   phone: string;
@@ -48,36 +47,36 @@ export interface DoctorRegistration {
   clinicId?: string;
 }
 
-const DEMO_USERS: Record<'admin' | 'doctor' | 'patient', AuthUser> = {
+const DEMO_USERS: Record<"admin" | "doctor" | "patient", AuthUser> = {
   admin: {
-    id: 'usr-admin-001',
-    phone: '+251911100701',
-    email: 'admin@mediflow-demo.local',
-    firstName: 'Demo',
-    lastName: 'Admin',
-    role: 'ADMIN',
+    id: "usr-admin-001",
+    phone: "+251911100701",
+    email: "admin@ClinicFlow-demo.local",
+    firstName: "Demo",
+    lastName: "Admin",
+    role: "ADMIN",
     isActive: true,
-    createdAt: '2026-01-01T00:00:00.000Z',
+    createdAt: "2026-01-01T00:00:00.000Z",
   },
   doctor: {
-    id: 'usr-doc-hana',
-    phone: '+251911100704',
-    email: 'doctor.hana@mediflow-demo.local',
-    firstName: 'Hana',
-    lastName: 'Tesfaye',
-    role: 'DOCTOR',
+    id: "usr-doc-hana",
+    phone: "+251911100704",
+    email: "doctor.hana@ClinicFlow-demo.local",
+    firstName: "Hana",
+    lastName: "Tesfaye",
+    role: "DOCTOR",
     isActive: true,
-    createdAt: '2026-01-01T00:00:00.000Z',
+    createdAt: "2026-01-01T00:00:00.000Z",
   },
   patient: {
-    id: 'usr-pat-ayalew',
-    phone: '+251911100705',
-    email: 'patient.ayalew@mediflow-demo.local',
-    firstName: 'Abebe',
-    lastName: 'Kebede',
-    role: 'PATIENT',
+    id: "usr-pat-ayalew",
+    phone: "+251911100705",
+    email: "patient.ayalew@ClinicFlow-demo.local",
+    firstName: "Abebe",
+    lastName: "Kebede",
+    role: "PATIENT",
     isActive: true,
-    createdAt: '2026-01-01T00:00:00.000Z',
+    createdAt: "2026-01-01T00:00:00.000Z",
   },
 };
 
@@ -93,16 +92,13 @@ export const authService = {
     }
   },
 
-  async login(
-    identifier: string,
-    password?: string,
-  ): Promise<AuthUser> {
+  async login(identifier: string, password?: string): Promise<AuthUser> {
     const cleanId = identifier.trim();
     try {
-      const session = await apiRequest<AuthSession>('/auth/login', {
-        method: 'POST',
+      const session = await apiRequest<AuthSession>("/auth/login", {
+        method: "POST",
         authenticated: false,
-        body: { identifier: cleanId, password: password || '' },
+        body: { identifier: cleanId, password: password || "" },
       });
       this.saveSession(session);
       return session.user;
@@ -112,8 +108,8 @@ export const authService = {
         throw apiErr;
       }
       // Only for completely unreachable network with pre-set demo identifiers, allow offline demo
-      const matchedDemoRole = (['admin', 'doctor', 'patient'] as const).find(
-        r =>
+      const matchedDemoRole = (["admin", "doctor", "patient"] as const).find(
+        (r) =>
           DEMO_USERS[r].email?.toLowerCase() === cleanId.toLowerCase() ||
           DEMO_USERS[r].phone === cleanId,
       );
@@ -124,12 +120,12 @@ export const authService = {
     }
   },
 
-  async demoLogin(role: 'admin' | 'doctor' | 'patient'): Promise<AuthUser> {
+  async demoLogin(role: "admin" | "doctor" | "patient"): Promise<AuthUser> {
     const user = DEMO_USERS[role];
     const session: AuthSession = {
       accessToken: `demo_access_${role}_${Date.now()}`,
       refreshToken: `demo_refresh_${role}_${Date.now()}`,
-      expiresIn: '7d',
+      expiresIn: "7d",
       user,
     };
     this.saveSession(session);
@@ -138,8 +134,8 @@ export const authService = {
 
   async registerDoctor(registration: DoctorRegistration): Promise<AuthUser> {
     try {
-      const session = await apiRequest<AuthSession>('/auth/register-doctor', {
-        method: 'POST',
+      const session = await apiRequest<AuthSession>("/auth/register-doctor", {
+        method: "POST",
         authenticated: false,
         body: registration,
       });
@@ -155,14 +151,14 @@ export const authService = {
         email: registration.email || null,
         firstName: registration.firstName,
         lastName: registration.lastName,
-        role: 'DOCTOR',
+        role: "DOCTOR",
         isActive: true,
         createdAt: new Date().toISOString(),
       };
       const session: AuthSession = {
         accessToken: `demo_access_doctor_${Date.now()}`,
         refreshToken: `demo_refresh_doctor_${Date.now()}`,
-        expiresIn: '7d',
+        expiresIn: "7d",
         user,
       };
       this.saveSession(session);
@@ -172,8 +168,8 @@ export const authService = {
 
   async registerPatient(registration: PatientRegistration): Promise<AuthUser> {
     try {
-      const session = await apiRequest<AuthSession>('/auth/register-patient', {
-        method: 'POST',
+      const session = await apiRequest<AuthSession>("/auth/register-patient", {
+        method: "POST",
         authenticated: false,
         body: registration,
       });
@@ -186,14 +182,14 @@ export const authService = {
         email: registration.email || null,
         firstName: registration.firstName,
         lastName: registration.lastName,
-        role: 'PATIENT',
+        role: "PATIENT",
         isActive: true,
         createdAt: new Date().toISOString(),
       };
       const session: AuthSession = {
         accessToken: `demo_access_patient_${Date.now()}`,
         refreshToken: `demo_refresh_patient_${Date.now()}`,
-        expiresIn: '7d',
+        expiresIn: "7d",
         user,
       };
       this.saveSession(session);
@@ -202,8 +198,8 @@ export const authService = {
   },
 
   async registerClinic(registration: ClinicRegistration): Promise<AuthUser> {
-    const session = await apiRequest<AuthSession>('/auth/register-clinic', {
-      method: 'POST',
+    const session = await apiRequest<AuthSession>("/auth/register-clinic", {
+      method: "POST",
       authenticated: false,
       body: registration,
     });
@@ -212,17 +208,18 @@ export const authService = {
   },
 
   async getProfile(): Promise<AuthUser> {
-    const user = await apiRequest<AuthUser>('/auth/me');
+    const user = await apiRequest<AuthUser>("/auth/me");
     localStorage.setItem(USER_KEY, JSON.stringify(user));
     return user;
   },
 
   async restoreSession(): Promise<AuthUser | null> {
-    if (!tokenStore.getAccessToken() && !tokenStore.getRefreshToken()) return null;
+    if (!tokenStore.getAccessToken() && !tokenStore.getRefreshToken())
+      return null;
     try {
       if (tokenStore.getAccessToken()) return await this.getProfile();
-      const refreshed = await apiRequest<AuthSession>('/auth/refresh', {
-        method: 'POST',
+      const refreshed = await apiRequest<AuthSession>("/auth/refresh", {
+        method: "POST",
         authenticated: false,
         retryUnauthorized: false,
         body: { refreshToken: tokenStore.getRefreshToken() },
@@ -242,8 +239,8 @@ export const authService = {
     const refreshToken = tokenStore.getRefreshToken();
     try {
       if (refreshToken) {
-        await apiRequest('/auth/logout', {
-          method: 'POST',
+        await apiRequest("/auth/logout", {
+          method: "POST",
           body: { refreshToken },
           retryUnauthorized: false,
         });
@@ -256,7 +253,7 @@ export const authService = {
   clearSession() {
     tokenStore.clear();
     localStorage.removeItem(USER_KEY);
-    localStorage.removeItem('mediflow_clinic_id');
+    localStorage.removeItem("ClinicFlow_clinic_id");
     window.dispatchEvent(new Event(AUTH_EVENT));
   },
 

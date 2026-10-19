@@ -13,9 +13,15 @@ import {
   QueueItem,
   QueueStatus,
   Role,
-} from '../../types';
-import { apiPaginated, apiPath, apiRequest, ApiError, PaginatedData } from './apiClient';
-import { clinicDateInputValue, clinicTimeValue } from '../utils';
+} from "../../types";
+import {
+  apiPaginated,
+  apiPath,
+  apiRequest,
+  ApiError,
+  PaginatedData,
+} from "./apiClient";
+import { clinicDateInputValue, clinicTimeValue } from "../utils";
 import {
   INITIAL_PATIENTS,
   INITIAL_DOCTORS,
@@ -25,7 +31,7 @@ import {
   INITIAL_NOTIFICATIONS,
   INITIAL_STAFF,
   INITIAL_STATS,
-} from '../mockData';
+} from "../mockData";
 
 export function getStoredMockData() {
   return {
@@ -40,7 +46,7 @@ export function getStoredMockData() {
   };
 }
 
-const CLINIC_ID_KEY = 'mediflow_clinic_id';
+const CLINIC_ID_KEY = "ClinicFlow_clinic_id";
 const PAGE_SIZE = 100;
 
 export interface ClinicProfile {
@@ -61,7 +67,12 @@ interface ApiDoctor {
   specialization: string;
   consultationFee?: number | null;
   availabilityStatus: string;
-  user?: { firstName: string; lastName: string; phone: string; email?: string | null };
+  user?: {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email?: string | null;
+  };
   staffMember?: { department?: string | null; jobTitle?: string | null };
 }
 
@@ -75,7 +86,12 @@ interface ApiPatient {
   emergencyContactName?: string | null;
   emergencyContactPhone?: string | null;
   createdAt: string;
-  user: { firstName: string; lastName: string; phone: string; email?: string | null };
+  user: {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email?: string | null;
+  };
 }
 
 interface ApiAppointment {
@@ -89,7 +105,10 @@ interface ApiAppointment {
   notes?: string | null;
   createdAt: string;
   patient?: { user?: { firstName: string; lastName: string } };
-  doctor?: { specialization: string; user?: { firstName: string; lastName: string } };
+  doctor?: {
+    specialization: string;
+    user?: { firstName: string; lastName: string };
+  };
 }
 
 interface ApiQueueTicket {
@@ -106,7 +125,10 @@ interface ApiQueueTicket {
   consultationStartedAt: string | null;
   completedAt: string | null;
   patient?: { user?: { firstName: string; lastName: string; phone: string } };
-  doctor?: { specialization: string; user?: { firstName: string; lastName: string } } | null;
+  doctor?: {
+    specialization: string;
+    user?: { firstName: string; lastName: string };
+  } | null;
 }
 
 interface ApiPayment {
@@ -138,7 +160,7 @@ interface ApiReport {
   averageWaitingTimeMinutes: number | null;
 }
 
-export type ReportRange = 'today' | '7d' | '30d';
+export type ReportRange = "today" | "7d" | "30d";
 
 export interface ClinicReportSeries {
   appointments: Array<{
@@ -170,13 +192,14 @@ function fromApiQueueStatus(value: string): QueueStatus {
 }
 
 function toApiAvailability(value: DoctorAvailability): string {
-  if (value === 'off_duty') return 'UNAVAILABLE';
+  if (value === "off_duty") return "UNAVAILABLE";
   return value.toUpperCase();
 }
 
 function fromApiAvailability(value: string): DoctorAvailability {
-  if (value === 'AVAILABLE' || value === 'BUSY') return lowerEnum(value) as DoctorAvailability;
-  return 'off_duty';
+  if (value === "AVAILABLE" || value === "BUSY")
+    return lowerEnum(value) as DoctorAvailability;
+  return "off_duty";
 }
 
 function ageFromBirthDate(value?: string | null): number {
@@ -187,7 +210,8 @@ function ageFromBirthDate(value?: string | null): number {
   let age = today.getFullYear() - birthDate.getFullYear();
   if (
     today.getMonth() < birthDate.getMonth() ||
-    (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())
+    (today.getMonth() === birthDate.getMonth() &&
+      today.getDate() < birthDate.getDate())
   ) {
     age--;
   }
@@ -195,21 +219,23 @@ function ageFromBirthDate(value?: string | null): number {
 }
 
 function toDoctor(record: ApiDoctor): Doctor {
-  const name = [record.user?.firstName, record.user?.lastName].filter(Boolean).join(' ');
+  const name = [record.user?.firstName, record.user?.lastName]
+    .filter(Boolean)
+    .join(" ");
   return {
     id: record.id,
     userId: record.userId,
-    name: name ? `Dr. ${name}` : 'Doctor',
-    email: record.user?.email || '',
-    phone: record.user?.phone || '',
+    name: name ? `Dr. ${name}` : "Doctor",
+    email: record.user?.email || "",
+    phone: record.user?.phone || "",
     specialization: record.specialization,
     department: record.staffMember?.department || record.specialization,
-    roomNumber: '',
+    roomNumber: "",
     availability: fromApiAvailability(record.availabilityStatus),
     consultationFeeETB: Number(record.consultationFee || 0),
     todayAppointmentsCount: 0,
     averageConsultationMinutes: 0,
-    workingHours: { start: '', end: '' },
+    workingHours: { start: "", end: "" },
   };
 }
 
@@ -217,15 +243,17 @@ function toPatient(record: ApiPatient): Patient {
   return {
     id: record.id,
     mrn: record.medicalRecordNumber,
-    name: [record.user.firstName, record.user.lastName].filter(Boolean).join(' '),
+    name: [record.user.firstName, record.user.lastName]
+      .filter(Boolean)
+      .join(" "),
     phone: record.user.phone,
     email: record.user.email || undefined,
-    gender: record.gender?.toLowerCase() === 'female' ? 'female' : 'male',
+    gender: record.gender?.toLowerCase() === "female" ? "female" : "male",
     age: ageFromBirthDate(record.dateOfBirth),
     emergencyContact: {
-      name: record.emergencyContactName || '',
-      phone: record.emergencyContactPhone || '',
-      relation: '',
+      name: record.emergencyContactName || "",
+      phone: record.emergencyContactPhone || "",
+      relation: "",
     },
     registeredDate: clinicDateInputValue(new Date(record.createdAt)),
   };
@@ -236,129 +264,136 @@ function toAppointment(
   patients: Patient[],
   doctors: Doctor[],
 ): Appointment {
-  const patient = patients.find(item => item.id === record.patientId);
-  const doctor = doctors.find(item => item.id === record.doctorId);
+  const patient = patients.find((item) => item.id === record.patientId);
+  const doctor = doctors.find((item) => item.id === record.doctorId);
   const startsAt = new Date(record.startsAt);
   const endsAt = new Date(record.endsAt);
   const patientName =
-    [record.patient?.user?.firstName, record.patient?.user?.lastName].filter(Boolean).join(' ') ||
+    [record.patient?.user?.firstName, record.patient?.user?.lastName]
+      .filter(Boolean)
+      .join(" ") ||
     patient?.name ||
-    'Patient';
+    "Patient";
   const doctorName =
-    [record.doctor?.user?.firstName, record.doctor?.user?.lastName].filter(Boolean).join(' ') ||
+    [record.doctor?.user?.firstName, record.doctor?.user?.lastName]
+      .filter(Boolean)
+      .join(" ") ||
     doctor?.name ||
-    'Doctor';
+    "Doctor";
   return {
     id: record.id,
     patientId: record.patientId,
     patientName,
-    patientPhone: patient?.phone || '',
+    patientPhone: patient?.phone || "",
     doctorId: record.doctorId,
     doctorName,
-    department: record.doctor?.specialization || doctor?.department || '',
+    department: record.doctor?.specialization || doctor?.department || "",
     date: clinicDateInputValue(startsAt),
     time: clinicTimeValue(startsAt),
-    durationMinutes: Math.max(0, Math.round((endsAt.getTime() - startsAt.getTime()) / 60000)),
+    durationMinutes: Math.max(
+      0,
+      Math.round((endsAt.getTime() - startsAt.getTime()) / 60000),
+    ),
     status: fromApiStatus(record.status),
-    type: 'general_consultation',
-    reason: record.reason || '',
+    type: "general_consultation",
+    reason: record.reason || "",
     notes: record.notes || undefined,
     createdAt: record.createdAt,
   };
 }
 
 function toQueueItem(record: ApiQueueTicket, index: number): QueueItem {
-  const patientName = [
-    record.patient?.user?.firstName,
-    record.patient?.user?.lastName,
-  ].filter(Boolean).join(' ') || 'Patient';
-  const doctorName = [
-    record.doctor?.user?.firstName,
-    record.doctor?.user?.lastName,
-  ].filter(Boolean).join(' ') || 'Unassigned';
-  const prefix = record.doctor?.specialization.toLowerCase().includes('ped') ? 'P' : 'A';
+  const patientName =
+    [record.patient?.user?.firstName, record.patient?.user?.lastName]
+      .filter(Boolean)
+      .join(" ") || "Patient";
+  const doctorName =
+    [record.doctor?.user?.firstName, record.doctor?.user?.lastName]
+      .filter(Boolean)
+      .join(" ") || "Unassigned";
+  const prefix = record.doctor?.specialization.toLowerCase().includes("ped")
+    ? "P"
+    : "A";
   return {
     id: record.id,
-    ticketNumber: `#${prefix}${String(record.queueNumber).padStart(3, '0')}`,
+    ticketNumber: `#${prefix}${String(record.queueNumber).padStart(3, "0")}`,
     appointmentId: record.appointmentId || undefined,
     patientId: record.patientId,
     patientName,
-    patientPhone: record.patient?.user?.phone || '',
-    doctorId: record.doctorId || '',
+    patientPhone: record.patient?.user?.phone || "",
+    doctorId: record.doctorId || "",
     doctorName,
-    department: record.doctor?.specialization || '',
+    department: record.doctor?.specialization || "",
     checkInTime: record.checkedInAt,
     calledTime: record.calledAt || undefined,
     startTime: record.consultationStartedAt || undefined,
     completedTime: record.completedAt || undefined,
     status: fromApiQueueStatus(record.status),
-    priority: lowerEnum(record.priority) === 'urgent' ? 'urgent' : 'normal',
+    priority: lowerEnum(record.priority) === "urgent" ? "urgent" : "normal",
     estimatedWaitMinutes: 0,
-    position: record.position ?? (record.status === 'WAITING' ? index + 1 : 0),
-    roomNumber: '',
+    position: record.position ?? (record.status === "WAITING" ? index + 1 : 0),
+    roomNumber: "",
   };
 }
 
 function fromPaymentMethod(value: string): PaymentMethod {
   const normalized = lowerEnum(value);
-  if (['chapa', 'cash', 'mpesa', 'bank_transfer'].includes(normalized)) {
+  if (["chapa", "cash", "mpesa", "bank_transfer"].includes(normalized)) {
     return normalized as PaymentMethod;
   }
-  if (normalized === 'other') return 'other';
-  return 'card';
+  if (normalized === "other") return "other";
+  return "card";
 }
 
 function fromPaymentStatus(value: string): PaymentStatus {
-  if (value === 'COMPLETED') return 'confirmed';
-  if (value === 'PENDING') return 'pending';
-  if (value === 'REFUNDED') return 'refunded';
-  return 'cancelled';
+  if (value === "COMPLETED") return "confirmed";
+  if (value === "PENDING") return "pending";
+  if (value === "REFUNDED") return "refunded";
+  return "cancelled";
 }
 
 function toPaymentMethod(value: PaymentMethod): string {
-  if (value === 'chapa') return 'CHAPA';
-  if (value === 'cbe_birr' || value === 'card' || value === 'other') return 'OTHER';
+  if (value === "chapa") return "CHAPA";
+  if (value === "cbe_birr" || value === "card" || value === "other")
+    return "OTHER";
   return value.toUpperCase();
 }
 
 function toApiPaymentStatus(value: PaymentStatus): string {
-  if (value === 'confirmed') return 'COMPLETED';
-  if (value === 'cancelled') return 'FAILED';
+  if (value === "confirmed") return "COMPLETED";
+  if (value === "cancelled") return "FAILED";
   return value.toUpperCase();
 }
 
-function toPayment(
-  record: ApiPayment,
-  patients: Patient[],
-): PaymentRecord {
-  const patient = patients.find(item => item.id === record.patientId);
-  const reference = record.note?.match(/(?:^| · )Reference: (.+)$/)?.[1] || '';
+function toPayment(record: ApiPayment, patients: Patient[]): PaymentRecord {
+  const patient = patients.find((item) => item.id === record.patientId);
+  const reference = record.note?.match(/(?:^| · )Reference: (.+)$/)?.[1] || "";
   return {
     id: record.id,
     receiptNumber: record.id,
     patientId: record.patientId,
-    patientName: patient?.name || 'Patient',
-    patientPhone: patient?.phone || '',
+    patientName: patient?.name || "Patient",
+    patientPhone: patient?.phone || "",
     appointmentId: record.appointmentId || undefined,
     amountETB: Number(record.amount),
     paymentMethod: fromPaymentMethod(record.method),
     referenceNumber: reference,
     status: fromPaymentStatus(record.status),
     date: record.createdAt,
-    description: (record.note || '').replace(/(?:^| · )Reference: .+$/, ''),
-    cashierName: '',
+    description: (record.note || "").replace(/(?:^| · )Reference: .+$/, ""),
+    cashierName: "",
   };
 }
 
 function toNotification(record: ApiNotification): ClinicNotification {
   const kind = record.type.toLowerCase();
-  const type: ClinicNotification['type'] = kind.includes('queue')
-    ? 'queue'
-    : kind.includes('appointment')
-      ? 'appointment'
-      : kind.includes('delay')
-        ? 'delay'
-        : 'system';
+  const type: ClinicNotification["type"] = kind.includes("queue")
+    ? "queue"
+    : kind.includes("appointment")
+      ? "appointment"
+      : kind.includes("delay")
+        ? "delay"
+        : "system";
   return {
     id: record.id,
     title: record.title,
@@ -373,12 +408,15 @@ async function getClinicId(): Promise<string> {
   const cached = localStorage.getItem(CLINIC_ID_KEY);
   if (cached) return cached;
   try {
-    if (clinicService.getActiveRole() === 'patient') {
-      const patient = await apiRequest<ApiPatient>('/patients/me');
+    if (clinicService.getActiveRole() === "patient") {
+      const patient = await apiRequest<ApiPatient>("/patients/me");
       localStorage.setItem(CLINIC_ID_KEY, patient.clinicId);
       return patient.clinicId;
     }
-    const clinics = await apiPaginated<ClinicProfile>('/clinics', { page: 1, limit: PAGE_SIZE });
+    const clinics = await apiPaginated<ClinicProfile>("/clinics", {
+      page: 1,
+      limit: PAGE_SIZE,
+    });
     if (clinics.data.length > 0) {
       localStorage.setItem(CLINIC_ID_KEY, clinics.data[0].id);
       return clinics.data[0].id;
@@ -386,7 +424,7 @@ async function getClinicId(): Promise<string> {
   } catch {
     // Graceful offline/demo fallback
   }
-  const fallbackId = 'cln-bole-001';
+  const fallbackId = "cln-bole-001";
   localStorage.setItem(CLINIC_ID_KEY, fallbackId);
   return fallbackId;
 }
@@ -398,8 +436,8 @@ async function getPatientsPage(
   gender?: string,
 ): Promise<PaginatedData<ApiPatient>> {
   try {
-    if (clinicService.getActiveRole() === 'patient') {
-      const patient = await apiRequest<ApiPatient>('/patients/me');
+    if (clinicService.getActiveRole() === "patient") {
+      const patient = await apiRequest<ApiPatient>("/patients/me");
       return {
         data: [patient],
         meta: {
@@ -414,7 +452,7 @@ async function getPatientsPage(
       };
     }
     const clinicId = await getClinicId();
-    return await apiPaginated<ApiPatient>('/patients', {
+    return await apiPaginated<ApiPatient>("/patients", {
       clinicId,
       page,
       limit,
@@ -425,18 +463,23 @@ async function getPatientsPage(
     let filtered = mockPatients;
     if (search) {
       const q = search.toLowerCase();
-      filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.mrn.toLowerCase().includes(q) || p.phone.includes(q));
+      filtered = filtered.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.mrn.toLowerCase().includes(q) ||
+          p.phone.includes(q),
+      );
     }
     return {
-      data: filtered.map(p => ({
+      data: filtered.map((p) => ({
         id: p.id,
-        clinicId: 'cln-bole-001',
+        clinicId: "cln-bole-001",
         medicalRecordNumber: p.mrn,
         gender: p.gender,
         createdAt: p.registeredDate,
         user: {
-          firstName: p.name.split(' ')[0] || '',
-          lastName: p.name.split(' ').slice(1).join(' ') || '',
+          firstName: p.name.split(" ")[0] || "",
+          lastName: p.name.split(" ").slice(1).join(" ") || "",
           phone: p.phone,
           email: p.email || null,
         },
@@ -455,13 +498,13 @@ async function getPatientsPage(
 
 export const clinicService = {
   getActiveRole(): Role {
-    const serialized = localStorage.getItem('mediflow_user');
-    if (!serialized) return 'patient';
+    const serialized = localStorage.getItem("ClinicFlow_user");
+    if (!serialized) return "patient";
     try {
       const { role } = JSON.parse(serialized) as { role?: string };
-      return (role || 'PATIENT').toLowerCase() as Role;
+      return (role || "PATIENT").toLowerCase() as Role;
     } catch {
-      return 'patient';
+      return "patient";
     }
   },
 
@@ -471,38 +514,50 @@ export const clinicService = {
       return await apiRequest<ClinicProfile>(`/clinics/${clinicId}`);
     } catch {
       return {
-        id: 'cln-bole-001',
-        name: 'Bole Specialty & Primary Care Clinic',
-        phone: '+251911223344',
-        email: 'info@boletwentythree.et',
-        address: 'Bole Medhanealem Road, Suite 402',
-        city: 'Addis Ababa',
-        region: 'Addis Ababa',
-        licenseNumber: 'MOH-ET-2024-9981',
+        id: "cln-bole-001",
+        name: "Bole Specialty & Primary Care Clinic",
+        phone: "+251911223344",
+        email: "info@boletwentythree.et",
+        address: "Bole Medhanealem Road, Suite 402",
+        city: "Addis Ababa",
+        region: "Addis Ababa",
+        licenseNumber: "MOH-ET-2024-9981",
       };
     }
   },
 
-  async updateClinicProfile(data: Partial<ClinicProfile>): Promise<ClinicProfile> {
+  async updateClinicProfile(
+    data: Partial<ClinicProfile>,
+  ): Promise<ClinicProfile> {
     const clinicId = await getClinicId();
-    return apiRequest<ClinicProfile>(`/clinics/${clinicId}`, { method: 'PATCH', body: data });
+    return apiRequest<ClinicProfile>(`/clinics/${clinicId}`, {
+      method: "PATCH",
+      body: data,
+    });
   },
 
   async getDoctors(search?: string): Promise<Doctor[]> {
     try {
       const clinicId = await getClinicId();
-      const page = await apiPaginated<ApiDoctor>(`/clinics/${clinicId}/doctors`, {
-        page: 1,
-        limit: PAGE_SIZE,
-        isActive: true,
-        search: search?.trim() || undefined,
-      });
+      const page = await apiPaginated<ApiDoctor>(
+        `/clinics/${clinicId}/doctors`,
+        {
+          page: 1,
+          limit: PAGE_SIZE,
+          isActive: true,
+          search: search?.trim() || undefined,
+        },
+      );
       return page.data.map(toDoctor);
     } catch {
       const stored = getStoredMockData().doctors;
       if (!search) return stored;
       const q = search.toLowerCase();
-      return stored.filter(d => d.name.toLowerCase().includes(q) || d.specialization.toLowerCase().includes(q));
+      return stored.filter(
+        (d) =>
+          d.name.toLowerCase().includes(q) ||
+          d.specialization.toLowerCase().includes(q),
+      );
     }
   },
 
@@ -518,18 +573,24 @@ export const clinicService = {
   }): Promise<Doctor> {
     const clinicId = await getClinicId();
     const doctor = await apiRequest<ApiDoctor>(`/clinics/${clinicId}/doctors`, {
-      method: 'POST',
+      method: "POST",
       body: data,
     });
     return toDoctor(doctor);
   },
 
-  async updateDoctorAvailability(id: string, availability: DoctorAvailability): Promise<Doctor> {
+  async updateDoctorAvailability(
+    id: string,
+    availability: DoctorAvailability,
+  ): Promise<Doctor> {
     const clinicId = await getClinicId();
-    const doctor = await apiRequest<ApiDoctor>(`/clinics/${clinicId}/doctors/${id}/availability`, {
-      method: 'PATCH',
-      body: { availabilityStatus: toApiAvailability(availability) },
-    });
+    const doctor = await apiRequest<ApiDoctor>(
+      `/clinics/${clinicId}/doctors/${id}/availability`,
+      {
+        method: "PATCH",
+        body: { availabilityStatus: toApiAvailability(availability) },
+      },
+    );
     return toDoctor(doctor);
   },
 
@@ -538,20 +599,29 @@ export const clinicService = {
     return page.data.map(toPatient);
   },
 
-  async getPatientsPage(search: string | undefined, page: number, gender?: string, limit = 25): Promise<PaginatedData<Patient>> {
+  async getPatientsPage(
+    search: string | undefined,
+    page: number,
+    gender?: string,
+    limit = 25,
+  ): Promise<PaginatedData<Patient>> {
     const result = await getPatientsPage(search, page, limit, gender);
     return { data: result.data.map(toPatient), meta: result.meta };
   },
 
-  async createPatient(data: Omit<Patient, 'id' | 'mrn' | 'registeredDate' | 'totalVisits'>): Promise<Patient> {
+  async createPatient(
+    data: Omit<Patient, "id" | "mrn" | "registeredDate" | "totalVisits">,
+  ): Promise<Patient> {
     const clinicId = await getClinicId();
-    const [firstName = 'Patient', ...lastNameParts] = data.name.trim().split(/\s+/);
-    const lastName = lastNameParts.join(' ') || 'Patient';
+    const [firstName = "Patient", ...lastNameParts] = data.name
+      .trim()
+      .split(/\s+/);
+    const lastName = lastNameParts.join(" ") || "Patient";
     const clinicToday = clinicDateInputValue();
-    const [year, month, day] = clinicToday.split('-').map(Number);
-    const dateOfBirth = `${year - data.age}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    const created = await apiRequest<ApiPatient>('/patients', {
-      method: 'POST',
+    const [year, month, day] = clinicToday.split("-").map(Number);
+    const dateOfBirth = `${year - data.age}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    const created = await apiRequest<ApiPatient>("/patients", {
+      method: "POST",
       body: {
         clinicId,
         phone: data.phone,
@@ -567,14 +637,19 @@ export const clinicService = {
     return toPatient(created);
   },
 
-  async getAppointments(filters?: { patientId?: string; doctorId?: string; search?: string }): Promise<Appointment[]> {
+  async getAppointments(filters?: {
+    patientId?: string;
+    doctorId?: string;
+    search?: string;
+  }): Promise<Appointment[]> {
     try {
       const clinicId = await getClinicId();
-      const patientId = this.getActiveRole() === 'patient'
-        ? (await apiRequest<ApiPatient>('/patients/me')).id
-        : filters?.patientId;
+      const patientId =
+        this.getActiveRole() === "patient"
+          ? (await apiRequest<ApiPatient>("/patients/me")).id
+          : filters?.patientId;
       const [appointments, patients, doctors] = await Promise.all([
-        apiPaginated<ApiAppointment>('/appointments', {
+        apiPaginated<ApiAppointment>("/appointments", {
           clinicId,
           page: 1,
           limit: PAGE_SIZE,
@@ -585,17 +660,23 @@ export const clinicService = {
         getPatientsPage(),
         this.getDoctors(),
       ]);
-      return appointments.data.map(record =>
+      return appointments.data.map((record) =>
         toAppointment(record, patients.data.map(toPatient), doctors),
       );
     } catch {
       let appointments = getStoredMockData().appointments;
       if (filters?.doctorId) {
-        appointments = appointments.filter(a => a.doctorId === filters.doctorId);
+        appointments = appointments.filter(
+          (a) => a.doctorId === filters.doctorId,
+        );
       }
       if (filters?.search) {
         const q = filters.search.toLowerCase();
-        appointments = appointments.filter(a => a.patientName.toLowerCase().includes(q) || a.doctorName.toLowerCase().includes(q));
+        appointments = appointments.filter(
+          (a) =>
+            a.patientName.toLowerCase().includes(q) ||
+            a.doctorName.toLowerCase().includes(q),
+        );
       }
       return appointments;
     }
@@ -607,11 +688,12 @@ export const clinicService = {
     limit = 25,
   ): Promise<PaginatedData<Appointment>> {
     const clinicId = await getClinicId();
-    const patientId = this.getActiveRole() === 'patient'
-      ? (await apiRequest<ApiPatient>('/patients/me')).id
-      : undefined;
+    const patientId =
+      this.getActiveRole() === "patient"
+        ? (await apiRequest<ApiPatient>("/patients/me")).id
+        : undefined;
     const [pageResult, patients, doctors] = await Promise.all([
-      apiPaginated<ApiAppointment>('/appointments', {
+      apiPaginated<ApiAppointment>("/appointments", {
         clinicId,
         page,
         limit,
@@ -624,17 +706,21 @@ export const clinicService = {
       this.getDoctors(),
     ]);
     return {
-      data: pageResult.data.map(record => toAppointment(record, patients.data.map(toPatient), doctors)),
+      data: pageResult.data.map((record) =>
+        toAppointment(record, patients.data.map(toPatient), doctors),
+      ),
       meta: pageResult.meta,
     };
   },
 
-  async createAppointment(data: Omit<Appointment, 'id' | 'createdAt'>): Promise<Appointment> {
+  async createAppointment(
+    data: Omit<Appointment, "id" | "createdAt">,
+  ): Promise<Appointment> {
     const clinicId = await getClinicId();
     const startsAt = new Date(`${data.date}T${data.time}:00+03:00`);
     const endsAt = new Date(startsAt.getTime() + data.durationMinutes * 60_000);
-    const result = await apiRequest<ApiAppointment>('/appointments', {
-      method: 'POST',
+    const result = await apiRequest<ApiAppointment>("/appointments", {
+      method: "POST",
       body: {
         clinicId,
         patientId: data.patientId,
@@ -645,32 +731,48 @@ export const clinicService = {
         notes: data.notes || undefined,
       },
     });
-    const [patients, doctors] = await Promise.all([getPatientsPage(), this.getDoctors()]);
+    const [patients, doctors] = await Promise.all([
+      getPatientsPage(),
+      this.getDoctors(),
+    ]);
     return toAppointment(result, patients.data.map(toPatient), doctors);
   },
 
-  async updateAppointmentStatus(id: string, status: AppointmentStatus): Promise<Appointment> {
+  async updateAppointmentStatus(
+    id: string,
+    status: AppointmentStatus,
+  ): Promise<Appointment> {
     const clinicId = await getClinicId();
     const result =
-      status === 'cancelled'
-        ? await apiRequest<ApiAppointment>(`/appointments/${id}/cancel?clinicId=${clinicId}`, {
-            method: 'POST',
-          })
-        : await apiRequest<ApiAppointment>(`/appointments/${id}?clinicId=${clinicId}`, {
-            method: 'PATCH',
-            body: { status: status.toUpperCase() },
-          });
-    const [patients, doctors] = await Promise.all([getPatientsPage(), this.getDoctors()]);
+      status === "cancelled"
+        ? await apiRequest<ApiAppointment>(
+            `/appointments/${id}/cancel?clinicId=${clinicId}`,
+            {
+              method: "POST",
+            },
+          )
+        : await apiRequest<ApiAppointment>(
+            `/appointments/${id}?clinicId=${clinicId}`,
+            {
+              method: "PATCH",
+              body: { status: status.toUpperCase() },
+            },
+          );
+    const [patients, doctors] = await Promise.all([
+      getPatientsPage(),
+      this.getDoctors(),
+    ]);
     return toAppointment(result, patients.data.map(toPatient), doctors);
   },
 
   async getQueue(): Promise<QueueItem[]> {
     try {
       const clinicId = await getClinicId();
-      const patientId = this.getActiveRole() === 'patient'
-        ? (await apiRequest<ApiPatient>('/patients/me')).id
-        : undefined;
-      const page = await apiPaginated<ApiQueueTicket>('/queue', {
+      const patientId =
+        this.getActiveRole() === "patient"
+          ? (await apiRequest<ApiPatient>("/patients/me")).id
+          : undefined;
+      const page = await apiPaginated<ApiQueueTicket>("/queue", {
         clinicId,
         page: 1,
         limit: PAGE_SIZE,
@@ -689,14 +791,14 @@ export const clinicService = {
     priority?: PriorityLevel;
   }): Promise<QueueItem> {
     const clinicId = await getClinicId();
-    const ticket = await apiRequest<ApiQueueTicket>('/queue/check-in', {
-      method: 'POST',
+    const ticket = await apiRequest<ApiQueueTicket>("/queue/check-in", {
+      method: "POST",
       body: {
         clinicId,
         patientId: params.patientId,
         doctorId: params.doctorId,
         appointmentId: params.appointmentId,
-        priority: params.priority === 'urgent' ? 'URGENT' : 'NORMAL',
+        priority: params.priority === "urgent" ? "URGENT" : "NORMAL",
       },
     });
     return toQueueItem(ticket, 0);
@@ -705,58 +807,70 @@ export const clinicService = {
   async updateQueueStatus(id: string, status: QueueStatus): Promise<QueueItem> {
     const clinicId = await getClinicId();
     const actions: Record<QueueStatus, string> = {
-      waiting: '',
-      called: 'call',
-      in_consultation: 'start',
-      completed: 'complete',
-      skipped: 'skip',
+      waiting: "",
+      called: "call",
+      in_consultation: "start",
+      completed: "complete",
+      skipped: "skip",
     };
     const action = actions[status];
-    if (!action) throw new ApiError('Queue tickets cannot be moved back to waiting.', 400);
-    const ticket = await apiRequest<ApiQueueTicket>(`/queue/${id}/${action}?clinicId=${clinicId}`, {
-      method: 'POST',
-    });
+    if (!action)
+      throw new ApiError("Queue tickets cannot be moved back to waiting.", 400);
+    const ticket = await apiRequest<ApiQueueTicket>(
+      `/queue/${id}/${action}?clinicId=${clinicId}`,
+      {
+        method: "POST",
+      },
+    );
     return toQueueItem(ticket, 0);
   },
 
   async callNextPatient(doctorId?: string): Promise<QueueItem | null> {
     const clinicId = await getClinicId();
-    const queue = await apiPaginated<ApiQueueTicket>('/queue', {
+    const queue = await apiPaginated<ApiQueueTicket>("/queue", {
       clinicId,
       page: 1,
       limit: PAGE_SIZE,
-      status: 'WAITING',
+      status: "WAITING",
       doctorId,
     });
     const next = queue.data[0];
     if (!next) return null;
     const ticket = await apiRequest<ApiQueueTicket>(
       `/queue/${next.id}/call?clinicId=${clinicId}`,
-      { method: 'POST' },
+      { method: "POST" },
     );
     return toQueueItem(ticket, 0);
   },
 
   async getPayments(): Promise<PaymentRecord[]> {
-    if (this.getActiveRole() === 'patient') {
+    if (this.getActiveRole() === "patient") {
       return getStoredMockData().payments;
     }
     try {
       const clinicId = await getClinicId();
       const [payments, patients] = await Promise.all([
-        apiPaginated<ApiPayment>('/payments', { clinicId, page: 1, limit: PAGE_SIZE }),
+        apiPaginated<ApiPayment>("/payments", {
+          clinicId,
+          page: 1,
+          limit: PAGE_SIZE,
+        }),
         getPatientsPage(),
       ]);
-      return payments.data.map(payment => toPayment(payment, patients.data.map(toPatient)));
+      return payments.data.map((payment) =>
+        toPayment(payment, patients.data.map(toPatient)),
+      );
     } catch {
       return getStoredMockData().payments;
     }
   },
 
-  async recordPayment(data: Omit<PaymentRecord, 'id' | 'receiptNumber' | 'date'>): Promise<PaymentRecord> {
+  async recordPayment(
+    data: Omit<PaymentRecord, "id" | "receiptNumber" | "date">,
+  ): Promise<PaymentRecord> {
     const clinicId = await getClinicId();
-    const result = await apiRequest<ApiPayment>('/payments', {
-      method: 'POST',
+    const result = await apiRequest<ApiPayment>("/payments", {
+      method: "POST",
       body: {
         clinicId,
         patientId: data.patientId,
@@ -764,9 +878,12 @@ export const clinicService = {
         amount: data.amountETB,
         method: toPaymentMethod(data.paymentMethod),
         status: toApiPaymentStatus(data.status),
-        note: [data.description, data.referenceNumber && `Reference: ${data.referenceNumber}`]
+        note: [
+          data.description,
+          data.referenceNumber && `Reference: ${data.referenceNumber}`,
+        ]
           .filter(Boolean)
-          .join(' · '),
+          .join(" · "),
       },
     });
     const patients = await getPatientsPage();
@@ -780,36 +897,51 @@ export const clinicService = {
     returnUrl?: string;
     callbackUrl?: string;
     description?: string;
-  }): Promise<{ checkoutUrl: string; txRef: string; paymentId: string; amount: number; currency: string }> {
+  }): Promise<{
+    checkoutUrl: string;
+    txRef: string;
+    paymentId: string;
+    amount: number;
+    currency: string;
+  }> {
     const clinicId = await getClinicId();
-    return await apiRequest('/payments/chapa/initialize', {
-      method: 'POST',
+    return await apiRequest("/payments/chapa/initialize", {
+      method: "POST",
       body: {
         clinicId,
         patientId: params.patientId,
         amount: params.amount,
         appointmentId: params.appointmentId,
-        returnUrl: params.returnUrl || `${window.location.origin}/patient/payments`,
+        returnUrl:
+          params.returnUrl || `${window.location.origin}/patient/payments`,
         callbackUrl: params.callbackUrl,
-        description: params.description || 'Clinical Consultation Fee Payment',
+        description: params.description || "Clinical Consultation Fee Payment",
       },
     });
   },
 
   async verifyChapaPayment(txRef: string): Promise<PaymentRecord> {
     const clinicId = await getClinicId();
-    const result = await apiRequest<ApiPayment>(`/payments/chapa/verify/${encodeURIComponent(txRef)}?clinicId=${clinicId}`);
+    const result = await apiRequest<ApiPayment>(
+      `/payments/chapa/verify/${encodeURIComponent(txRef)}?clinicId=${clinicId}`,
+    );
     const patients = await getPatientsPage();
     return toPayment(result, patients.data.map(toPatient));
   },
 
-  async updatePaymentStatus(_id: string, _status: PaymentStatus): Promise<PaymentRecord[]> {
-    throw new ApiError('The payment API does not support changing a recorded payment status.', 405);
+  async updatePaymentStatus(
+    _id: string,
+    _status: PaymentStatus,
+  ): Promise<PaymentRecord[]> {
+    throw new ApiError(
+      "The payment API does not support changing a recorded payment status.",
+      405,
+    );
   },
 
   async getNotifications(): Promise<ClinicNotification[]> {
     const clinicId = await getClinicId();
-    const page = await apiPaginated<ApiNotification>('/notifications', {
+    const page = await apiPaginated<ApiNotification>("/notifications", {
       clinicId,
       page: 1,
       limit: PAGE_SIZE,
@@ -819,12 +951,16 @@ export const clinicService = {
 
   async markNotificationAsRead(id: string): Promise<ClinicNotification[]> {
     const clinicId = await getClinicId();
-    await apiRequest(`/notifications/${id}/read?clinicId=${clinicId}`, { method: 'PATCH' });
+    await apiRequest(`/notifications/${id}/read?clinicId=${clinicId}`, {
+      method: "PATCH",
+    });
     return this.getNotifications();
   },
 
   async markAllNotificationsAsRead(): Promise<ClinicNotification[]> {
-    const unread = (await this.getNotifications()).filter(notification => !notification.read);
+    const unread = (await this.getNotifications()).filter(
+      (notification) => !notification.read,
+    );
     for (const notification of unread) {
       await this.markNotificationAsRead(notification.id);
     }
@@ -834,7 +970,7 @@ export const clinicService = {
   async getStats(): Promise<ClinicStats> {
     const clinicId = await getClinicId();
     const report = await apiRequest<ApiReport>(
-      apiPath('/reports/dashboard', { clinicId, range: 'today' }),
+      apiPath("/reports/dashboard", { clinicId, range: "today" }),
     );
     const appointments = await this.getAppointments();
     return {
@@ -857,9 +993,15 @@ export const clinicService = {
     const clinicId = await getClinicId();
     const params = { clinicId, range };
     const [appointments, revenue, waitingTime] = await Promise.all([
-      apiRequest<{ data: ClinicReportSeries['appointments'] }>(apiPath('/reports/appointments', params)),
-      apiRequest<{ data: ClinicReportSeries['revenue'] }>(apiPath('/reports/revenue', params)),
-      apiRequest<{ data: ClinicReportSeries['waitingTime'] }>(apiPath('/reports/waiting-time', params)),
+      apiRequest<{ data: ClinicReportSeries["appointments"] }>(
+        apiPath("/reports/appointments", params),
+      ),
+      apiRequest<{ data: ClinicReportSeries["revenue"] }>(
+        apiPath("/reports/revenue", params),
+      ),
+      apiRequest<{ data: ClinicReportSeries["waitingTime"] }>(
+        apiPath("/reports/waiting-time", params),
+      ),
     ]);
     return {
       appointments: appointments.data,

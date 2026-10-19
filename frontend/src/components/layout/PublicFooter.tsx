@@ -28,7 +28,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
                 <Hospital className="w-5 h-5" />
               </div>
               <span className="text-xl font-bold text-white tracking-tight">
-                MediFlow<span className="text-[#3B82F6]">.ET</span>
+                ClinicFlow<span className="text-[#3B82F6]">.ET</span>
               </span>
             </div>
             <p className="text-sm text-zinc-400 leading-relaxed max-w-sm">
@@ -104,7 +104,7 @@ export const PublicFooter: React.FC<PublicFooterProps> = ({ onNavigate }) => {
                   onClick={() => onNavigate("/about")}
                   className="hover:text-white transition-colors cursor-pointer text-left"
                 >
-                  About MediFlow
+                  About ClinicFlow
                 </button>
               </li>
               <li>

@@ -788,7 +788,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 <div className="space-y-3">
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EFF4FF] dark:bg-blue-950/40 text-[#1D5BD8] dark:text-[#93C5FD] text-xs font-semibold">
                     <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>The MediFlow Standard</span>
+                    <span>The ClinicFlow Standard</span>
                   </div>
                   <h2 className="text-3xl sm:text-4xl font-bold text-[#172033] dark:text-white tracking-tight">
                     Why patients choose ClinicFlow for private care

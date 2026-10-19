@@ -1,4 +1,8 @@
-import { BadRequestException, ForbiddenException, NotFoundException } from '../common/exceptions/http.exceptions';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '../common/exceptions/http.exceptions';
 import { AppointmentStatus, PaymentMethod, PaymentStatus, Prisma, Role } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { PaginatedResponseDto } from '../common/dto/pagination.dto';
@@ -119,7 +123,7 @@ export class PaymentsService {
     const initResult = await chapa.initialize({
       amount: dto.amount,
       currency: 'ETB',
-      email: patient.user?.email || actor.email || 'patient@mediflow.et',
+      email: patient.user?.email || actor.email || 'patient@ClinicFlow.et',
       firstName: patient.user?.firstName || actor.firstName || 'Patient',
       lastName: patient.user?.lastName || actor.lastName || 'User',
       phone: patient.user?.phone || actor.phone || '+251911000000',

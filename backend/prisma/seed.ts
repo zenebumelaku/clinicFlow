@@ -39,7 +39,7 @@ async function main(): Promise<void> {
   const seedUsers = [
     {
       phone: '+251911100701',
-      email: 'admin@mediflow-demo.local',
+      email: 'admin@ClinicFlow-demo.local',
       firstName: 'Demo',
       lastName: 'Admin',
       role: Role.ADMIN,
@@ -47,7 +47,7 @@ async function main(): Promise<void> {
     },
     {
       phone: '+251911100702',
-      email: 'reception@mediflow-demo.local',
+      email: 'reception@ClinicFlow-demo.local',
       firstName: 'Sara',
       lastName: 'Reception',
       role: Role.RECEPTIONIST,
@@ -55,7 +55,7 @@ async function main(): Promise<void> {
     },
     {
       phone: '+251911100703',
-      email: 'doctor.abebe@mediflow-demo.local',
+      email: 'doctor.abebe@ClinicFlow-demo.local',
       firstName: 'Abebe',
       lastName: 'Bekele',
       role: Role.DOCTOR,
@@ -63,7 +63,7 @@ async function main(): Promise<void> {
     },
     {
       phone: '+251911100704',
-      email: 'doctor.hana@mediflow-demo.local',
+      email: 'doctor.hana@ClinicFlow-demo.local',
       firstName: 'Hana',
       lastName: 'Tadesse',
       role: Role.DOCTOR,
@@ -71,7 +71,7 @@ async function main(): Promise<void> {
     },
     {
       phone: '+251911100705',
-      email: 'patient.ayalew@mediflow-demo.local',
+      email: 'patient.ayalew@ClinicFlow-demo.local',
       firstName: 'Ayalew',
       lastName: 'Kebede',
       role: Role.PATIENT,
@@ -79,7 +79,7 @@ async function main(): Promise<void> {
     },
     {
       phone: '+251911100706',
-      email: 'patient.mekdes@mediflow-demo.local',
+      email: 'patient.mekdes@ClinicFlow-demo.local',
       firstName: 'Mekdes',
       lastName: 'Tesfaye',
       role: Role.PATIENT,
@@ -87,7 +87,7 @@ async function main(): Promise<void> {
     },
     {
       phone: '+251911100707',
-      email: 'patient.dawit@mediflow-demo.local',
+      email: 'patient.dawit@ClinicFlow-demo.local',
       firstName: 'Dawit',
       lastName: 'Worku',
       role: Role.PATIENT,
@@ -98,7 +98,9 @@ async function main(): Promise<void> {
   const seedPasswords = seedUsers.map((user) => {
     const password = process.env[user.passwordEnv];
     if (!password || password.length < 12) {
-      throw new Error(`Set ${user.passwordEnv} to a development password of at least 12 characters`);
+      throw new Error(
+        `Set ${user.passwordEnv} to a development password of at least 12 characters`,
+      );
     }
     return password;
   });
@@ -111,13 +113,13 @@ async function main(): Promise<void> {
   }
 
   const clinic = await prisma.clinic.upsert({
-    where: { slug: 'mediflow-addis-demo' },
-    update: { name: 'MediFlow Addis Demo Clinic', isActive: true },
+    where: { slug: 'ClinicFlow-addis-demo' },
+    update: { name: 'ClinicFlow Addis Demo Clinic', isActive: true },
     create: {
-      slug: 'mediflow-addis-demo',
-      name: 'MediFlow Addis Demo Clinic',
+      slug: 'ClinicFlow-addis-demo',
+      name: 'ClinicFlow Addis Demo Clinic',
       phone: '+251111000701',
-      email: 'contact@mediflow-demo.local',
+      email: 'contact@ClinicFlow-demo.local',
       address: 'Bole Road',
       city: 'Addis Ababa',
       region: 'Addis Ababa',
@@ -425,7 +427,7 @@ async function main(): Promise<void> {
       appointmentId: appointmentSeeds[0].id,
       type: NotificationType.APPOINTMENT_REMINDER,
       title: 'Upcoming appointment',
-      message: 'Your follow-up appointment is scheduled at MediFlow Addis Demo Clinic.',
+      message: 'Your follow-up appointment is scheduled at ClinicFlow Addis Demo Clinic.',
       readAt: null,
     },
     create: {
@@ -435,7 +437,7 @@ async function main(): Promise<void> {
       appointmentId: appointmentSeeds[0].id,
       type: NotificationType.APPOINTMENT_REMINDER,
       title: 'Upcoming appointment',
-      message: 'Your follow-up appointment is scheduled at MediFlow Addis Demo Clinic.',
+      message: 'Your follow-up appointment is scheduled at ClinicFlow Addis Demo Clinic.',
     },
   });
 

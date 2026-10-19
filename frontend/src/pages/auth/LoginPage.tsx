@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Hospital, Lock, Phone, ArrowRight, Stethoscope, Users, Sparkles, ShieldCheck } from "lucide-react";
+import {
+  Hospital,
+  Lock,
+  Phone,
+  ArrowRight,
+  Stethoscope,
+  Users,
+  Sparkles,
+  ShieldCheck,
+} from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useToast } from "../../components/ui/Toast";
@@ -12,28 +21,47 @@ interface LoginPageProps {
 
 type PortalKind = "patient" | "doctor" | "admin";
 
-const DEMO_CREDENTIALS: Record<PortalKind, { identifier: string; pass: string }> = {
+const DEMO_CREDENTIALS: Record<
+  PortalKind,
+  { identifier: string; pass: string }
+> = {
   patient: { identifier: "+251911223344", pass: "ClinicFlow@2026" },
-  doctor: { identifier: "doctor.hana@mediflow-demo.local", pass: "ClinicFlow@2026" },
-  admin: { identifier: "admin@mediflow-demo.local", pass: "ClinicFlow@2026" },
+  doctor: {
+    identifier: "doctor.hana@ClinicFlow-demo.local",
+    pass: "ClinicFlow@2026",
+  },
+  admin: { identifier: "admin@ClinicFlow-demo.local", pass: "ClinicFlow@2026" },
 };
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   const { success, error } = useToast();
-  const searchPortal = new URLSearchParams(window.location.search).get("portal") as PortalKind | null;
-  const initialPortal: PortalKind = searchPortal && ["doctor", "patient", "admin"].includes(searchPortal)
-    ? searchPortal
-    : "patient";
+  const searchPortal = new URLSearchParams(window.location.search).get(
+    "portal",
+  ) as PortalKind | null;
+  const initialPortal: PortalKind =
+    searchPortal && ["doctor", "patient", "admin"].includes(searchPortal)
+      ? searchPortal
+      : "patient";
 
   const [activePortal, setActivePortal] = useState<PortalKind>(initialPortal);
-  const [identifier, setIdentifier] = useState(DEMO_CREDENTIALS[initialPortal].identifier);
-  const [password, setPassword] = useState(DEMO_CREDENTIALS[initialPortal].pass);
+  const [identifier, setIdentifier] = useState(
+    DEMO_CREDENTIALS[initialPortal].identifier,
+  );
+  const [password, setPassword] = useState(
+    DEMO_CREDENTIALS[initialPortal].pass,
+  );
   const [loading, setLoading] = useState(false);
 
   // Sync with URL query parameter when route loads or changes
   useEffect(() => {
-    const portalFromUrl = new URLSearchParams(window.location.search).get("portal") as PortalKind | null;
-    if (portalFromUrl && ["doctor", "patient", "admin"].includes(portalFromUrl) && portalFromUrl !== activePortal) {
+    const portalFromUrl = new URLSearchParams(window.location.search).get(
+      "portal",
+    ) as PortalKind | null;
+    if (
+      portalFromUrl &&
+      ["doctor", "patient", "admin"].includes(portalFromUrl) &&
+      portalFromUrl !== activePortal
+    ) {
       setActivePortal(portalFromUrl);
       setIdentifier(DEMO_CREDENTIALS[portalFromUrl].identifier);
       setPassword(DEMO_CREDENTIALS[portalFromUrl].pass);
@@ -93,34 +121,42 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
       );
     } catch (loginError) {
       error(
-        loginError instanceof Error ? loginError.message : "Invalid identifier or password.",
+        loginError instanceof Error
+          ? loginError.message
+          : "Invalid identifier or password.",
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const portalConfig: Record<PortalKind, {
-    title: string;
-    subtitle: string;
-    icon: typeof Users;
-    badge: string;
-    badgeClass: string;
-    buttonClass: string;
-    boxClass: string;
-    launchLabel: string;
-    targetRoute: string;
-    registerLabel: string;
-    registerPath: string;
-  }> = {
+  const portalConfig: Record<
+    PortalKind,
+    {
+      title: string;
+      subtitle: string;
+      icon: typeof Users;
+      badge: string;
+      badgeClass: string;
+      buttonClass: string;
+      boxClass: string;
+      launchLabel: string;
+      targetRoute: string;
+      registerLabel: string;
+      registerPath: string;
+    }
+  > = {
     patient: {
       title: "Patient Care Portal Sign In",
-      subtitle: "Access your live clinic queue ticket, doctor appointments, and medical receipts.",
+      subtitle:
+        "Access your live clinic queue ticket, doctor appointments, and medical receipts.",
       icon: Users,
       badge: "Patient Portal",
-      badgeClass: "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/60 dark:text-violet-300 dark:border-violet-800",
+      badgeClass:
+        "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/60 dark:text-violet-300 dark:border-violet-800",
       buttonClass: "bg-violet-700 hover:bg-violet-800 text-white",
-      boxClass: "border-violet-200 bg-violet-50/70 dark:border-violet-900/60 dark:bg-violet-950/30",
+      boxClass:
+        "border-violet-200 bg-violet-50/70 dark:border-violet-900/60 dark:bg-violet-950/30",
       launchLabel: "1-Click Launch Patient Portal (Abebe Kebede)",
       targetRoute: "/patient/dashboard",
       registerLabel: "Sign up as Patient",
@@ -128,12 +164,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
     },
     doctor: {
       title: "Doctor Workspace Sign In",
-      subtitle: "Sign in to access your assigned queue, consultation desk, and patient charts.",
+      subtitle:
+        "Sign in to access your assigned queue, consultation desk, and patient charts.",
       icon: Stethoscope,
       badge: "Doctor Portal",
-      badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800",
+      badgeClass:
+        "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800",
       buttonClass: "bg-emerald-700 hover:bg-emerald-800 text-white",
-      boxClass: "border-emerald-200 bg-emerald-50/70 dark:border-emerald-900/60 dark:bg-emerald-950/30",
+      boxClass:
+        "border-emerald-200 bg-emerald-50/70 dark:border-emerald-900/60 dark:bg-emerald-950/30",
       launchLabel: "1-Click Launch Doctor Workspace (Dr. Hana)",
       targetRoute: "/doctor/overview",
       registerLabel: "Register as Doctor",
@@ -141,12 +180,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
     },
     admin: {
       title: "Clinic Admin Portal Sign In",
-      subtitle: "Sign in to front desk management, queue totem, staff oversight, and payments.",
+      subtitle:
+        "Sign in to front desk management, queue totem, staff oversight, and payments.",
       icon: Hospital,
       badge: "Clinic Admin Portal",
-      badgeClass: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800",
+      badgeClass:
+        "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800",
       buttonClass: "bg-blue-700 hover:bg-blue-800 text-white",
-      boxClass: "border-blue-200 bg-blue-50/70 dark:border-blue-900/60 dark:bg-blue-950/30",
+      boxClass:
+        "border-blue-200 bg-blue-50/70 dark:border-blue-900/60 dark:bg-blue-950/30",
       launchLabel: "1-Click Launch Clinic Admin Portal",
       targetRoute: "/dashboard/overview",
       registerLabel: "Register a Clinic",
@@ -271,7 +313,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
           {/* Header */}
           <div className="space-y-1.5">
-            <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border ${current.badgeClass}`}>
+            <div
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border ${current.badgeClass}`}
+            >
               <CurrentIcon className="w-3.5 h-3.5" />
               <span>{current.badge}</span>
             </div>
@@ -291,7 +335,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                 Option 1: Quick 1-Click Test Access
               </span>
-              <span className="text-[10px] font-semibold text-slate-500 dark:text-zinc-400">Verified Profile</span>
+              <span className="text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                Verified Profile
+              </span>
             </div>
             <Button
               size="lg"

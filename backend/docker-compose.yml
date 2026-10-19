@@ -1,22 +1,22 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: mediflow-postgres
+    container_name: ClinicFlow-postgres
     restart: always
     environment:
-      POSTGRES_USER: mediflow
-      POSTGRES_PASSWORD: mediflow_password
-      POSTGRES_DB: mediflow_db
+      POSTGRES_USER: ClinicFlow
+      POSTGRES_PASSWORD: ClinicFlow_password
+      POSTGRES_DB: ClinicFlow_db
     ports:
       - '5433:5432'
     volumes:
-      - mediflow_pg_data:/var/lib/postgresql/data
+      - ClinicFlow_pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U mediflow -d mediflow_db']
+      test: ['CMD-SHELL', 'pg_isready -U ClinicFlow -d ClinicFlow_db']
       interval: 5s
       timeout: 5s
       retries: 5
 
 volumes:
-  mediflow_pg_data:
+  ClinicFlow_pg_data:
     driver: local

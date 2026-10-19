@@ -45,9 +45,9 @@ export class ChapaService {
 
   constructor(private readonly config: ConfigService) {
     this.secretKey = this.config.get<string>('chapa.secretKey', process.env.CHAPA_SECRET_KEY || '');
-    this.baseUrl = (
-      this.config.get<string>('chapa.baseUrl', process.env.CHAPA_BASE_URL || 'https://api.chapa.co/v1')
-    ).replace(/\/$/, '');
+    this.baseUrl = this.config
+      .get<string>('chapa.baseUrl', process.env.CHAPA_BASE_URL || 'https://api.chapa.co/v1')
+      .replace(/\/$/, '');
     this.webhookSecret = this.config.get<string>(
       'chapa.webhookSecret',
       process.env.CHAPA_WEBHOOK_SECRET || this.secretKey,
@@ -71,7 +71,7 @@ export class ChapaService {
     const {
       amount,
       currency = 'ETB',
-      email = 'patient@mediflow.et',
+      email = 'patient@ClinicFlow.et',
       firstName,
       lastName,
       phone,
@@ -93,7 +93,7 @@ export class ChapaService {
     const payload = {
       amount: amount.toString(),
       currency,
-      email: email || 'patient@mediflow.et',
+      email: email || 'patient@ClinicFlow.et',
       first_name: firstName,
       last_name: lastName,
       phone_number: phone,
@@ -160,13 +160,16 @@ export class ChapaService {
     }
 
     try {
-      const response = await fetch(`${this.baseUrl}/transaction/verify/${encodeURIComponent(txRef)}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${this.secretKey}`,
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${this.baseUrl}/transaction/verify/${encodeURIComponent(txRef)}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${this.secretKey}`,
+            'Content-Type': 'application/json',
+          },
         },
-      });
+      );
 
       const data = (await response.json()) as {
         status: string;
@@ -194,7 +197,12 @@ export class ChapaService {
 
       const transactionStatus = data.data.status?.toLowerCase();
       return {
-        status: transactionStatus === 'success' ? 'success' : transactionStatus === 'pending' ? 'pending' : 'failed',
+        status:
+          transactionStatus === 'success'
+            ? 'success'
+            : transactionStatus === 'pending'
+              ? 'pending'
+              : 'failed',
         txRef: data.data.tx_ref,
         reference: data.data.reference,
         amount: Number(data.data.amount),
@@ -204,7 +212,9 @@ export class ChapaService {
       };
     } catch (err) {
       this.logger.error(`Error verifying Chapa transaction: ${err}`);
-      throw new BadRequestException('Payment verification failed due to network connectivity issues.');
+      throw new BadRequestException(
+        'Payment verification failed due to network connectivity issues.',
+      );
     }
   }
 
