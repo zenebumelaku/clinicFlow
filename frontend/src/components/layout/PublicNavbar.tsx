@@ -152,7 +152,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
               onClick={() => setShowPortalsMenu((open) => !open)}
               aria-haspopup="menu"
               aria-expanded={showPortalsMenu}
-              className="inline-flex items-center gap-1 transition-colors duration-200 cursor-pointer hover:text-[#1D5BD8] dark:hover:text-[#60A5FA] py-1.5 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-zinc-800/60"
+              className="inline-flex items-center gap-1 text-[#1D5BD8] dark:text-[#60A5FA] font-bold transition-colors duration-200 cursor-pointer hover:text-[#1D5BD8] dark:hover:text-[#60A5FA] py-1.5 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-zinc-800/60"
             >
               Portals
               <ChevronDown className="h-3.5 w-3.5" />
@@ -180,11 +180,17 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
                         <Users className="h-4 w-4" />
                       </div>
                       <div>
-                        <div className="font-semibold text-xs text-slate-900 dark:text-white">Patient Portal</div>
-                        <div className="text-[10px] text-slate-500 dark:text-zinc-400">Tickets, bookings & receipts</div>
+                        <div className="font-semibold text-xs text-slate-900 dark:text-white">
+                          Patient Portal
+                        </div>
+                        <div className="text-[10px] text-slate-500 dark:text-zinc-400">
+                          Tickets, bookings & receipts
+                        </div>
                       </div>
                     </div>
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-100 text-violet-800 dark:bg-violet-950/60 dark:text-violet-300">Launch</span>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-100 text-violet-800 dark:bg-violet-950/60 dark:text-violet-300">
+                      Launch
+                    </span>
                   </button>
 
                   <button
@@ -201,11 +207,17 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
                         <Stethoscope className="h-4 w-4" />
                       </div>
                       <div>
-                        <div className="font-semibold text-xs text-slate-900 dark:text-white">Doctor Workspace</div>
-                        <div className="text-[10px] text-slate-500 dark:text-zinc-400">Dr. Hana · Consult desk</div>
+                        <div className="font-semibold text-xs text-slate-900 dark:text-white">
+                          Doctor Workspace
+                        </div>
+                        <div className="text-[10px] text-slate-500 dark:text-zinc-400">
+                          Dr. Hana · Consult desk
+                        </div>
                       </div>
                     </div>
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">Launch</span>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                      Launch
+                    </span>
                   </button>
 
                   <button
@@ -222,11 +234,17 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
                         <Hospital className="h-4 w-4" />
                       </div>
                       <div>
-                        <div className="font-semibold text-xs text-slate-900 dark:text-white">Clinic Admin Portal</div>
-                        <div className="text-[10px] text-slate-500 dark:text-zinc-400">Totem, check-in, billing</div>
+                        <div className="font-semibold text-xs text-slate-900 dark:text-white">
+                          Clinic Admin Portal
+                        </div>
+                        <div className="text-[10px] text-slate-500 dark:text-zinc-400">
+                          Totem, check-in, billing
+                        </div>
                       </div>
                     </div>
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">Launch</span>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">
+                      Launch
+                    </span>
                   </button>
                 </div>
 
@@ -358,14 +376,6 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
           </div>
 
           <button
-            onClick={() => handleNavClick("/login?portal=doctor")}
-            className="text-xs sm:text-[13px] font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 transition-all duration-200 cursor-pointer flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
-          >
-            <Stethoscope className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Doctor Portal</span>
-          </button>
-
-          <button
             onClick={() => handleNavClick("/login")}
             className="text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg text-[#667085] dark:text-zinc-300 hover:text-[#172033] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all duration-200 cursor-pointer whitespace-nowrap"
           >
@@ -459,7 +469,9 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
               className="text-left px-3 py-2 rounded-lg hover:bg-violet-50 dark:hover:bg-zinc-800 text-violet-700 dark:text-violet-300 font-semibold transition-colors flex items-center justify-between"
             >
               <span>Patient Portal</span>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-100 dark:bg-violet-950/60 text-violet-800 dark:text-violet-300">Launch</span>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-100 dark:bg-violet-950/60 text-violet-800 dark:text-violet-300">
+                Launch
+              </span>
             </button>
             <button
               onClick={async () => {
@@ -469,7 +481,9 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
               className="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 dark:hover:bg-zinc-800 text-emerald-700 dark:text-emerald-300 font-semibold transition-colors flex items-center justify-between"
             >
               <span>Doctor Workspace</span>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">Launch</span>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
+                Launch
+              </span>
             </button>
             <button
               onClick={async () => {
@@ -479,7 +493,9 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
               className="text-left px-3 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-zinc-800 text-[#1D5BD8] dark:text-[#60A5FA] font-semibold transition-colors flex items-center justify-between"
             >
               <span>Clinic Admin Portal</span>
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300">Launch</span>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300">
+                Launch
+              </span>
             </button>
           </div>
           <div className="pt-2 border-t border-slate-100 dark:border-zinc-800 space-y-2">
