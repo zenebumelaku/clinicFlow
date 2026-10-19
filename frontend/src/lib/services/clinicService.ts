@@ -301,9 +301,10 @@ function toQueueItem(record: ApiQueueTicket, index: number): QueueItem {
 
 function fromPaymentMethod(value: string): PaymentMethod {
   const normalized = lowerEnum(value);
-  if (['chapa', 'cash', 'telebirr', 'mpesa', 'bank_transfer'].includes(normalized)) {
+  if (['chapa', 'cash', 'mpesa', 'bank_transfer'].includes(normalized)) {
     return normalized as PaymentMethod;
   }
+  if (normalized === 'other') return 'other';
   return 'card';
 }
 
@@ -315,7 +316,8 @@ function fromPaymentStatus(value: string): PaymentStatus {
 }
 
 function toPaymentMethod(value: PaymentMethod): string {
-  if (value === 'chapa' || value === 'cbe_birr' || value === 'card') return 'OTHER';
+  if (value === 'chapa') return 'CHAPA';
+  if (value === 'cbe_birr' || value === 'card' || value === 'other') return 'OTHER';
   return value.toUpperCase();
 }
 

@@ -14,7 +14,6 @@ import { TokenService } from './token.service';
 import { RegisterClinicDto } from './dto/register-clinic.dto';
 import { RegisterPatientDto } from './dto/register-patient.dto';
 import { RegisterDoctorDto } from './dto/register-doctor.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LogoutDto } from './dto/logout.dto';
@@ -314,39 +313,6 @@ export class AuthService {
       refreshToken: tokens.refreshToken,
       expiresIn: tokens.expiresIn,
       user: this.mapUserResponse(user),
-    };
-  }
-
-  async resetPassword(dto: ResetPasswordDto): Promise<MessageResponseDto> {
-    const identifier = dto.identifier.trim().toLowerCase();
-
-    const user = await this.prisma.user.findFirst({
-      where: { OR: [{ phone: identifier }, { email: identifier }] },
-    });
-
-    if (user?.isActive) {
-      const passwordHash = await bcrypt.hash(dto.password, 12);
-      await this.prisma.$transaction(async (transaction) => {
-        await transaction.user.update({
-          where: { id: user.id },
-          data: { passwordHash },
-        });
-        await transaction.refreshToken.updateMany({
-          where: { userId: user.id, isRevoked: false },
-          data: { isRevoked: true },
-        });
-      });
-      await this.auditService.record({
-        userId: user.id,
-        action: 'AUTH_PASSWORD_RESET',
-        entity: 'User',
-        entityId: user.id,
-      });
-    }
-
-    return {
-      success: true,
-      message: 'If the account is active, its password has been reset. You can now sign in.',
     };
   }
 

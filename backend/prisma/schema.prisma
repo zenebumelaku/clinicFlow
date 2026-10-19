@@ -15,12 +15,6 @@ enum Role {
   PATIENT
 }
 
-enum OtpPurpose {
-  LOGIN
-  REGISTRATION
-  PASSWORD_RESET
-}
-
 enum DoctorAvailabilityStatus {
   AVAILABLE
   BUSY
@@ -54,7 +48,7 @@ enum QueuePriority {
 
 enum PaymentMethod {
   CASH
-  TELEBIRR
+  CHAPA
   MPESA
   BANK_TRANSFER
   OTHER
@@ -87,7 +81,6 @@ model User {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   refreshTokens RefreshToken[]
-  otps          Otp[]
   auditLogs     AuditLog[]
   staffMembers  StaffMember[]
   doctors       Doctor[]
@@ -110,24 +103,6 @@ model RefreshToken {
   @@index([userId, isRevoked])
   @@index([expiresAt])
   @@map("refresh_tokens")
-}
-
-model Otp {
-  id          String     @id @default(uuid())
-  identifier  String
-  codeHash    String
-  purpose     OtpPurpose @default(LOGIN)
-  userId      String?
-  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  isUsed      Boolean    @default(false)
-  attempts    Int        @default(0)
-  maxAttempts Int        @default(3)
-  expiresAt   DateTime
-  createdAt   DateTime   @default(now())
-
-  @@index([identifier, isUsed])
-  @@index([identifier, purpose, createdAt])
-  @@map("otps")
 }
 
 model AuditLog {

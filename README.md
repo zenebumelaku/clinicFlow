@@ -100,7 +100,7 @@ npm run db:seed
 npm run start:dev
 ```
 
-Update `backend/.env` before running the seed. Use private development values for `JWT_SECRET`, `OTP_PEPPER`, and `SEED_PASSWORD`; never commit your `.env` file. The included development OTP adapter writes codes to the backend console.
+Update `backend/.env` before running the seed. Use private development values for `JWT_SECRET` and every `SEED_*_PASSWORD`; never commit your `.env` file.
 
 The API is available at `http://localhost:3000/api/v1`. The health check is `http://localhost:3000/api/v1/health`, and Swagger docs are at `http://localhost:3000/api/docs` when enabled.
 
@@ -176,9 +176,9 @@ Explore endpoints interactively through Swagger at `/api/docs` while the backend
 ## Security notes
 
 - Keep backend secrets in the backend environment, never in source control.
-- Use unique, strong `JWT_SECRET` and `OTP_PEPPER` values outside local development.
+- Use a unique, strong `JWT_SECRET` outside local development.
 - Configure an explicit allowed CORS origin for production.
-- The console OTP delivery adapter is for development only; production requires a configured delivery provider.
+- Password recovery is handled by the clinic administrator; the API does not expose an unauthenticated password-reset operation.
 - Review [backend/README.md](./backend/README.md) for production configuration and deployment details.
 
 ## About the developer

@@ -298,10 +298,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#172033]/60 via-transparent to-transparent pointer-events-none" />
 
                   {/* Top Floating Badge: Available Today */}
-                  <div className="absolute top-4 left-4 bg-white/95 dark:bg-[#121214]/95 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[#172033] dark:text-white text-xs font-semibold flex items-center gap-2 border border-[#E6EAF0] dark:border-zinc-800 shadow-md">
-                    <span className="w-2 h-2 rounded-full bg-[#22A06B] animate-pulse" />
-                    <span>500+ Verified Doctors</span>
-                  </div>
 
                   <div className="absolute top-4 right-4 bg-white/95 dark:bg-[#121214]/95 backdrop-blur-md px-3 py-1.5 rounded-full text-[#1D5BD8] dark:text-[#60A5FA] text-xs font-bold border border-[#E6EAF0] dark:border-zinc-800 shadow-md">
                     Available Today

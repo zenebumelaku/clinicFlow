@@ -79,34 +79,32 @@ export function createPaymentsRouter(services: AppServices): Router {
    * Chapa Webhook Receiver
    * Public endpoint with signature validation
    */
-  router.post(
-    '/chapa/webhook',
-    async (req, res, next) => {
-      try {
-        const signature = (req.headers['x-chapa-signature'] as string) || '';
-        const chapa = services.payments.getChapaService();
+  router.post('/chapa/webhook', async (req, res, next) => {
+    try {
+      const signature = (req.headers['x-chapa-signature'] as string) || '';
+      const chapa = services.payments.getChapaService();
 
-        // In test mode, signature verification can be permissive if no secret configured
-        if (chapa.isConfigured() && signature) {
-          const rawBody = JSON.stringify(req.body);
-          const isValid = chapa.verifyWebhookSignature(rawBody, signature);
-          if (!isValid) {
-            res.status(401).json({ error: 'Invalid webhook signature' });
-            return;
-          }
-        }
-
-        const txRef = req.body?.tx_ref || req.body?.trx_ref;
-        if (txRef) {
-          await services.payments.verifyChapaPayment(txRef);
-        }
-
-        res.status(200).json({ received: true });
-      } catch (err) {
-        next(err);
+      if (!chapa.isConfigured()) {
+        res.status(503).json({ error: 'Chapa payments are not configured' });
+        return;
       }
-    },
-  );
+
+      const rawBody = (req as typeof req & { rawBody?: Buffer }).rawBody;
+      if (!rawBody || !signature || !chapa.verifyWebhookSignature(rawBody, signature)) {
+        res.status(401).json({ error: 'Invalid webhook signature' });
+        return;
+      }
+
+      const txRef = req.body?.tx_ref || req.body?.trx_ref;
+      if (txRef) {
+        await services.payments.verifyChapaPayment(txRef);
+      }
+
+      res.status(200).json({ received: true });
+    } catch (err) {
+      next(err);
+    }
+  });
 
   router.get(
     '/',

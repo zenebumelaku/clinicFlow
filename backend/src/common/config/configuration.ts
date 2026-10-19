@@ -23,6 +23,6 @@ export default () => ({
   chapa: {
     secretKey: process.env.CHAPA_SECRET_KEY || '',
     baseUrl: process.env.CHAPA_BASE_URL || 'https://api.chapa.co/v1',
-    webhookSecret: process.env.CHAPA_WEBHOOK_SECRET || '',
+    webhookSecret: process.env.CHAPA_WEBHOOK_SECRET || process.env.CHAPA_SECRET_KEY || '',
   },
 });

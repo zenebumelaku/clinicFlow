@@ -76,7 +76,7 @@ export const PatientPaymentsPage: React.FC<PatientPaymentsPageProps> = ({ onNavi
         txRef: res.txRef,
         amount: res.amount,
       });
-      info(`Chapa test transaction initialized (${res.txRef}).`);
+      info(`Chapa checkout initialized (${res.txRef}).`);
     } catch (err) {
       error(err instanceof Error ? err.message : 'Could not initialize Chapa payment');
     } finally {
@@ -154,27 +154,27 @@ export const PatientPaymentsPage: React.FC<PatientPaymentsPageProps> = ({ onNavi
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 dark:border-zinc-800 dark:bg-[#121214]">
           <span className="text-xs font-semibold text-slate-500 dark:text-zinc-400">Payment Gateway</span>
           <div className="mt-2 flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-zinc-300">
-            <span className="px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800">Chapa (Test Mode)</span>
+            <span className="px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800">Chapa</span>
             <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-zinc-800">Cash</span>
           </div>
-          <p className="mt-2 text-[11px] text-slate-400">Official Ethiopian Birr (ETB) test checkout</p>
+          <p className="mt-2 text-[11px] text-slate-400">Hosted checkout in Ethiopian Birr (ETB)</p>
         </div>
       </div>
 
-      {/* Chapa Test Checkout Action Card */}
+      {/* Chapa Checkout Action Card */}
       <div className="p-5 sm:p-6 rounded-2xl border border-emerald-200/90 dark:border-emerald-800/60 bg-gradient-to-r from-emerald-50/70 via-white to-white dark:from-emerald-950/30 dark:via-[#121214] dark:to-[#121214] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">
-              Chapa Sandbox
+              Chapa Checkout
             </span>
-            <span className="text-xs text-slate-500 dark:text-zinc-400">Experimental Integration</span>
+            <span className="text-xs text-slate-500 dark:text-zinc-400">Hosted payment</span>
           </div>
           <h2 className="text-base font-bold text-slate-900 dark:text-white">
             Settle Clinical Consultation Fee (850 ETB)
           </h2>
           <p className="text-xs text-slate-600 dark:text-zinc-400 max-w-xl">
-            Test the live Chapa payment flow in sandbox mode. Generates a server-tracked transaction reference, opens the hosted checkout flow, and verifies the transaction server-to-server.
+            Start a hosted Chapa checkout. The backend verifies the transaction directly with Chapa before confirming payment.
           </p>
         </div>
         <div className="flex items-center gap-3 shrink-0">
@@ -184,7 +184,7 @@ export const PatientPaymentsPage: React.FC<PatientPaymentsPageProps> = ({ onNavi
             className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs cursor-pointer"
             leftIcon={<CreditCard className="h-4 w-4" />}
           >
-            Pay with Chapa (Test Mode)
+            Pay with Chapa
           </Button>
         </div>
       </div>
@@ -327,7 +327,7 @@ export const PatientPaymentsPage: React.FC<PatientPaymentsPageProps> = ({ onNavi
         </div>
       )}
 
-      {/* Chapa Test Checkout Modal */}
+      {/* Chapa Checkout Modal */}
       {activeChapaModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
           <div className="w-full max-w-lg rounded-3xl bg-white p-6 sm:p-7 shadow-2xl border border-emerald-200 dark:border-zinc-800 dark:bg-[#121214]">
@@ -340,7 +340,7 @@ export const PatientPaymentsPage: React.FC<PatientPaymentsPageProps> = ({ onNavi
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-bold text-slate-900 dark:text-white">Chapa Payment Gateway</h3>
                     <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300">
-                      Sandbox Mode
+                      Hosted Checkout
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-zinc-400">Official Ethiopian Birr (ETB) Hosted Checkout</p>
@@ -359,7 +359,7 @@ export const PatientPaymentsPage: React.FC<PatientPaymentsPageProps> = ({ onNavi
               <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-200 flex items-start gap-2.5">
                 <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-xs">Experimental Sandbox Checkout</p>
+                  <p className="font-semibold text-xs">Server-verified checkout</p>
                   <p className="text-[11px] text-emerald-700 dark:text-emerald-300 mt-0.5">
                     This transaction is tracked on the ClinicFlow backend. Verification happens server-to-server directly against Chapa's official API.
                   </p>

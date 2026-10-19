@@ -1,4 +1,7 @@
-import { BadRequestException } from '../common/exceptions/http.exceptions';
+import {
+  BadRequestException,
+  ServiceUnavailableException,
+} from '../common/exceptions/http.exceptions';
 import { ConfigService } from '../common/config/config.service';
 import { Logger } from '../common/utils/logger';
 import * as crypto from 'crypto';
@@ -52,7 +55,8 @@ export class ChapaService {
   }
 
   isConfigured(): boolean {
-    return Boolean(this.secretKey && this.secretKey.trim() !== '' && !this.secretKey.startsWith('your_'));
+    const key = this.secretKey.trim();
+    return Boolean(key && !/(^|[-_])(?:your|placeholder|replace)([-_]|$)/i.test(key));
   }
 
   getBaseUrl(): string {
@@ -103,15 +107,7 @@ export class ChapaService {
     };
 
     if (!this.isConfigured()) {
-      this.logger.warn(
-        `CHAPA_SECRET_KEY is not configured or in placeholder mode. Generating sandbox checkout URL for reference ${txRef}.`,
-      );
-      return {
-        status: 'success',
-        message: 'Chapa Sandbox Initialized (Test Mode - Simulated Credentials)',
-        checkoutUrl: `https://checkout.chapa.co/checkout/test-payment/${txRef}`,
-        txRef,
-      };
+      throw new ServiceUnavailableException('Chapa payments are not configured');
     }
 
     try {
@@ -160,19 +156,7 @@ export class ChapaService {
     }
 
     if (!this.isConfigured()) {
-      this.logger.warn(
-        `CHAPA_SECRET_KEY is not configured. Simulating verification check for test reference: ${txRef}`,
-      );
-      // For sandbox verification without live API keys, verify format and return test success
-      return {
-        status: 'success',
-        txRef,
-        reference: `CHAPA-TEST-${Date.now()}`,
-        amount: 0,
-        currency: 'ETB',
-        paymentMethod: 'CHAPA_TEST',
-        raw: { mode: 'test_simulation' },
-      };
+      throw new ServiceUnavailableException('Chapa payments are not configured');
     }
 
     try {

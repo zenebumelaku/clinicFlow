@@ -1,6 +1,5 @@
 import {
   Role,
-  OtpPurpose,
   DoctorAvailabilityStatus,
   AppointmentStatus,
   QueuePriority,
@@ -22,19 +21,6 @@ export interface MockUser {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface MockOtp {
-  id: string;
-  identifier: string;
-  codeHash: string;
-  purpose: OtpPurpose;
-  userId?: string | null;
-  isUsed: boolean;
-  attempts: number;
-  maxAttempts: number;
-  expiresAt: Date;
-  createdAt: Date;
 }
 
 export interface MockRefreshToken {
@@ -398,7 +384,6 @@ function paginate<T>(
 
 export class MockPrismaService {
   users = new Map<string, MockUser>();
-  otps = new Map<string, MockOtp>();
   refreshTokens = new Map<string, MockRefreshToken>();
   clinics = new Map<string, MockClinic>();
   branches = new Map<string, MockBranch>();
@@ -505,65 +490,6 @@ export class MockPrismaService {
       const updated = applyUpdate(user, params.data as Record<string, unknown>);
       this.users.set(params.where.id, updated);
       return updated;
-    },
-  };
-
-  otp = {
-    findFirst: async (params: {
-      where: { identifier: string; purpose?: OtpPurpose; isUsed?: boolean };
-      orderBy?: { createdAt: 'desc' | 'asc' };
-    }) => {
-      const matches: MockOtp[] = [];
-      for (const otp of this.otps.values()) {
-        if (otp.identifier !== params.where.identifier) continue;
-        if (params.where.purpose !== undefined && otp.purpose !== params.where.purpose) continue;
-        if (params.where.isUsed !== undefined && otp.isUsed !== params.where.isUsed) continue;
-        matches.push(otp);
-      }
-      matches.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-      return matches[0] || null;
-    },
-    create: async (params: { data: Partial<MockOtp> }) => {
-      const id = params.data.id || randomUUID();
-      const otp: MockOtp = {
-        id,
-        identifier: params.data.identifier!,
-        codeHash: params.data.codeHash!,
-        purpose: params.data.purpose || OtpPurpose.LOGIN,
-        userId: params.data.userId || null,
-        isUsed: params.data.isUsed ?? false,
-        attempts: params.data.attempts ?? 0,
-        maxAttempts: params.data.maxAttempts ?? 3,
-        expiresAt: params.data.expiresAt || new Date(Date.now() + 5 * 60 * 1000),
-        createdAt: new Date(),
-      };
-      this.otps.set(id, otp);
-      return otp;
-    },
-    update: async (params: { where: { id: string }; data: Partial<MockOtp> }) => {
-      const otp = this.otps.get(params.where.id);
-      if (!otp) return null;
-      const updated = { ...otp, ...params.data };
-      this.otps.set(params.where.id, updated);
-      return updated;
-    },
-    updateMany: async (params: {
-      where: Record<string, unknown>;
-      data: Omit<Partial<MockOtp>, 'attempts'> & {
-        attempts?: number | { increment: number };
-      };
-    }) => {
-      let count = 0;
-      for (const [id, otp] of this.otps.entries()) {
-        if (!matchesWhere(otp as unknown as Record<string, unknown>, params.where)) continue;
-        const { attempts, ...data } = params.data;
-        const updated = { ...otp, ...data };
-        if (typeof attempts === 'number') updated.attempts = attempts;
-        if (typeof attempts === 'object') updated.attempts = otp.attempts + attempts.increment;
-        this.otps.set(id, updated);
-        count++;
-      }
-      return { count };
     },
   };
 
@@ -1374,7 +1300,6 @@ export class MockPrismaService {
 
   clear() {
     this.users.clear();
-    this.otps.clear();
     this.refreshTokens.clear();
     this.clinics.clear();
     this.branches.clear();

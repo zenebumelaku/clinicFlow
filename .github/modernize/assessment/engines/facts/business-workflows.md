@@ -6,7 +6,7 @@ ClinicFlow (also branded MediFlow ET in parts of the UI) coordinates a clinic's 
 
 | Entity | Service / Bounded Context | Description | Key Relationships |
 |---|---|---|---|
-| User | Identity and Access | A person who signs in as an administrator, receptionist, doctor, or patient. | Can have clinic staff membership, doctor and/or patient profiles, tokens, OTP records, notifications, and audit entries. |
+| User | Identity and Access | A person who signs in as an administrator, receptionist, doctor, or patient. | Can have clinic staff membership, doctor and/or patient profiles, refresh tokens, notifications, and audit entries. |
 | Clinic | Clinic Operations | A healthcare organization and principal tenant boundary for operational records. | Owns branches, staff, doctors, patients, appointments, queue tickets, payments, and notifications. |
 | Branch | Clinic Operations | A physical clinic location within a clinic. | Belongs to a clinic; staff may be assigned to a branch. |
 | StaffMember | Workforce Management | A user's active membership and job identity at a clinic. | Links a user to a clinic and optionally to a branch; a doctor profile is attached to its staff record. |
@@ -17,7 +17,7 @@ ClinicFlow (also branded MediFlow ET in parts of the UI) coordinates a clinic's 
 | QueueDailyCounter | Check-In and Queue | A per-clinic, per-day counter that allocates unique sequential queue numbers. | Owned by a clinic and used when issuing queue tickets. |
 | Payment | Billing | A record of an amount collected or recorded for a patient, optionally tied to an appointment. | Belongs to a clinic and patient; may reference an appointment. |
 | Notification | Patient and Staff Communications | A user-specific record of queue or appointment updates, with a read state. | Belongs to a clinic and user; may reference an appointment. |
-| Otp / RefreshToken | Identity and Access | Short-lived verification codes and revocable long-lived session credentials. | Associated with a user when that user is known; OTPs also identify a phone or email and purpose. |
+| RefreshToken | Identity and Access | Revocable long-lived session credentials. | Associated with a user and stored as a token hash. |
 | AuditLog | Audit | A record of clinic data mutations and request context. | May identify the acting user and clinic, plus the action and target entity. |
 
 ## Service-to-Domain Mapping
@@ -26,13 +26,13 @@ This is a modular Express monolith, not a set of independently deployed services
 
 | Service / Module | Domain Context | Owned Entities | External Dependencies |
 |---|---|---|---|
-| `auth` | Identity and Access | User authentication behavior, OTP, refresh tokens | PostgreSQL through Prisma; OTP delivery adapter (console in development, HTTP adapter in production) |
+| `auth` | Identity and Access | Password authentication and refresh tokens | PostgreSQL through Prisma; JWT signing |
 | `clinics`, `branches` | Clinic Operations | Clinic and branch records | Prisma; staff membership for tenant access |
 | `staff`, `doctors` | Workforce Management | Staff membership and doctor profiles | Prisma; clinic and branch records |
 | `patients` | Patient Management | Patient profiles and clinic-scoped MRNs | Prisma; shared user identity |
 | `appointments` | Scheduling | Appointment lifecycle and conflict checks | Prisma; patient and doctor records in the same database |
 | `queue` | Check-In and Queue | Queue tickets, daily counters, queue transitions | Prisma; appointment and patient records; writes user notifications |
-| `payments` | Billing | Payment records | Prisma; patient and optional appointment records |
+| `payments` | Billing | Payment records and Chapa checkout verification | Prisma; patient and optional appointment records; Chapa API |
 | `notifications` | Patient and Staff Communications | User-scoped notification retrieval and read state | Prisma; user, clinic, and optional appointment records |
 | `reports` | Clinic Analytics | Aggregated operational measures (not a separate reporting store) | PostgreSQL queries through Prisma |
 | `audit` | Audit | Audit log records | Prisma; Express request/response lifecycle |
@@ -51,9 +51,7 @@ There is no service-to-service REST or event-bus flow in this repository. Cross-
 6. The frontend's route guard redirects unauthenticated users to `/login` and routes authenticated users back to the portal for their role. Backend middleware independently checks the bearer JWT, re-reads the active user from the database, and applies route-specific role and clinic-membership checks.
 7. Logout calls `POST /auth/logout`, clears the browser's tokens, user and selected-clinic cache, and clears cached React Query data.
 
-The backend also provides `POST /auth/send-otp` and `POST /auth/verify-otp`. OTPs are single-use, expire after five minutes, have a 60-second resend cooldown and at most three attempts. Successful OTP verification can create a new PATIENT user and return tokens.
-
-**Implementation gap:** the visible login form is wired to password login, not the OTP endpoints. The registration and forgot-password forms described below are not connected to the backend OTP flow.
+Authentication uses phone/email and password; there are no OTP endpoints. The forgot-password page directs users to their clinic administrator because no verified self-service reset flow is available.
 
 ### Workflow 2: Administrator Sets Up a Clinic
 
@@ -62,7 +60,7 @@ The backend also provides `POST /auth/send-otp` and `POST /auth/verify-otp`. OTP
 3. The frontend determines a staff user's current clinic by loading the clinics associated with that account and caching the first clinic ID in local storage. Clinic-specific API requests carry that clinic ID.
 4. For protected clinic operations, the backend requires an active user and active clinic plus an active staff membership or patient profile in that clinic. ADMIN-only operations include clinic updates, staff maintenance, branch maintenance, and doctor creation/deletion.
 
-**Implementation gap:** the `/register` page asks for a phone, supplies a hard-coded demo OTP, lets the visitor choose a role, then navigates to the dashboard using only local UI state. It makes no API call, creates no user or clinic, and does not issue a session. Actual clinic creation requires an already authenticated ADMIN account.
+The registration page submits clinic, patient, and doctor registration to the corresponding authentication endpoints. Clinic registration creates the initial administrator and clinic atomically; patient and doctor registrations create the account and clinic-scoped profile.
 
 ### Workflow 3: Reception Registers a Patient and Schedules a Visit
 
@@ -104,14 +102,15 @@ The Doctor portal navigation exposes consultation overview, queue, schedule, and
 3. Queue and notification updates are created by backend operations such as check-in, call, start, and completion. Notifications are fetched and marked read only for the authenticated user.
 4. The portal presents payment receipts in its layout, but patient payment data is not currently supplied: the shared data hook does not enable payment fetching for PATIENT accounts, and the payment API is restricted to ADMIN and RECEPTIONIST.
 
-**Implementation gap:** forgot-password only changes local component state and displays a success toast claiming that SMS instructions were sent. It does not call `/auth/send-otp`, verify a reset code, or change a password. Although the API has OTP purpose values including `PASSWORD_RESET`, there is no password-reset route/operation in the current frontend or authentication router.
+The forgot-password page instructs users to contact their clinic administrator. The API intentionally has no unauthenticated password-reset route.
 
 ### Workflow 7: Staff Records Payment and Reviews Clinic Performance
 
-1. ADMIN or RECEPTIONIST records a payment through `POST /payments`, selecting a patient, optional appointment, amount, currency, method, and status.
-2. The service confirms the patient is active in the clinic and, when provided, the appointment belongs to the same patient and clinic. It creates the payment record in the database.
-3. Staff can list payments and use reporting screens for clinic-level dashboard, revenue, appointment, and waiting-time measures. The report endpoints require ADMIN or RECEPTIONIST and clinic access.
-4. The UI supports marking payment state as though that were an action, but the current API provides no payment-status update route; the client service returns an explicit “not supported” error for that operation.
+1. ADMIN or RECEPTIONIST records manual cash, MPESA, bank-transfer, or other payments through `POST /payments`. Chapa is not accepted through this route because it would bypass provider verification.
+2. An authorized staff member or the patient starts Chapa checkout through `POST /payments/chapa/initialize`. The service validates clinic, patient, optional appointment, amount, and the provider API response, then creates a pending ETB payment.
+3. The patient completes hosted checkout. The API verifies the transaction with Chapa and confirms it only when transaction reference, amount, and currency match the pending record. Signed webhooks use the original request body for signature validation.
+4. Staff can list payments and use reporting screens for clinic-level dashboard, revenue, appointment, and waiting-time measures. The report endpoints require ADMIN or RECEPTIONIST and clinic access.
+5. The UI supports marking payment state as though that were an action, but the current API provides no payment-status update route; the client service returns an explicit “not supported” error for that operation.
 
 ## Cross-Service Data Flows
 
@@ -207,13 +206,13 @@ Frontend portal checks select which pages a user sees, but backend route guards 
 ### Validation and domain rules
 
 - **Identity:** Password login accepts phone or email. Inactive accounts cannot log in or continue an authenticated request. Invalid identifiers/passwords receive a generic authentication failure.
-- **OTP:** A six-digit code is stored as a hash, is single-use, expires in five minutes, has a one-minute resend cooldown, and permits at most three verification attempts. Sending OTP is additionally rate-limited at the auth route.
+- **Password recovery:** The API intentionally has no public self-service password-reset endpoint. Users must contact their clinic administrator.
 - **Appointment scheduling:** Start and end must parse as valid dates, and end must be after start. The patient and doctor must be active in the same clinic. A doctor cannot have overlapping non-terminal appointments.
 - **Appointment lifecycle:** `SCHEDULED` can become `CONFIRMED`, `CHECKED_IN`, `CANCELLED`, or `NO_SHOW`; `CONFIRMED` can become `CHECKED_IN`, `CANCELLED`, or `NO_SHOW`; `CHECKED_IN` can become `IN_CONSULTATION` or `CANCELLED`; `IN_CONSULTATION` can become `COMPLETED`. `COMPLETED`, `CANCELLED`, and `NO_SHOW` are terminal.
 - **Queue admission:** Patient and optional doctor must be active in the clinic. A linked appointment must belong to the same patient and clinic, use the assigned doctor, and be `SCHEDULED` or `CONFIRMED`. One appointment can have at most one queue ticket.
 - **Queue order:** Tickets are numbered per clinic and Addis Ababa-local queue date. Position prioritizes `EMERGENCY`, then `URGENT`, then `NORMAL`, and orders tickets by queue number within the same priority.
 - **Queue lifecycle:** Waiting tickets may be called or skipped; called tickets may start or be skipped; in-consultation tickets may complete. Invalid or concurrent transitions are rejected rather than silently overwritten.
-- **Payments:** Amount/currency/method/status are persisted as a record, not a payment-gateway transaction. Patient must be active in the clinic, and an optional appointment must belong to that patient and clinic. The application does not demonstrate settlement verification or gateway callbacks.
+- **Payments:** Chapa checkout is initialized as a pending ETB payment and must be verified server-to-server before being marked complete. Payment records also support cash, bank transfer, MPESA, and other methods. Patient and optional appointment ownership are validated against the clinic.
 - **Patient visibility:** Patient appointment and queue list operations use the authenticated user's linked patient identity. Notifications are fetched and acknowledged only for that authenticated user in a clinic they belong to.
 - **Clinic integrity:** Clinic ID is taken from route, query, or request body (or inferred from a patient's profile where supported), validated, and checked against clinic membership before protected clinic operations.
 

@@ -43,7 +43,7 @@ export const PaymentsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
     patientId: '',
     appointmentId: '',
     amountETB: 0,
-    paymentMethod: 'chapa' as PaymentMethod,
+    paymentMethod: 'cash' as PaymentMethod,
     referenceNumber: '',
     status: 'confirmed' as PaymentStatus,
     description: ''
@@ -76,7 +76,7 @@ export const PaymentsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
       );
       setIsRecordDrawerOpen(false);
       setNewPayment({
-        patientId: '', appointmentId: '', amountETB: 0, paymentMethod: 'chapa',
+        patientId: '', appointmentId: '', amountETB: 0, paymentMethod: 'cash',
         referenceNumber: '', status: 'confirmed', description: '',
       });
     } catch (paymentError) {
@@ -348,7 +348,6 @@ export const PaymentsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
                 setNewPayment({ ...newPayment, paymentMethod: e.target.value as PaymentMethod })
               }
             >
-              <option value="chapa">Chapa Payment Gateway (Digital Payments)</option>
               <option value="cash">Cash Collection</option>
               <option value="bank_transfer">Direct Bank Transfer</option>
             </Select>

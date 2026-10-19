@@ -15,7 +15,7 @@ export type PriorityLevel = 'normal' | 'urgent' | 'follow_up' | 'elderly_child';
 
 export type DoctorAvailability = 'available' | 'busy' | 'off_duty';
 
-export type PaymentMethod = 'chapa' | 'telebirr' | 'cash' | 'mpesa' | 'cbe_birr' | 'bank_transfer' | 'card';
+export type PaymentMethod = 'chapa' | 'cash' | 'mpesa' | 'cbe_birr' | 'bank_transfer' | 'card' | 'other';
 
 export type PaymentStatus = 'pending' | 'confirmed' | 'cancelled' | 'refunded';
 

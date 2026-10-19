@@ -8,7 +8,10 @@ export const swaggerDocument = {
   servers: [{ url: '/' }],
   tags: [
     { name: 'Health', description: 'Health status checks' },
-    { name: 'Authentication & Authorization', description: 'Authentication, OTP, JWT, and RBAC' },
+    {
+      name: 'Authentication & Authorization',
+      description: 'Password authentication, JWT, and RBAC',
+    },
     { name: 'Clinics', description: 'Clinic profile management with tenant isolation' },
     { name: 'Branches', description: 'Clinic branch CRUD' },
     { name: 'Staff', description: 'Clinic staff management' },
@@ -16,7 +19,7 @@ export const swaggerDocument = {
     { name: 'Patients', description: 'Clinic patient registration and records' },
     { name: 'Appointments', description: 'Appointment scheduling and status workflow' },
     { name: 'Clinic Queue', description: 'Daily clinic queue and consultation flow' },
-    { name: 'Payments', description: 'Payment records (no external processor)' },
+    { name: 'Payments', description: 'Chapa checkout, payment verification, and payment records' },
     { name: 'Notifications', description: 'User and clinic notifications' },
     { name: 'Reports', description: 'Dashboard and analytics' },
   ],
@@ -89,31 +92,6 @@ export const swaggerDocument = {
           '201': { description: 'Clinic and administrator created; session issued' },
           '400': { description: 'Invalid registration data' },
           '409': { description: 'Phone or email is already registered' },
-        },
-      },
-    },
-    '/api/v1/auth/reset-password': {
-      post: {
-        tags: ['Authentication & Authorization'],
-        summary: 'Reset account password using registered phone or email',
-        requestBody: {
-          required: true,
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                required: ['identifier', 'password'],
-                properties: {
-                  identifier: { type: 'string', example: '+251911234567' },
-                  password: { type: 'string', minLength: 8 },
-                },
-              },
-            },
-          },
-        },
-        responses: {
-          '200': { description: 'Generic completion message; active sessions are revoked' },
-          '400': { description: 'Invalid request data' },
         },
       },
     },

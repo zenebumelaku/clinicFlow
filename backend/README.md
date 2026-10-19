@@ -38,7 +38,6 @@ authentication, RBAC, tenant isolation, validation, audit logging, and correlati
 | `/api/v1/auth/register-clinic`        | `POST` | Public                  | Register with phone and password; atomically create clinic, admin, and membership |
 | `/api/v1/auth/register-patient`       | `POST` | Public                  | Register patient with phone and password                   |
 | `/api/v1/auth/register-doctor`        | `POST` | Public                  | Register doctor with phone, password, and specialization   |
-| `/api/v1/auth/reset-password`         | `POST` | Public                  | Reset account password using phone/email and new password  |
 | `/api/v1/auth/login`                  | `POST` | Public                  | Authenticate with phone/email and password                 |
 | `/api/v1/auth/refresh`                | `POST` | Public                  | Rotate refresh token and issue new token pair              |
 | `/api/v1/auth/logout`                 | `POST` | Public / Bearer         | Revoke refresh token and terminate session                 |
@@ -120,20 +119,17 @@ Chart endpoints return ordered daily `data` rows with a `date` field and numeric
 
 ## Security Features
 
-1. **OTP Expiration**: Enforces strict 5-minute time-to-live (TTL).
-2. **OTP Single-Use**: Instantly marked as `isUsed: true` upon successful verification.
-3. **Rate Limiting & Cooldown**:
-   - 60-second cooldown between consecutive OTP requests for the same recipient.
-   - Max 3 verification attempts per OTP; automatically invalidated on 3 consecutive wrong attempts.
-4. **Credential Hashing**:
+1. **Credential Hashing**:
    - Passwords hashed using `bcryptjs` (salt rounds: 10).
-   - OTP codes and refresh tokens hashed with SHA-256 before database storage.
-5. **Token Rotation & Revocation**:
+   - Refresh tokens hashed with SHA-256 before database storage.
+2. **Token Rotation & Revocation**:
    - Access tokens expire in 15 minutes.
    - Refresh tokens are single-use; `/auth/refresh` issues a new refresh token and revokes the previous one.
    - Reuse of revoked refresh tokens triggers instant revocation of all user sessions.
-6. **Role-Based Access Control**:
+3. **Role-Based Access Control**:
    - Granular RBAC supporting `ADMIN`, `RECEPTIONIST`, `DOCTOR`, `PATIENT`.
+4. **Password Recovery**:
+   - There is no public self-service reset endpoint. Users should contact their clinic administrator.
 
 ---
 
@@ -171,13 +167,13 @@ Create the local environment file:
 cp .env.example .env
 ```
 
-For development, the example values target the bundled PostgreSQL container and the console OTP adapter. Replace `JWT_SECRET`, `OTP_PEPPER`, and every `SEED_*_PASSWORD` value with private values before use. Generate cryptographic values with:
+For development, the example values target the bundled PostgreSQL container. Replace `JWT_SECRET` and every `SEED_*_PASSWORD` value with private values before use. Generate cryptographic values with:
 
 ```bash
 openssl rand -hex 32
 ```
 
-Production requires a unique 32-character-or-longer `JWT_SECRET` and `OTP_PEPPER`, an explicit non-wildcard `CORS_ORIGIN`, and an HTTPS `OTP_DELIVERY_URL` plus `OTP_DELIVERY_TOKEN`. The production adapter POSTs `{ "recipient": "...", "code": "...", "purpose": "..." }` as JSON with a Bearer token. The console adapter is development-only. Set `SWAGGER_ENABLED=false` in production unless the documentation route is intentionally exposed. Set `TRUST_PROXY_HOPS` only to the exact number of trusted reverse proxies in front of the app; leave it at `0` when directly exposed.
+Production requires a unique 32-character-or-longer `JWT_SECRET` and an explicit non-wildcard `CORS_ORIGIN`. Set `SWAGGER_ENABLED=false` in production unless the documentation route is intentionally exposed. Set `TRUST_PROXY_HOPS` only to the exact number of trusted reverse proxies in front of the app; leave it at `0` when directly exposed.
 
 ## Database Setup
 
@@ -185,7 +181,9 @@ For Neon or another serverless PostgreSQL provider, configure `DATABASE_URL` wit
 
 The backend's Vercel build runs committed Prisma migrations only for production deployments, then builds the API. Preview builds skip production migrations.
 
-For a demo deployment, `OTP_DELIVERY_URL` and `OTP_DELIVERY_TOKEN` may both be omitted. Password registration and password login remain available; OTP requests return HTTP 503 until both provider settings are configured. `OTP_PEPPER` remains required in production, and OTP codes are never logged there.
+Password registration and password login are available. Password recovery is handled by the clinic administrator; do not expose an unverified password reset flow.
+
+To test Chapa payments, configure `CHAPA_SECRET_KEY` with a Chapa test secret key (the key starts with `CHASECK_TEST-`). Use Chapa's live secret key only when ready to accept real charges. Checkout and verification fail with HTTP 503 when the key is not configured; payments are never simulated.
 
 Start the local database, then generate Prisma Client:
 
@@ -226,7 +224,7 @@ The seed is idempotent and refuses to run when `NODE_ENV=production`. It creates
 npm run start:dev
 ```
 
-The API is at `http://localhost:3000/api/v1`; health check is `http://localhost:3000/api/v1/health`. OTP codes are printed by the console adapter only in development.
+The API is at `http://localhost:3000/api/v1`; health check is `http://localhost:3000/api/v1/health`.
 
 ## Testing Commands
 

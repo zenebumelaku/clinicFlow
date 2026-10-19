@@ -18,6 +18,10 @@ export class PaymentsService {
   ) {}
 
   async create(dto: CreatePaymentDto): Promise<PaymentResponseDto> {
+    if (dto.method === PaymentMethod.CHAPA) {
+      throw new BadRequestException('Use Chapa checkout to initialize and verify digital payments');
+    }
+
     const patient = await this.prisma.patient.findFirst({
       where: { id: dto.patientId, clinicId: dto.clinicId, isActive: true },
     });
@@ -133,7 +137,7 @@ export class PaymentsService {
         appointmentId: dto.appointmentId || null,
         amount: new Prisma.Decimal(dto.amount),
         currency: 'ETB',
-        method: PaymentMethod.OTHER,
+        method: PaymentMethod.CHAPA,
         status: PaymentStatus.PENDING,
         note: JSON.stringify({
           provider: 'CHAPA',
@@ -182,7 +186,20 @@ export class PaymentsService {
     const chapa = this.chapaService || new ChapaService(new ConfigService());
     const verification = await chapa.verify(txRef);
 
+    if (verification.txRef !== txRef) {
+      throw new BadRequestException('Chapa returned a different transaction reference');
+    }
+
     if (verification.status === 'success') {
+      if (
+        verification.amount !== Number(payment.amount) ||
+        verification.currency.toUpperCase() !== payment.currency.toUpperCase()
+      ) {
+        throw new BadRequestException(
+          'Chapa payment amount or currency does not match the payment',
+        );
+      }
+
       const updated = await this.prisma.$transaction(async (tx) => {
         const p = await tx.payment.update({
           where: { id: payment.id },

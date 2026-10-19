@@ -118,14 +118,14 @@ describe('ClinicFlow Part 6: Payments and Notifications', () => {
   }
 
   describe('Payment records', () => {
-    it('records payment methods and filters by status without processing transactions', async () => {
+    it('records manual payment methods and requires verified Chapa checkout for digital payments', async () => {
       const completed = await authJson('/payments', adminAToken, {
         method: 'POST',
         body: JSON.stringify({
           clinicId: clinicAId,
           patientId: patientAId,
           amount: 1250.5,
-          method: PaymentMethod.TELEBIRR,
+          method: PaymentMethod.MPESA,
         }),
       });
       assert.strictEqual(completed.status, 201);
@@ -134,6 +134,17 @@ describe('ClinicFlow Part 6: Payments and Notifications', () => {
         PaymentStatus.COMPLETED,
       );
       assert.strictEqual((completed.json.data as Record<string, unknown>).currency, 'ETB');
+
+      const unverifiedChapa = await authJson('/payments', adminAToken, {
+        method: 'POST',
+        body: JSON.stringify({
+          clinicId: clinicAId,
+          patientId: patientAId,
+          amount: 1250.5,
+          method: PaymentMethod.CHAPA,
+        }),
+      });
+      assert.strictEqual(unverifiedChapa.status, 400);
 
       const pending = await authJson('/payments', adminAToken, {
         method: 'POST',

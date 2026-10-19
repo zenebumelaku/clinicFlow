@@ -23,8 +23,7 @@ secrets, signing keys, or database credentials in a `VITE_*` variable.
 
 ## Clinic owner registration
 
-The `/register` flow sends a registration-purpose OTP to the supplied mobile
-number, then creates the administrator account and clinic through the API.
-Local development uses the backend console OTP adapter, so read the API
-terminal for the code. Production requires the backend OTP delivery provider
-and its server-side environment configuration.
+The `/register` flow creates clinic administrator, patient, or doctor accounts
+through the backend API using phone/email and password credentials. No OTP
+verification is used. Clinic administrators can help users recover account
+access.

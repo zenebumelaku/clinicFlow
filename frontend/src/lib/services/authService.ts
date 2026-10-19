@@ -201,14 +201,6 @@ export const authService = {
     }
   },
 
-  async resetPassword(identifier: string, password: string): Promise<void> {
-    await apiRequest('/auth/reset-password', {
-      method: 'POST',
-      authenticated: false,
-      body: { identifier, password },
-    });
-  },
-
   async registerClinic(registration: ClinicRegistration): Promise<AuthUser> {
     const session = await apiRequest<AuthSession>('/auth/register-clinic', {
       method: 'POST',

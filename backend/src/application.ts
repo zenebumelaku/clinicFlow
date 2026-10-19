@@ -81,7 +81,15 @@ export function createApp(options?: CreateAppOptions): { app: Express; services:
     }),
   );
 
-  app.use(express.json());
+  app.use(
+    express.json({
+      verify: (request, _response, body) => {
+        if (request.url?.endsWith('/payments/chapa/webhook')) {
+          Object.assign(request, { rawBody: body });
+        }
+      },
+    }),
+  );
   app.use(express.urlencoded({ extended: true }));
 
   app.use(correlationIdMiddleware);

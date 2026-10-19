@@ -1,38 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { ArrowLeft, CheckCircle2, Hospital, LockKeyhole, Phone } from 'lucide-react';
+import React from 'react';
+import { ArrowLeft, Hospital } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
-import { useToast } from '../../components/ui/Toast';
-import { authService } from '../../lib/services/authService';
 
 export const ForgotPasswordPage: React.FC<{
   onNavigate: (path: string) => void;
 }> = ({ onNavigate }) => {
-  const { success, error } = useToast();
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isResetting, setIsResetting] = useState(false);
-  const [isDone, setIsDone] = useState(false);
-
-  const handleResetPassword = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (password !== confirmPassword) {
-      error('The passwords do not match.');
-      return;
-    }
-    setIsResetting(true);
-    try {
-      await authService.resetPassword(identifier, password);
-      setIsDone(true);
-      success('Password reset complete. You can now sign in with your new password.');
-    } catch (resetError) {
-      error(resetError instanceof Error ? resetError.message : 'Unable to reset your password.');
-    } finally {
-      setIsResetting(false);
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-10 transition-colors dark:bg-[#09090b]">
       <section className="w-full max-w-md space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/[0.06] dark:border-zinc-800 dark:bg-[#121214] sm:p-8">
@@ -47,71 +19,16 @@ export const ForgotPasswordPage: React.FC<{
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#1D5BD8] dark:text-blue-400">
             Account recovery
           </p>
-          <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">
-            {isDone ? 'Password updated' : 'Reset your password'}
-          </h1>
+          <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">Forgot your password?</h1>
           <p className="mt-1.5 text-sm text-slate-500 dark:text-zinc-400">
-            {isDone
-              ? 'You can now sign in using your new password.'
-              : 'Enter your registered phone or email along with your new password.'}
+            For your account's security, password recovery is handled by your clinic administrator.
+            Contact your clinic to request a password reset.
           </p>
         </div>
 
-        {!isDone ? (
-          <form onSubmit={(event) => void handleResetPassword(event)} className="space-y-4">
-            <Input
-              label="Phone number or email"
-              type="text"
-              autoComplete="username"
-              required
-              minLength={6}
-              maxLength={254}
-              placeholder="+251 911 234567 or you@example.com"
-              leftIcon={<Phone className="h-4 w-4" />}
-              value={identifier}
-              onChange={(event) => setIdentifier(event.target.value)}
-            />
-            <Input
-              label="New password"
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              maxLength={128}
-              leftIcon={<LockKeyhole className="h-4 w-4" />}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-            <Input
-              label="Confirm new password"
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              maxLength={128}
-              error={
-                confirmPassword && password !== confirmPassword
-                  ? 'Passwords do not match.'
-                  : undefined
-              }
-              value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
-            />
-            <Button type="submit" className="w-full" isLoading={isResetting}>
-              Reset password
-            </Button>
-          </form>
-        ) : (
-          <div className="space-y-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-center dark:border-emerald-900/70 dark:bg-emerald-950/30">
-            <CheckCircle2 className="mx-auto h-9 w-9 text-emerald-600 dark:text-emerald-400" />
-            <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
-              Your password has been updated. Other active sessions have been signed out.
-            </p>
-            <Button className="w-full" onClick={() => onNavigate('/login')}>
-              Return to sign in
-            </Button>
-          </div>
-        )}
+        <Button className="w-full" onClick={() => onNavigate('/login')}>
+          Return to sign in
+        </Button>
 
         <div className="border-t border-slate-100 pt-4 text-center dark:border-zinc-800">
           <button

@@ -48,13 +48,6 @@ export const SettingsPage: React.FC<{
     maxWaitingCap: "30",
   });
 
-  const [chapaConfig, setChapaConfig] = useState({
-    publicKey: "CHAPUBK_TEST-sandbox-key",
-    baseUrl: "https://api.chapa.co/v1",
-    testMode: true,
-    allowCashSettlement: true,
-  });
-
   useEffect(() => {
     if (!clinicProfile) return;
     setProfileData((current) => ({
@@ -350,69 +343,33 @@ export const SettingsPage: React.FC<{
         )}
 
         {activeTab === "payments" && (
-          <form onSubmit={handleSave} className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
-                  Chapa Payment Gateway & Currency (ETB)
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-zinc-400">
-                  Configure Chapa hosted test checkout and digital fee settlement.
-                </p>
-              </div>
-              <span className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">
-                Chapa Sandbox Active
-              </span>
+          <div className="space-y-4 text-xs">
+            <div>
+              <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
+                Chapa Payment Gateway & Currency (ETB)
+              </h3>
+              <p className="mt-1 text-slate-500 dark:text-zinc-400">
+                Chapa checkout is configured by the system operator on the backend. Payment
+                credentials are never stored in clinic settings or exposed to the browser.
+              </p>
             </div>
 
-            <Input
-              label="Chapa Merchant / Public Key (Test Mode)"
-              value={chapaConfig.publicKey}
-              onChange={(e) =>
-                setChapaConfig({
-                  ...chapaConfig,
-                  publicKey: e.target.value,
-                })
-              }
-            />
-
-            <Input
-              label="Chapa API Base URL"
-              value={chapaConfig.baseUrl}
-              onChange={(e) =>
-                setChapaConfig({
-                  ...chapaConfig,
-                  baseUrl: e.target.value,
-                })
-              }
-            />
-
-            <div className="p-3 bg-slate-50 dark:bg-zinc-900/60 rounded-lg border border-slate-200 dark:border-zinc-800 text-xs flex items-center justify-between">
-              <div>
-                <strong className="text-slate-900 dark:text-white">
-                  Allow Physical Cash Collections
-                </strong>
-                <p className="text-slate-500 dark:text-zinc-400">
-                  Permit cash receipt generation at reception counter alongside Chapa digital payments.
-                </p>
-              </div>
-              <input
-                type="checkbox"
-                checked={chapaConfig.allowCashSettlement}
-                onChange={(e) =>
-                  setChapaConfig({
-                    ...chapaConfig,
-                    allowCashSettlement: e.target.checked,
-                  })
-                }
-                className="w-4 h-4 rounded text-blue-600 cursor-pointer"
-              />
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/60">
+              <strong className="text-slate-900 dark:text-white">Backend configuration</strong>
+              <p className="mt-1 text-slate-500 dark:text-zinc-400">
+                Set <code>CHAPA_SECRET_KEY</code> and, if provided by Chapa,{' '}
+                <code>CHAPA_WEBHOOK_SECRET</code> in the backend environment. Checkout stays
+                unavailable until a valid key is configured. For testing, use a Chapa test secret
+                key beginning with <code>CHASECK_TEST-</code>; only use a live key when ready to
+                accept real charges.
+              </p>
             </div>
 
-            <div className="pt-4 flex justify-end">
-              <Button type="submit">Save Chapa Settings</Button>
-            </div>
-          </form>
+            <p className="text-slate-500 dark:text-zinc-400">
+              Staff can record cash and bank-transfer payments from the Payments page. Chapa
+              payments must use hosted checkout and server verification.
+            </p>
+          </div>
         )}
 
         {activeTab === "security" && (

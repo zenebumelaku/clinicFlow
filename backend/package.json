@@ -13,7 +13,7 @@
     "start:prod": "node dist/src/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "typecheck": "tsc --noEmit",
-    "test": "ts-node -r tsconfig-paths/register test/auth.spec.ts && ts-node -r tsconfig-paths/register test/clinics.spec.ts && ts-node -r tsconfig-paths/register test/patients-appointments.spec.ts && ts-node -r tsconfig-paths/register test/queue.spec.ts && ts-node -r tsconfig-paths/register test/payments-notifications.spec.ts && ts-node -r tsconfig-paths/register test/reports.spec.ts && ts-node -r tsconfig-paths/register test/hardening.spec.ts",
+    "test": "ts-node -r tsconfig-paths/register test/auth.spec.ts && ts-node -r tsconfig-paths/register test/clinics.spec.ts && ts-node -r tsconfig-paths/register test/patients-appointments.spec.ts && ts-node -r tsconfig-paths/register test/queue.spec.ts && ts-node -r tsconfig-paths/register test/payments-notifications.spec.ts && ts-node -r tsconfig-paths/register test/chapa.spec.ts && ts-node -r tsconfig-paths/register test/reports.spec.ts && ts-node -r tsconfig-paths/register test/hardening.spec.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
