@@ -18,7 +18,7 @@ export function createAppointmentsRouter(services: AppServices): Router {
   router.post(
     '/',
     ...baseGuards,
-    requireRoles(Role.ADMIN, Role.RECEPTIONIST),
+    requireRoles(Role.ADMIN, Role.RECEPTIONIST, Role.PATIENT),
     validateBody(CreateAppointmentDto),
     async (req, res, next) => {
       try {
@@ -84,7 +84,7 @@ export function createAppointmentsRouter(services: AppServices): Router {
     '/:appointmentId/cancel',
     ...baseGuards,
     validateUuidParam('appointmentId'),
-    requireRoles(Role.ADMIN, Role.RECEPTIONIST),
+    requireRoles(Role.ADMIN, Role.RECEPTIONIST, Role.PATIENT),
     async (req, res, next) => {
       try {
         const clinicId = req.query.clinicId as string;

@@ -42,12 +42,16 @@ export class PaymentsService {
     return this.map(payment);
   }
 
-  async findAll(query: PaymentQueryDto): Promise<PaginatedResponseDto<PaymentResponseDto>> {
+  async findAll(
+    query: PaymentQueryDto,
+    patientUserId?: string,
+  ): Promise<PaginatedResponseDto<PaymentResponseDto>> {
     const where: Prisma.PaymentWhereInput = {
       clinicId: query.clinicId,
       ...(query.status ? { status: query.status } : {}),
       ...(query.patientId ? { patientId: query.patientId } : {}),
       ...(query.appointmentId ? { appointmentId: query.appointmentId } : {}),
+      ...(patientUserId ? { patient: { is: { userId: patientUserId } } } : {}),
     };
     const [total, payments] = await Promise.all([
       this.prisma.payment.count({ where }),

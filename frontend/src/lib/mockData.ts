@@ -12,6 +12,7 @@ import {
 export const INITIAL_DOCTORS: Doctor[] = [
   {
     id: "doc-1",
+    userId: "usr-doc-hana",
     name: "Dr. Hana Tesfaye",
     email: "hana.tesfaye@ClinicFlow.com",
     phone: "+251911234567",
@@ -104,6 +105,7 @@ export const INITIAL_DOCTORS: Doctor[] = [
 export const INITIAL_PATIENTS: Patient[] = [
   {
     id: "pat-1",
+    userId: "usr-pat-ayalew",
     mrn: "ET-2026-0104",
     name: "Abebe Kebede",
     phone: "+251911456789",

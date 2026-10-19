@@ -87,7 +87,7 @@ export function useClinicData(filters: ClinicDataFilters = {}) {
   const doctorsQuery = useQuery({
     queryKey: ['clinic', 'doctors'],
     queryFn: () => clinicService.getDoctors(),
-    enabled: !isPatient,
+    enabled: true,
   });
   const patientsQuery = useQuery({
     queryKey: ['clinic', 'patients', patientSearch || ''],
@@ -108,7 +108,7 @@ export function useClinicData(filters: ClinicDataFilters = {}) {
   const paymentsQuery = useQuery({
     queryKey: ['clinic', 'payments'],
     queryFn: () => clinicService.getPayments(),
-    enabled: canViewPayments,
+    enabled: canViewPayments || isPatient,
   });
   const notificationsQuery = useQuery({
     queryKey: ['clinic', 'notifications'],
@@ -124,7 +124,7 @@ export function useClinicData(filters: ClinicDataFilters = {}) {
   const clinicProfileQuery = useQuery({
     queryKey: ['clinic', 'profile'],
     queryFn: () => clinicService.getClinicProfile(),
-    enabled: !isPatient,
+    enabled: true,
   });
 
   const invalidateClinic = useCallback(() => {

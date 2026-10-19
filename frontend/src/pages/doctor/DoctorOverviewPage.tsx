@@ -26,8 +26,11 @@ export const DoctorOverviewPage: React.FC<{ onNavigate: (path: string) => void }
   const { success, error } = useToast();
   const currentUser = authService.getUser();
 
-  const myDoctor = doctors.find(doctor => doctor.userId === currentUser?.id);
+  const myDoctor = doctors.find(doctor => doctor.userId === currentUser?.id) || doctors[0];
   const today = clinicDateInputValue();
+
+  const [clinicalNotes, setClinicalNotes] = useState('');
+  const [prescription, setPrescription] = useState('');
 
   const myQueue = myDoctor ? queue.filter(q => q.doctorId === myDoctor.id) : [];
   const myWaiting = myQueue.filter(q => q.status === 'waiting');
@@ -167,12 +170,12 @@ export const DoctorOverviewPage: React.FC<{ onNavigate: (path: string) => void }
               </div>
             ) : (
               <div className="mt-1 text-slate-500 dark:text-zinc-400 text-sm italic">
-                No active consultation. Reception will call the next patient when ready.
+                Desk ready for next patient.
               </div>
             )}
           </div>
 
-          {/* Timer & Completion button */}
+          {/* Timer & Completion button / Call button */}
           {myInConsultation ? (
             <div className="flex items-center gap-4">
               <div className="text-right">
@@ -184,14 +187,16 @@ export const DoctorOverviewPage: React.FC<{ onNavigate: (path: string) => void }
               <Button
                 size="lg"
                 variant="primary"
-                className="bg-emerald-600 hover:bg-emerald-700"
-                onClick={() =>
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                onClick={() => {
                   handleCompleteConsultation(
                     myInConsultation.id,
                     myInConsultation.ticketNumber,
                     myInConsultation.patientName
-                  )
-                }
+                  );
+                  setClinicalNotes('');
+                  setPrescription('');
+                }}
                 leftIcon={<CheckCircle2 className="w-5 h-5" />}
               >
                 Complete Consultation
@@ -201,6 +206,7 @@ export const DoctorOverviewPage: React.FC<{ onNavigate: (path: string) => void }
             <Button
               size="lg"
               variant="primary"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
               onClick={() =>
                 handleStartConsultation(
                   myCalled[0].id,
@@ -212,8 +218,47 @@ export const DoctorOverviewPage: React.FC<{ onNavigate: (path: string) => void }
             >
               Begin Consultation
             </Button>
-          ) : null}
+          ) : (
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => onNavigate('/doctor/queue')}
+              leftIcon={<Play className="w-4 h-4" />}
+            >
+              View Waiting Queue ({myWaiting.length})
+            </Button>
+          )}
         </div>
+
+        {/* Clinical notes and prescription writer when in consultation */}
+        {myInConsultation && (
+          <div className="mt-5 pt-4 border-t border-blue-200/60 dark:border-zinc-800 grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="text-xs font-bold text-slate-700 dark:text-zinc-300 block mb-1">
+                Clinical Diagnosis & Consultation Notes
+              </label>
+              <textarea
+                rows={3}
+                placeholder="Chief complaint, clinical findings, diagnosis..."
+                value={clinicalNotes}
+                onChange={e => setClinicalNotes(e.target.value)}
+                className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-slate-700 dark:text-zinc-300 block mb-1">
+                Prescriptions & Follow-up Instructions
+              </label>
+              <textarea
+                rows={3}
+                placeholder="Prescribed medications, dosage, follow-up instructions..."
+                value={prescription}
+                onChange={e => setPrescription(e.target.value)}
+                className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              />
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* 3. My Waiting Queue List & Schedule */}

@@ -11,10 +11,15 @@ import {
   Moon,
   Monitor,
   LogOut,
+  ShieldCheck,
+  Stethoscope,
+  HeartHandshake,
+  ArrowRightLeft,
 } from "lucide-react";
 import { Role } from "../../types";
 import { useClinicData } from "../../lib/hooks/useClinic";
 import { useTheme } from "../../lib/theme";
+import { authService } from "../../lib/services/authService";
 
 interface TopBarProps {
   onToggleSidebar: () => void;
@@ -36,10 +41,12 @@ export const TopBar: React.FC<TopBarProps> = ({
   const { theme, isDark, setTheme, toggleTheme } = useTheme();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
+  const [showPortalMenu, setShowPortalMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const notifRef = useRef<HTMLDivElement>(null);
   const themeRef = useRef<HTMLDivElement>(null);
+  const portalRef = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const workspaceLabel = role === "patient"
@@ -66,10 +73,26 @@ export const TopBar: React.FC<TopBarProps> = ({
       if (themeRef.current && !themeRef.current.contains(e.target as Node)) {
         setShowThemeMenu(false);
       }
+      if (portalRef.current && !portalRef.current.contains(e.target as Node)) {
+        setShowPortalMenu(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleSwitchPortal = async (targetRole: "admin" | "doctor" | "patient") => {
+    setShowPortalMenu(false);
+    if (role === targetRole) return;
+    await authService.demoLogin(targetRole);
+    const targetPath =
+      targetRole === "admin"
+        ? "/dashboard/overview"
+        : targetRole === "doctor"
+          ? "/doctor/overview"
+          : "/patient/dashboard";
+    onNavigate(targetPath);
+  };
 
   return (
     <header className="h-16 bg-white dark:bg-[#09090b] border-b border-[#E6EAF0] dark:border-zinc-800 px-4 md:px-6 flex items-center justify-between sticky top-0 z-30 shadow-2xs">
@@ -127,6 +150,105 @@ export const TopBar: React.FC<TopBarProps> = ({
 
       {/* Right actions: Theme Toggle, Notifications, Account */}
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Quick Portal Switcher (1-Click Demo & Multi-portal) */}
+        <div className="relative" ref={portalRef}>
+          <button
+            type="button"
+            onClick={() => setShowPortalMenu(!showPortalMenu)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200/80 dark:bg-zinc-800 dark:hover:bg-zinc-700/80 text-slate-700 dark:text-zinc-200 transition-all cursor-pointer border border-slate-200/80 dark:border-zinc-700/80 shadow-2xs"
+            title="Switch Workspace Portal"
+          >
+            <ArrowRightLeft className="w-3.5 h-3.5 text-[#1D5BD8] dark:text-[#60A5FA]" />
+            <span className="hidden sm:inline">
+              {role === "admin" || role === "receptionist"
+                ? "Admin Portal"
+                : role === "doctor"
+                  ? "Doctor Portal"
+                  : "Patient Portal"}
+            </span>
+            <ChevronDown className="w-3 h-3 text-slate-400" />
+          </button>
+
+          {showPortalMenu && (
+            <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-[#121214] rounded-2xl shadow-xl border border-slate-200 dark:border-zinc-800 p-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+              <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider flex items-center justify-between">
+                <span>Switch Portal</span>
+                <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 font-bold">1-Click Live</span>
+              </div>
+              <div className="space-y-1 mt-1">
+                <button
+                  type="button"
+                  onClick={() => handleSwitchPortal("admin")}
+                  className={`w-full flex items-center justify-between p-2 rounded-xl text-xs font-medium transition-all text-left cursor-pointer ${
+                    role === "admin" || role === "receptionist"
+                      ? "bg-blue-50 dark:bg-blue-950/40 text-[#1D5BD8] dark:text-[#93C5FD] font-semibold border border-blue-200/60 dark:border-blue-900/60"
+                      : "text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 flex items-center justify-center shrink-0">
+                      <ShieldCheck className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-semibold truncate">Clinic Admin</div>
+                      <div className="text-[10px] text-slate-500 dark:text-zinc-400 truncate">Totem, check-in, billing</div>
+                    </div>
+                  </div>
+                  {(role === "admin" || role === "receptionist") && (
+                    <CheckCircle2 className="w-4 h-4 text-[#1D5BD8] dark:text-[#60A5FA] shrink-0 ml-1" />
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSwitchPortal("doctor")}
+                  className={`w-full flex items-center justify-between p-2 rounded-xl text-xs font-medium transition-all text-left cursor-pointer ${
+                    role === "doctor"
+                      ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-200/60 dark:border-emerald-900/60"
+                      : "text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                      <Stethoscope className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-semibold truncate">Doctor Workspace</div>
+                      <div className="text-[10px] text-slate-500 dark:text-zinc-400 truncate">Dr. Hana · Consult desk</div>
+                    </div>
+                  </div>
+                  {role === "doctor" && (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 ml-1" />
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSwitchPortal("patient")}
+                  className={`w-full flex items-center justify-between p-2 rounded-xl text-xs font-medium transition-all text-left cursor-pointer ${
+                    role === "patient"
+                      ? "bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300 font-semibold border border-violet-200/60 dark:border-violet-900/60"
+                      : "text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 flex items-center justify-center shrink-0">
+                      <HeartHandshake className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-semibold truncate">Patient Portal</div>
+                      <div className="text-[10px] text-slate-500 dark:text-zinc-400 truncate">Abebe · Ticket & bookings</div>
+                    </div>
+                  </div>
+                  {role === "patient" && (
+                    <CheckCircle2 className="w-4 h-4 text-violet-600 dark:text-violet-400 shrink-0 ml-1" />
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Theme Options & Quick Toggle */}
         <div className="relative" ref={themeRef}>
           <div className="flex items-center">

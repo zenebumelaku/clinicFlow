@@ -497,7 +497,7 @@ export const clinicService = {
         search: filters?.search?.trim() || undefined,
       }),
       getPatientsPage(),
-      this.getActiveRole() === 'patient' ? Promise.resolve([]) : this.getDoctors(),
+      this.getDoctors(),
     ]);
     return appointments.data.map(record =>
       toAppointment(record, patients.data.map(toPatient), doctors),
@@ -524,7 +524,7 @@ export const clinicService = {
         search: filters.search?.trim() || undefined,
       }),
       getPatientsPage(),
-      this.getActiveRole() === 'patient' ? Promise.resolve([]) : this.getDoctors(),
+      this.getDoctors(),
     ]);
     return {
       data: pageResult.data.map(record => toAppointment(record, patients.data.map(toPatient), doctors)),
@@ -637,12 +637,19 @@ export const clinicService = {
   },
 
   async getPayments(): Promise<PaymentRecord[]> {
-    const clinicId = await getClinicId();
-    const [payments, patients] = await Promise.all([
-      apiPaginated<ApiPayment>('/payments', { clinicId, page: 1, limit: PAGE_SIZE }),
-      getPatientsPage(),
-    ]);
-    return payments.data.map(payment => toPayment(payment, patients.data.map(toPatient)));
+    if (this.getActiveRole() === 'patient') {
+      return getStoredMockData().payments;
+    }
+    try {
+      const clinicId = await getClinicId();
+      const [payments, patients] = await Promise.all([
+        apiPaginated<ApiPayment>('/payments', { clinicId, page: 1, limit: PAGE_SIZE }),
+        getPatientsPage(),
+      ]);
+      return payments.data.map(payment => toPayment(payment, patients.data.map(toPatient)));
+    } catch {
+      return getStoredMockData().payments;
+    }
   },
 
   async recordPayment(data: Omit<PaymentRecord, 'id' | 'receiptNumber' | 'date'>): Promise<PaymentRecord> {

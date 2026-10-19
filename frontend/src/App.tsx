@@ -31,7 +31,13 @@ import { SettingsPage } from './pages/dashboard/SettingsPage';
 
 // Role portals
 import { DoctorOverviewPage } from './pages/doctor/DoctorOverviewPage';
+import { DoctorQueuePage } from './pages/doctor/DoctorQueuePage';
+import { DoctorSchedulePage } from './pages/doctor/DoctorSchedulePage';
+import { DoctorPatientsPage } from './pages/doctor/DoctorPatientsPage';
 import { PatientPortalPage } from './pages/patient/PatientPortalPage';
+import { PatientQueuePage } from './pages/patient/PatientQueuePage';
+import { PatientAppointmentsPage } from './pages/patient/PatientAppointmentsPage';
+import { PatientPaymentsPage } from './pages/patient/PatientPaymentsPage';
 
 import { useActiveRole, useAuth, useClinicData } from './lib/hooks/useClinic';
 import { Role } from './types';
@@ -171,17 +177,20 @@ function MainRouter() {
 
     // Doctor specific routes
     if (currentPath.startsWith('/doctor')) {
-      if (currentPath === '/doctor/appointments') return <AppointmentsPage onNavigate={navigate} />;
-      if (currentPath === '/doctor/queue') return <QueuePage onNavigate={navigate} />;
-      if (currentPath === '/doctor/patients') return <PatientsPage onNavigate={navigate} />;
+      if (currentPath === '/doctor/appointments') return <DoctorSchedulePage onNavigate={navigate} />;
+      if (currentPath === '/doctor/queue') return <DoctorQueuePage onNavigate={navigate} />;
+      if (currentPath === '/doctor/patients') return <DoctorPatientsPage onNavigate={navigate} />;
       if (currentPath === '/doctor/notifications') return <NotificationsPage onNavigate={navigate} />;
       return <DoctorOverviewPage onNavigate={navigate} />;
     }
 
     // Patient specific routes
     if (currentPath.startsWith('/patient')) {
+      if (currentPath === '/patient/queue') return <PatientQueuePage onNavigate={navigate} />;
+      if (currentPath === '/patient/appointments') return <PatientAppointmentsPage onNavigate={navigate} />;
+      if (currentPath === '/patient/payments') return <PatientPaymentsPage onNavigate={navigate} />;
       if (currentPath === '/patient/notifications') return <NotificationsPage onNavigate={navigate} />;
-      return <PatientPortalPage onNavigate={navigate} currentPath={currentPath} />;
+      return <PatientPortalPage onNavigate={navigate} />;
     }
 
     // Admin & Receptionist Dashboard routes

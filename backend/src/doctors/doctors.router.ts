@@ -38,7 +38,7 @@ export function createDoctorsRouter(services: AppServices): Router {
   router.get(
     '/',
     ...commonGuards,
-    requireRoles(Role.ADMIN, Role.RECEPTIONIST, Role.DOCTOR),
+    requireRoles(Role.ADMIN, Role.RECEPTIONIST, Role.DOCTOR, Role.PATIENT),
     validateQuery(DoctorQueryDto),
     async (req, res, next) => {
       try {

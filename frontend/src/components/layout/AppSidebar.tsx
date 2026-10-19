@@ -48,6 +48,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         { label: 'Patient Portal', path: '/patient/dashboard', icon: LayoutDashboard },
         { label: 'Live Ticket Status', path: '/patient/queue', icon: Clock },
         { label: 'Appointments', path: '/patient/appointments', icon: Calendar },
+        { label: 'Billing & Receipts', path: '/patient/payments', icon: CreditCard },
         { label: 'Notifications', path: '/patient/notifications', icon: Bell }
       ];
     }

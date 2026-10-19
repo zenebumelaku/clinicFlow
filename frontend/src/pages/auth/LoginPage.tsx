@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Hospital, Lock, Phone, ArrowRight } from "lucide-react";
+import { Hospital, Lock, Phone, ArrowRight, Stethoscope, Users, Sparkles } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { useToast } from "../../components/ui/Toast";
@@ -16,6 +16,27 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleDemoLogin = async (role: "admin" | "doctor" | "patient") => {
+    setLoading(true);
+    try {
+      const user = await authService.demoLogin(role);
+      success(`Signed in to the ${role} portal as ${user.firstName}`);
+      onNavigate(
+        role === "doctor"
+          ? "/doctor/overview"
+          : role === "patient"
+            ? "/patient/dashboard"
+            : "/dashboard/overview",
+      );
+    } catch (loginError) {
+      error(
+        loginError instanceof Error ? loginError.message : "Unable to sign in.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogin = async () => {
     setLoading(true);
@@ -111,6 +132,56 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             </p>
           </div>
 
+          {/* Quick 1-Click Demo Portals for Evaluation */}
+          <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-4 dark:border-zinc-800 dark:bg-zinc-900/60">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-blue-900 dark:text-blue-300">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span>Instant 1-Click Demo Portals</span>
+            </div>
+            <p className="mt-1 text-[11px] text-blue-700/80 dark:text-zinc-400">
+              Select a portal profile to experience the workflow immediately:
+            </p>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => void handleDemoLogin("admin")}
+                disabled={loading}
+                className="flex flex-col items-center justify-center rounded-xl border border-blue-200 bg-white p-2.5 text-center text-xs font-semibold text-blue-900 shadow-2xs transition hover:border-blue-400 hover:bg-blue-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:border-zinc-600 cursor-pointer"
+              >
+                <Hospital className="w-4 h-4 text-blue-600 dark:text-blue-400 mb-1" />
+                <span className="text-[11px] font-bold">Admin</span>
+                <span className="text-[9.5px] text-slate-500 dark:text-zinc-400">Clinic Portal</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleDemoLogin("doctor")}
+                disabled={loading}
+                className="flex flex-col items-center justify-center rounded-xl border border-emerald-200 bg-white p-2.5 text-center text-xs font-semibold text-emerald-900 shadow-2xs transition hover:border-emerald-400 hover:bg-emerald-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:border-zinc-600 cursor-pointer"
+              >
+                <Stethoscope className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mb-1" />
+                <span className="text-[11px] font-bold">Dr. Hana</span>
+                <span className="text-[9.5px] text-slate-500 dark:text-zinc-400">Doctor Portal</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleDemoLogin("patient")}
+                disabled={loading}
+                className="flex flex-col items-center justify-center rounded-xl border border-violet-200 bg-white p-2.5 text-center text-xs font-semibold text-violet-900 shadow-2xs transition hover:border-violet-400 hover:bg-violet-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:border-zinc-600 cursor-pointer"
+              >
+                <Users className="w-4 h-4 text-violet-600 dark:text-violet-400 mb-1" />
+                <span className="text-[11px] font-bold">Patient</span>
+                <span className="text-[9.5px] text-slate-500 dark:text-zinc-400">Patient Care</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="relative flex items-center justify-center">
+            <div className="w-full border-t border-slate-200 dark:border-zinc-800" />
+            <span className="absolute bg-white px-3 text-[11px] font-medium text-slate-400 dark:bg-[#09090b] dark:text-zinc-500 uppercase tracking-wider">
+              Or sign in with password
+            </span>
+          </div>
+
           {/* Form */}
           <form
             onSubmit={(e) => {
@@ -168,13 +239,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
           {/* Footnote */}
           <div className="text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
-            <div>
-              Want to register a new clinic?{" "}
+            <div className="flex items-center justify-center gap-2">
+              <span>New here?</span>
               <button
-                onClick={() => onNavigate("/register")}
+                onClick={() => onNavigate("/register?type=patient")}
+                className="text-violet-600 dark:text-violet-400 font-semibold hover:underline cursor-pointer"
+              >
+                Sign up as Patient
+              </button>
+              <span>·</span>
+              <button
+                onClick={() => onNavigate("/register?type=clinic")}
                 className="text-[#1D5BD8] dark:text-[#60A5FA] font-semibold hover:underline cursor-pointer"
               >
-                Register Practice
+                Register Clinic
               </button>
             </div>
             <div>

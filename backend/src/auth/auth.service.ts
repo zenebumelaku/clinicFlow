@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '../common/exceptions/http.exceptions';
 import * as bcrypt from 'bcryptjs';
-import { randomBytes } from 'crypto';
+import { randomBytes, randomUUID } from 'crypto';
 import { OtpPurpose, Role } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditService } from '../audit/audit.service';
@@ -15,6 +15,7 @@ import { TokenService } from './token.service';
 import { SendOtpDto } from './dto/send-otp.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { RegisterClinicDto } from './dto/register-clinic.dto';
+import { RegisterPatientDto } from './dto/register-patient.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -131,6 +132,90 @@ export class AuthService {
       action: 'AUTH_REGISTER_CLINIC',
       entity: 'Clinic',
       entityId: clinicId,
+    });
+
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      expiresIn: tokens.expiresIn,
+      user: this.mapUserResponse(user),
+    };
+  }
+
+  async registerPatient(dto: RegisterPatientDto): Promise<AuthResponseDto> {
+    const phone = dto.phone.trim();
+    const email = dto.email ? dto.email.trim().toLowerCase() : null;
+
+    let clinicId = dto.clinicId;
+    if (!clinicId) {
+      const defaultClinic = await this.prisma.clinic.findFirst({
+        where: { isActive: true },
+        orderBy: { createdAt: 'asc' },
+      });
+      if (!defaultClinic) {
+        throw new BadRequestException('No active clinic is available for patient registration');
+      }
+      clinicId = defaultClinic.id;
+    }
+
+    const passwordHash = await bcrypt.hash(dto.password, 12);
+    const medicalRecordNumber = `MR-${randomUUID().slice(0, 10).toUpperCase()}`;
+
+    const registration = await this.prisma
+      .$transaction(async (transaction) => {
+        const createdUser = await transaction.user.create({
+          data: {
+            phone,
+            email,
+            passwordHash,
+            firstName: dto.firstName.trim(),
+            lastName: dto.lastName.trim(),
+            role: Role.PATIENT,
+          },
+        });
+
+        const createdPatient = await transaction.patient.create({
+          data: {
+            clinicId: clinicId!,
+            userId: createdUser.id,
+            medicalRecordNumber,
+            dateOfBirth: dto.dateOfBirth ? new Date(dto.dateOfBirth) : null,
+            gender: dto.gender || null,
+            emergencyContactName: dto.emergencyContactName || null,
+            emergencyContactPhone: dto.emergencyContactPhone || null,
+          },
+        });
+
+        return { user: createdUser, clinicId: clinicId!, patient: createdPatient };
+      })
+      .catch((error: unknown) => {
+        if (
+          typeof error === 'object' &&
+          error !== null &&
+          'code' in error &&
+          error.code === 'P2002'
+        ) {
+          throw new ConflictException(
+            'An account already exists for this phone number or email address',
+          );
+        }
+        throw error;
+      });
+
+    const { user } = registration;
+    const tokens = await this.tokenService.generateTokens({
+      id: user.id,
+      phone: user.phone,
+      email: user.email,
+      role: user.role,
+    });
+
+    await this.auditService.record({
+      userId: user.id,
+      clinicId,
+      action: 'AUTH_REGISTER_PATIENT',
+      entity: 'Patient',
+      entityId: registration.patient.id,
     });
 
     return {

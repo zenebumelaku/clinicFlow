@@ -34,12 +34,15 @@ export function createPaymentsRouter(services: AppServices): Router {
 
   router.get(
     '/',
-    ...baseGuards,
+    authenticate,
+    requireClinicAccess,
+    requireRoles(Role.ADMIN, Role.RECEPTIONIST),
     validateQuery(PaymentQueryDto),
     async (req, res, next) => {
       try {
         const query = req.query as unknown as PaymentQueryDto;
-        const result = await services.payments.findAll(query);
+        const patientUserId = req.user!.role === Role.PATIENT ? req.user!.id : undefined;
+        const result = await services.payments.findAll(query, patientUserId);
         res.status(200).json(result);
       } catch (err) {
         next(err);
