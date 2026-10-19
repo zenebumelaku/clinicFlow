@@ -12,9 +12,18 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   const { success, error } = useToast();
-  const requestedPortal = new URLSearchParams(window.location.search).get("portal");
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
+  const requestedPortal = new URLSearchParams(window.location.search).get("portal") as "doctor" | "patient" | "admin" | null;
+
+  const defaultIdentifier = requestedPortal === "doctor"
+    ? "doctor.hana@mediflow-demo.local"
+    : requestedPortal === "patient"
+      ? "+251911223344"
+      : requestedPortal === "admin"
+        ? "admin@mediflow-demo.local"
+        : "";
+
+  const [identifier, setIdentifier] = useState(defaultIdentifier);
+  const [password, setPassword] = useState(defaultIdentifier ? "ClinicFlow@2026" : "");
   const [loading, setLoading] = useState(false);
 
   const handleDemoLogin = async (role: "admin" | "doctor" | "patient") => {
@@ -41,23 +50,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const user = await authService.login(identifier, password);
-      const role = user.role.toLowerCase();
-      const requestedRole = requestedPortal === "admin"
-        ? ["admin", "receptionist"].includes(role)
-        : requestedPortal === "patient" || requestedPortal === "doctor"
-          ? role === requestedPortal
-          : true;
-      if (!requestedRole) {
-        authService.clearSession();
-        error(`This account is assigned to the ${role} portal, not the ${requestedPortal} portal. Sign in with a ${requestedPortal} account.`);
-        return;
-      }
-      success(`Signed in to the ${requestedPortal || role} portal`);
+      const targetRole = requestedPortal || (identifier.toLowerCase().includes("doc") || identifier.toLowerCase().includes("hana") ? "doctor" : identifier.toLowerCase().includes("pat") || identifier.toLowerCase().includes("abebe") ? "patient" : "admin");
+      
+      const user = await authService.login(
+        identifier || (targetRole === "doctor" ? "doctor.hana@mediflow-demo.local" : targetRole === "patient" ? "+251911223344" : "admin@mediflow-demo.local"),
+        password || "ClinicFlow@2026",
+        targetRole,
+      );
+
+      const actualRole = user.role.toLowerCase() as Role;
+      success(`Signed in to the ${actualRole} portal`);
       onNavigate(
-        role === "doctor"
+        actualRole === "doctor"
           ? "/doctor/overview"
-          : role === "patient"
+          : actualRole === "patient"
             ? "/patient/dashboard"
             : "/dashboard/overview",
       );
@@ -69,6 +75,35 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
       setLoading(false);
     }
   };
+
+  const portalConfig = {
+    doctor: {
+      title: "Doctor Workspace Sign In",
+      subtitle: "Dedicated clinical consultation desk, queue, and patient records.",
+      icon: Stethoscope,
+      color: "emerald",
+      badge: "Doctor Portal",
+      launchLabel: "Launch Doctor Workspace (Dr. Hana)",
+    },
+    patient: {
+      title: "Patient Care Portal Sign In",
+      subtitle: "View live queue totem status, book appointments, and check receipts.",
+      icon: Users,
+      color: "violet",
+      badge: "Patient Portal",
+      launchLabel: "Launch Patient Portal (Abebe Kebede)",
+    },
+    admin: {
+      title: "Clinic Admin Portal Sign In",
+      subtitle: "Front desk management, queue totem, appointments, and billing.",
+      icon: Hospital,
+      color: "blue",
+      badge: "Admin Portal",
+      launchLabel: "Launch Clinic Admin Portal",
+    },
+  };
+
+  const currentConfig = requestedPortal ? portalConfig[requestedPortal] : null;
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-white dark:bg-[#09090b] text-slate-900 dark:text-zinc-100 transition-colors">
@@ -110,7 +145,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
 
       {/* Right Form Column */}
       <div className="lg:col-span-7 flex flex-col justify-center px-6 sm:px-12 lg:px-20 py-12 bg-white dark:bg-[#09090b]">
-        <div className="max-w-md w-full mx-auto space-y-8">
+        <div className="max-w-md w-full mx-auto space-y-7">
+          {/* Header */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 lg:hidden mb-4">
               <div className="w-8 h-8 rounded-lg bg-[#1D5BD8] flex items-center justify-center text-white">
@@ -120,65 +156,105 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 ClinicFlow
               </span>
             </div>
+
+            {currentConfig && (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 mb-1 border border-slate-200 dark:border-zinc-700">
+                <currentConfig.icon className="w-3.5 h-3.5 text-[#1D5BD8]" />
+                <span>{currentConfig.badge}</span>
+              </div>
+            )}
+
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-              {requestedPortal
-                ? `Sign in to the ${requestedPortal} portal`
-                : "Sign in to ClinicFlow"}
+              {currentConfig ? currentConfig.title : "Sign in to ClinicFlow"}
             </h1>
             <p className="text-xs text-slate-500 dark:text-zinc-400">
-              {requestedPortal
-                ? `Use the account provided for the ${requestedPortal} portal.`
-                : "Sign in with your registered email or phone number and password"}
+              {currentConfig
+                ? currentConfig.subtitle
+                : "Select your dedicated portal workspace below or sign in with credentials:"}
             </p>
           </div>
 
-          {/* Quick 1-Click Demo Portals for Evaluation */}
-          <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-4 dark:border-zinc-800 dark:bg-zinc-900/60">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-blue-900 dark:text-blue-300">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span>Instant 1-Click Demo Portals</span>
+          {/* If requestedPortal: Show Dedicated Prominent 1-Click Launch Button */}
+          {requestedPortal ? (
+            <div className={`p-4 rounded-2xl border ${
+              requestedPortal === 'doctor'
+                ? 'border-emerald-200 bg-emerald-50/70 dark:border-emerald-900/60 dark:bg-emerald-950/30'
+                : requestedPortal === 'patient'
+                  ? 'border-violet-200 bg-violet-50/70 dark:border-violet-900/60 dark:bg-violet-950/30'
+                  : 'border-blue-200 bg-blue-50/70 dark:border-blue-900/60 dark:bg-blue-950/30'
+            }`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  1-Click Direct Launch
+                </span>
+                <span className="text-[10px] font-semibold text-slate-500 dark:text-zinc-400">Instant Access</span>
+              </div>
+              <Button
+                size="lg"
+                onClick={() => void handleDemoLogin(requestedPortal)}
+                isLoading={loading}
+                rightIcon={<ArrowRight className="w-4 h-4" />}
+                className={`w-full ${
+                  requestedPortal === 'doctor'
+                    ? 'bg-emerald-700 hover:bg-emerald-800 text-white'
+                    : requestedPortal === 'patient'
+                      ? 'bg-violet-700 hover:bg-violet-800 text-white'
+                      : 'bg-blue-700 hover:bg-blue-800 text-white'
+                }`}
+              >
+                {currentConfig?.launchLabel}
+              </Button>
             </div>
-            <p className="mt-1 text-[11px] text-blue-700/80 dark:text-zinc-400">
-              Select a portal profile to experience the workflow immediately:
-            </p>
-            <div className="mt-3 grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => void handleDemoLogin("admin")}
-                disabled={loading}
-                className="flex flex-col items-center justify-center rounded-xl border border-blue-200 bg-white p-2.5 text-center text-xs font-semibold text-blue-900 shadow-2xs transition hover:border-blue-400 hover:bg-blue-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:border-zinc-600 cursor-pointer"
-              >
-                <Hospital className="w-4 h-4 text-blue-600 dark:text-blue-400 mb-1" />
-                <span className="text-[11px] font-bold">Admin</span>
-                <span className="text-[9.5px] text-slate-500 dark:text-zinc-400">Clinic Portal</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => void handleDemoLogin("doctor")}
-                disabled={loading}
-                className="flex flex-col items-center justify-center rounded-xl border border-emerald-200 bg-white p-2.5 text-center text-xs font-semibold text-emerald-900 shadow-2xs transition hover:border-emerald-400 hover:bg-emerald-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:border-zinc-600 cursor-pointer"
-              >
-                <Stethoscope className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mb-1" />
-                <span className="text-[11px] font-bold">Dr. Hana</span>
-                <span className="text-[9.5px] text-slate-500 dark:text-zinc-400">Doctor Portal</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => void handleDemoLogin("patient")}
-                disabled={loading}
-                className="flex flex-col items-center justify-center rounded-xl border border-violet-200 bg-white p-2.5 text-center text-xs font-semibold text-violet-900 shadow-2xs transition hover:border-violet-400 hover:bg-violet-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:border-zinc-600 cursor-pointer"
-              >
-                <Users className="w-4 h-4 text-violet-600 dark:text-violet-400 mb-1" />
-                <span className="text-[11px] font-bold">Patient</span>
-                <span className="text-[9.5px] text-slate-500 dark:text-zinc-400">Patient Care</span>
-              </button>
+          ) : (
+            /* If no portal query: 3 Interactive Portal Cards */
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-900/60">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-zinc-200 mb-1">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span>Choose Your Portal:</span>
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-zinc-400 mb-3">
+                1-click to launch the dedicated workspace for your role:
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => void handleDemoLogin("admin")}
+                  disabled={loading}
+                  className="flex flex-col items-center justify-center rounded-xl border border-blue-200 bg-white p-2.5 text-center text-xs font-semibold text-blue-900 shadow-2xs transition hover:border-blue-400 hover:bg-blue-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:border-zinc-600 cursor-pointer"
+                >
+                  <Hospital className="w-4 h-4 text-blue-600 dark:text-blue-400 mb-1" />
+                  <span className="text-[11px] font-bold">Admin</span>
+                  <span className="text-[9.5px] text-slate-500 dark:text-zinc-400">Clinic Portal</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void handleDemoLogin("doctor")}
+                  disabled={loading}
+                  className="flex flex-col items-center justify-center rounded-xl border border-emerald-200 bg-white p-2.5 text-center text-xs font-semibold text-emerald-900 shadow-2xs transition hover:border-emerald-400 hover:bg-emerald-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:border-zinc-600 cursor-pointer"
+                >
+                  <Stethoscope className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mb-1" />
+                  <span className="text-[11px] font-bold">Dr. Hana</span>
+                  <span className="text-[9.5px] text-slate-500 dark:text-zinc-400">Doctor Portal</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void handleDemoLogin("patient")}
+                  disabled={loading}
+                  className="flex flex-col items-center justify-center rounded-xl border border-violet-200 bg-white p-2.5 text-center text-xs font-semibold text-violet-900 shadow-2xs transition hover:border-violet-400 hover:bg-violet-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:border-zinc-600 cursor-pointer"
+                >
+                  <Users className="w-4 h-4 text-violet-600 dark:text-violet-400 mb-1" />
+                  <span className="text-[11px] font-bold">Patient</span>
+                  <span className="text-[9.5px] text-slate-500 dark:text-zinc-400">Patient Care</span>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="relative flex items-center justify-center">
             <div className="w-full border-t border-slate-200 dark:border-zinc-800" />
             <span className="absolute bg-white px-3 text-[11px] font-medium text-slate-400 dark:bg-[#09090b] dark:text-zinc-500 uppercase tracking-wider">
-              Or sign in with password
+              {requestedPortal ? "Or sign in with custom password" : "Or sign in with password"}
             </span>
           </div>
 
@@ -198,7 +274,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               autoComplete="username"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              required
             />
 
             <div className="space-y-1">
@@ -222,7 +297,6 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
               />
             </div>
 
@@ -233,14 +307,50 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
               isLoading={loading}
               rightIcon={<ArrowRight className="w-4 h-4" />}
             >
-              Sign In
+              {requestedPortal ? `Sign In to ${currentConfig?.badge}` : "Sign In"}
             </Button>
           </form>
+
+          {/* Portal Switcher Links */}
+          {requestedPortal && (
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 text-xs text-slate-600 dark:text-zinc-400 flex items-center justify-between">
+              <span>Switch portal:</span>
+              <div className="flex items-center gap-2">
+                {requestedPortal !== "admin" && (
+                  <button
+                    type="button"
+                    onClick={() => onNavigate("/login?portal=admin")}
+                    className="text-[#1D5BD8] dark:text-[#60A5FA] font-semibold hover:underline cursor-pointer"
+                  >
+                    Admin
+                  </button>
+                )}
+                {requestedPortal !== "doctor" && (
+                  <button
+                    type="button"
+                    onClick={() => onNavigate("/login?portal=doctor")}
+                    className="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline cursor-pointer"
+                  >
+                    Doctor
+                  </button>
+                )}
+                {requestedPortal !== "patient" && (
+                  <button
+                    type="button"
+                    onClick={() => onNavigate("/login?portal=patient")}
+                    className="text-violet-600 dark:text-violet-400 font-semibold hover:underline cursor-pointer"
+                  >
+                    Patient
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Footnote */}
           <div className="text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
             <div className="flex items-center justify-center gap-2">
-              <span>New here?</span>
+              <span>New patient?</span>
               <button
                 onClick={() => onNavigate("/register?type=patient")}
                 className="text-violet-600 dark:text-violet-400 font-semibold hover:underline cursor-pointer"

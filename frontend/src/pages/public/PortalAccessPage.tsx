@@ -66,44 +66,47 @@ const roleMatchesPortal = (role: string, portal: PortalKind) => {
 };
 
 export const PortalAccessPage: React.FC<PortalAccessPageProps> = ({ portal, onNavigate }) => {
-  const { error } = useToast();
+  const { success, error } = useToast();
   const content = portalContent[portal];
   const user = authService.getUser();
   const hasMatchingAccount = Boolean(user && roleMatchesPortal(user.role, portal));
+
   const colorClasses = {
     patient: {
       badge: 'border-violet-200 bg-violet-50 text-violet-800 dark:border-violet-900 dark:bg-violet-950/40 dark:text-violet-200',
-      button: 'bg-violet-700 hover:bg-violet-800',
+      button: 'bg-violet-700 hover:bg-violet-800 text-white',
       check: 'bg-violet-100 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300',
     },
     doctor: {
       badge: 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200',
-      button: 'bg-emerald-700 hover:bg-emerald-800',
+      button: 'bg-emerald-700 hover:bg-emerald-800 text-white',
       check: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300',
     },
     admin: {
       badge: 'border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-200',
-      button: 'bg-blue-700 hover:bg-blue-800',
+      button: 'bg-blue-700 hover:bg-blue-800 text-white',
       check: 'bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300',
     },
   }[portal];
 
-  const handleContinue = async () => {
-    if (hasMatchingAccount) {
-      onNavigate(homeForPortal[portal]);
-      return;
-    }
-
-    if (user) {
-      try {
-        await authService.logout();
-      } catch (logoutError) {
-        error(logoutError instanceof Error ? logoutError.message : 'Could not switch accounts.');
-        return;
+  const handleLaunch = async () => {
+    try {
+      if (!hasMatchingAccount) {
+        await authService.demoLogin(portal);
       }
+      success(`Entering ${portal} workspace`);
+      onNavigate(homeForPortal[portal]);
+    } catch (e) {
+      error(e instanceof Error ? e.message : 'Could not launch portal.');
+      onNavigate(`/login?portal=${portal}`);
     }
-    onNavigate(`/login?portal=${portal}`);
   };
+
+  const primaryLabel = portal === 'doctor'
+    ? 'Launch Doctor Workspace (Dr. Hana)'
+    : portal === 'patient'
+      ? 'Launch Patient Portal (Abebe Kebede)'
+      : 'Launch Clinic Admin Portal';
 
   return (
     <main className="flex min-h-[70vh] items-center justify-center px-4 py-12 sm:px-6">
@@ -131,18 +134,30 @@ export const PortalAccessPage: React.FC<PortalAccessPageProps> = ({ portal, onNa
             ))}
           </div>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row flex-wrap">
             <Button
               size="lg"
-              onClick={() => void handleContinue()}
+              onClick={() => void handleLaunch()}
               rightIcon={<ArrowRight className="h-4 w-4" />}
               className={colorClasses.button}
             >
-              {hasMatchingAccount ? 'Open your portal' : content.signInLabel}
+              {primaryLabel}
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => onNavigate(`/login?portal=${portal}`)}
+            >
+              Sign in with password
             </Button>
             {portal === 'admin' && (
               <Button size="lg" variant="outline" onClick={() => onNavigate('/register')}>
                 Register a clinic
+              </Button>
+            )}
+            {portal === 'patient' && (
+              <Button size="lg" variant="outline" onClick={() => onNavigate('/register')}>
+                Create Patient Account
               </Button>
             )}
           </div>

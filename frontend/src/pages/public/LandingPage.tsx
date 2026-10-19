@@ -39,6 +39,7 @@ import pediatricSuiteImage from "../../assets/images/room_pediatric_suite_179147
 import physiciansTeamImage from "../../assets/images/physicians_team_tablet_1791477807468.jpg";
 import womensSuiteImage from "../../assets/images/room_womens_suite_1791479241424.jpg";
 import hanaProfileImage from "../../assets/images/z.jpg";
+import { authService } from "../../lib/services/authService";
 
 interface LandingPageProps {
   onNavigate: (path: string) => void;
@@ -207,8 +208,46 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   onClick={() => onNavigate("/login")}
                   className="px-6 py-3.5 rounded-xl bg-white dark:bg-zinc-900 text-[#172033] dark:text-zinc-200 font-semibold text-sm hover:bg-[#F7FAFC] dark:hover:bg-zinc-800 hover:border-[#1D5BD8]/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 border border-[#E6EAF0] dark:border-zinc-700 cursor-pointer shadow-xs flex items-center gap-2"
                 >
-                  <span>Clinic Sign In</span>
+                  <span>Sign In Options</span>
                 </button>
+
+                {/* 1-Click Direct Portal Access Pills */}
+                <div className="w-full flex flex-wrap items-center gap-2 pt-1 text-xs">
+                  <span className="font-semibold text-slate-500 dark:text-zinc-400">Direct Portals:</span>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await authService.demoLogin("patient");
+                      onNavigate("/patient/dashboard");
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 dark:bg-violet-950/40 dark:border-violet-900/60 dark:text-violet-300 font-semibold transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                  >
+                    <span>Patient Portal</span>
+                    <span className="text-[10px] text-violet-500 font-bold">→</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await authService.demoLogin("doctor");
+                      onNavigate("/doctor/overview");
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-900/60 dark:text-emerald-300 font-semibold transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                  >
+                    <span>Doctor Workspace</span>
+                    <span className="text-[10px] text-emerald-500 font-bold">→</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await authService.demoLogin("admin");
+                      onNavigate("/dashboard/overview");
+                    }}
+                    className="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#1D5BD8] border border-blue-200 dark:bg-blue-950/40 dark:border-blue-900/60 dark:text-blue-300 font-semibold transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                  >
+                    <span>Clinic Admin</span>
+                    <span className="text-[10px] text-blue-500 font-bold">→</span>
+                  </button>
+                </div>
               </div>
 
               {/* Social Proof & Patient Stack */}
@@ -1007,7 +1046,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 onClick={() => onNavigate("/login")}
                 className="px-7 py-3.5 rounded-xl bg-white/15 text-white font-semibold text-sm hover:bg-white/25 hover:-translate-y-0.5 active:scale-95 transition-all border border-white/30 cursor-pointer backdrop-blur-xs"
               >
-                Sign In to Clinic App
+                Sign In to Portals
               </button>
             </div>
           </div>
