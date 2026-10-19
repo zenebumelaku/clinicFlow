@@ -18,7 +18,7 @@ import { createAuthRouter } from './auth/auth.router';
 import { createClinicsRouter } from './clinics/clinics.router';
 import { createBranchesRouter } from './branches/branches.router';
 import { createStaffRouter } from './staff/staff.router';
-import { createDoctorsRouter } from './doctors/doctors.router';
+import { createDoctorsRouter, createDoctorSelfRouter } from './doctors/doctors.router';
 import { createPatientsRouter } from './patients/patients.router';
 import { createAppointmentsRouter } from './appointments/appointments.router';
 import { createQueueRouter } from './queue/queue.router';
@@ -109,6 +109,7 @@ export function createApp(options?: CreateAppOptions): { app: Express; services:
   app.use(`${cleanPrefix}/clinics/:clinicId/branches`, createBranchesRouter(services));
   app.use(`${cleanPrefix}/clinics/:clinicId/staff`, createStaffRouter(services));
   app.use(`${cleanPrefix}/clinics/:clinicId/doctors`, createDoctorsRouter(services));
+  app.use(`${cleanPrefix}/doctors`, createDoctorSelfRouter(services));
   app.use(`${cleanPrefix}/patients`, createPatientsRouter(services));
   app.use(`${cleanPrefix}/appointments`, createAppointmentsRouter(services));
   app.use(`${cleanPrefix}/queue`, createQueueRouter(services));

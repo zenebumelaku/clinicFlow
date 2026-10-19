@@ -102,6 +102,18 @@ export class EnvironmentVariables {
   @IsBoolean()
   @IsOptional()
   SWAGGER_ENABLED?: boolean;
+
+  @IsString()
+  @IsOptional()
+  CHAPA_SECRET_KEY?: string;
+
+  @IsString()
+  @IsOptional()
+  CHAPA_BASE_URL?: string = 'https://api.chapa.co/v1';
+
+  @IsString()
+  @IsOptional()
+  CHAPA_WEBHOOK_SECRET?: string;
 }
 
 export function validate(config: Record<string, unknown>) {

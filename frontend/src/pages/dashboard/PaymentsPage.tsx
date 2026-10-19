@@ -199,6 +199,7 @@ export const PaymentsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
             className="rounded-xl border border-slate-200/80 dark:border-zinc-700 bg-white dark:bg-zinc-800/90 px-3 py-2 text-xs text-slate-800 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
           >
             <option value="all" className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white">All Methods</option>
+            <option value="chapa" className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white">Chapa (Test Mode)</option>
             <option value="telebirr" className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white">Telebirr</option>
             <option value="cash" className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white">Cash</option>
             <option value="cbe_birr" className="bg-white dark:bg-zinc-900 text-slate-900 dark:text-white">CBE Birr</option>
@@ -350,6 +351,7 @@ export const PaymentsPage: React.FC<{ onNavigate: (path: string) => void }> = ({
                 setNewPayment({ ...newPayment, paymentMethod: e.target.value as PaymentMethod })
               }
             >
+              <option value="chapa">Chapa Payment Gateway (Online Test)</option>
               <option value="telebirr">Telebirr (Ethio Telecom)</option>
               <option value="cash">Cash Collection</option>
               <option value="cbe_birr">Commercial Bank of Ethiopia (CBE Birr)</option>

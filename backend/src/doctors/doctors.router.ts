@@ -120,3 +120,24 @@ export function createDoctorsRouter(services: AppServices): Router {
 
   return router;
 }
+
+export function createDoctorSelfRouter(services: AppServices): Router {
+  const router = Router();
+  const authenticate = createAuthMiddleware(services.prisma, services.config);
+
+  router.get(
+    '/me',
+    authenticate,
+    requireRoles(Role.DOCTOR),
+    async (req, res, next) => {
+      try {
+        const result = await services.doctors.findMine(req.user!.id);
+        res.status(200).json(result);
+      } catch (err) {
+        next(err);
+      }
+    },
+  );
+
+  return router;
+}

@@ -231,6 +231,16 @@ export function useClinicData(filters: ClinicDataFilters = {}) {
     updateAppointmentStatus: updateAppointmentStatusMutation.mutateAsync,
     createPatient: createPatientMutation.mutateAsync,
     recordPayment: recordPaymentMutation.mutateAsync,
+    initializeChapaPayment: async (params: Parameters<typeof clinicService.initializeChapaPayment>[0]) => {
+      const result = await clinicService.initializeChapaPayment(params);
+      await invalidateClinic();
+      return result;
+    },
+    verifyChapaPayment: async (txRef: string) => {
+      const result = await clinicService.verifyChapaPayment(txRef);
+      await invalidateClinic();
+      return result;
+    },
     updatePaymentStatus: updatePaymentStatusMutation.mutateAsync,
     markNotificationAsRead: markNotificationReadMutation.mutateAsync,
     markAllNotificationsAsRead: markAllNotificationsReadMutation.mutateAsync,
@@ -247,10 +257,22 @@ export function useClinicReports(range: ReportRange) {
   });
 }
 
-export function usePatientsPage(search: string, page: number, gender: string) {
+export function usePatientsPage(
+  search?: string,
+  page: number = 1,
+  gender: string = 'all',
+  limit?: number,
+) {
+  const trimmed = search?.trim() || '';
   return useQuery({
-    queryKey: ['clinic', 'patients', 'page', search.trim(), gender, page],
-    queryFn: () => clinicService.getPatientsPage(search.trim() || undefined, page, gender === 'all' ? undefined : gender),
+    queryKey: ['clinic', 'patients', 'page', trimmed, gender, page, limit],
+    queryFn: () =>
+      clinicService.getPatientsPage(
+        trimmed || undefined,
+        page,
+        !gender || gender === 'all' ? undefined : gender,
+        limit,
+      ),
   });
 }
 

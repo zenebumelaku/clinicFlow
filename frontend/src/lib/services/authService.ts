@@ -40,6 +40,19 @@ export interface PatientRegistration {
   emergencyContactPhone?: string;
 }
 
+export interface DoctorRegistration {
+  phone: string;
+  email?: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  specialization: string;
+  licenseNumber: string;
+  consultationFee?: number;
+  bio?: string;
+  clinicId?: string;
+}
+
 const DEMO_USERS: Record<'admin' | 'doctor' | 'patient', AuthUser> = {
   admin: {
     id: 'usr-admin-001',
@@ -88,33 +101,29 @@ export const authService = {
   async login(
     identifier: string,
     password?: string,
-    fallbackRole?: 'admin' | 'doctor' | 'patient',
   ): Promise<AuthUser> {
-    const cleanId = identifier.trim().toLowerCase();
+    const cleanId = identifier.trim();
     try {
       const session = await apiRequest<AuthSession>('/auth/login', {
         method: 'POST',
         authenticated: false,
-        body: { identifier: cleanId || identifier, password: password || 'ClinicFlow@2026' },
+        body: { identifier: cleanId, password: password || '' },
       });
       this.saveSession(session);
       return session.user;
     } catch (apiErr) {
-      // Check if identifier matches a demo user or fallback test user
+      // If the backend returns an explicit error (401 invalid credentials, 400, etc.), do NOT mask it!
+      if (apiErr instanceof ApiError) {
+        throw apiErr;
+      }
+      // Only for completely unreachable network with pre-set demo identifiers, allow offline demo
       const matchedDemoRole = (['admin', 'doctor', 'patient'] as const).find(
         r =>
-          DEMO_USERS[r].email?.toLowerCase() === cleanId ||
-          DEMO_USERS[r].phone === cleanId ||
-          cleanId.includes(r) ||
-          (r === 'doctor' && (cleanId.includes('hana') || cleanId.includes('dr') || cleanId.includes('doc'))) ||
-          (r === 'patient' && (cleanId.includes('abebe') || cleanId.includes('ayalew') || cleanId.includes('pat') || cleanId.includes('223344'))) ||
-          (r === 'admin' && (cleanId.includes('admin') || cleanId.includes('clinic') || cleanId.includes('reception'))),
+          DEMO_USERS[r].email?.toLowerCase() === cleanId.toLowerCase() ||
+          DEMO_USERS[r].phone === cleanId,
       );
       if (matchedDemoRole) {
         return this.demoLogin(matchedDemoRole);
-      }
-      if (fallbackRole) {
-        return this.demoLogin(fallbackRole);
       }
       throw apiErr;
     }
@@ -130,6 +139,40 @@ export const authService = {
     };
     this.saveSession(session);
     return user;
+  },
+
+  async registerDoctor(registration: DoctorRegistration): Promise<AuthUser> {
+    try {
+      const session = await apiRequest<AuthSession>('/auth/register-doctor', {
+        method: 'POST',
+        authenticated: false,
+        body: registration,
+      });
+      this.saveSession(session);
+      return session.user;
+    } catch (err) {
+      if (err instanceof ApiError) {
+        throw err;
+      }
+      const user: AuthUser = {
+        id: `usr-doc-${Date.now()}`,
+        phone: registration.phone,
+        email: registration.email || null,
+        firstName: registration.firstName,
+        lastName: registration.lastName,
+        role: 'DOCTOR',
+        isActive: true,
+        createdAt: new Date().toISOString(),
+      };
+      const session: AuthSession = {
+        accessToken: `demo_access_doctor_${Date.now()}`,
+        refreshToken: `demo_refresh_doctor_${Date.now()}`,
+        expiresIn: '7d',
+        user,
+      };
+      this.saveSession(session);
+      return user;
+    }
   },
 
   async registerPatient(registration: PatientRegistration): Promise<AuthUser> {

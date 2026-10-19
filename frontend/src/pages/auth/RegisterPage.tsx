@@ -12,6 +12,7 @@ import {
   User,
   Users,
   HeartPulse,
+  Stethoscope,
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input, Select } from '../../components/ui/Input';
@@ -49,6 +50,19 @@ interface PatientForm {
   emergencyContactPhone: string;
 }
 
+interface DoctorForm {
+  phone: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  confirmPassword: string;
+  specialization: string;
+  licenseNumber: string;
+  consultationFee: string;
+  bio: string;
+}
+
 const initialClinicForm: RegistrationForm = {
   phone: '',
   email: '',
@@ -75,15 +89,29 @@ const initialPatientForm: PatientForm = {
   emergencyContactPhone: '',
 };
 
+const initialDoctorForm: DoctorForm = {
+  phone: '',
+  email: '',
+  firstName: '',
+  lastName: '',
+  password: '',
+  confirmPassword: '',
+  specialization: 'Internal Medicine',
+  licenseNumber: '',
+  consultationFee: '850',
+  bio: '',
+};
+
 export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
   const { success, error } = useToast();
   const searchType = new URLSearchParams(window.location.search).get('type');
-  const [regType, setRegType] = useState<'patient' | 'clinic'>(
-    searchType === 'clinic' ? 'clinic' : 'patient'
+  const [regType, setRegType] = useState<'patient' | 'doctor' | 'clinic'>(
+    searchType === 'clinic' ? 'clinic' : searchType === 'doctor' ? 'doctor' : 'patient'
   );
   const [step, setStep] = useState<1 | 2>(1);
   const [clinicForm, setClinicForm] = useState(initialClinicForm);
   const [patientForm, setPatientForm] = useState(initialPatientForm);
+  const [doctorForm, setDoctorForm] = useState(initialDoctorForm);
   const [isRegistering, setIsRegistering] = useState(false);
 
   const handleClinicAccountDetails = (event: React.FormEvent<HTMLFormElement>) => {
@@ -142,13 +170,49 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
         emergencyContactName: patientForm.emergencyContactName.trim() || undefined,
         emergencyContactPhone: patientForm.emergencyContactPhone.trim() || undefined,
       });
-      success('Welcome to MediFlow! Your patient account and record are ready.');
+      success('Welcome to ClinicFlow! Your patient account and record are ready.');
       onNavigate('/patient/dashboard');
     } catch (registrationError) {
       error(
         registrationError instanceof Error
           ? registrationError.message
           : 'Unable to create patient account.',
+      );
+    } finally {
+      setIsRegistering(false);
+    }
+  };
+
+  const handleDoctorRegistration = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (doctorForm.password !== doctorForm.confirmPassword) {
+      error('The passwords do not match.');
+      return;
+    }
+    if (!doctorForm.licenseNumber.trim()) {
+      error('Medical practice license number is required.');
+      return;
+    }
+    setIsRegistering(true);
+    try {
+      await authService.registerDoctor({
+        phone: doctorForm.phone.trim(),
+        ...(doctorForm.email.trim() ? { email: doctorForm.email.trim() } : {}),
+        password: doctorForm.password,
+        firstName: doctorForm.firstName.trim(),
+        lastName: doctorForm.lastName.trim(),
+        specialization: doctorForm.specialization.trim(),
+        licenseNumber: doctorForm.licenseNumber.trim(),
+        consultationFee: Number(doctorForm.consultationFee) || 0,
+        ...(doctorForm.bio.trim() ? { bio: doctorForm.bio.trim() } : {}),
+      });
+      success('Doctor account registered successfully! Redirecting to your workspace.');
+      onNavigate('/doctor/overview');
+    } catch (registrationError) {
+      error(
+        registrationError instanceof Error
+          ? registrationError.message
+          : 'Unable to register doctor account.',
       );
     } finally {
       setIsRegistering(false);
@@ -183,12 +247,16 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
             <h2 className="text-4xl font-bold leading-tight tracking-tight">
               {regType === 'patient'
                 ? 'Your personal health records, simplified.'
-                : 'Bring your clinic into a better flow.'}
+                : regType === 'doctor'
+                  ? 'Doctor consultation desk & workspace.'
+                  : 'Bring your clinic into a better flow.'}
             </h2>
             <p className="text-sm text-slate-300 leading-relaxed max-w-sm">
               {regType === 'patient'
                 ? 'Create a patient account to track appointments, follow your live clinic queue ticket, and access visit summaries.'
-                : 'Create an administrator account to coordinate appointments, patient records, and daily clinic operations in one place.'}
+                : regType === 'doctor'
+                  ? 'Register as an accredited physician to manage consultation queues, issue digital prescriptions, and record medical findings.'
+                  : 'Create an administrator account to coordinate appointments, patient records, and daily clinic operations in one place.'}
             </p>
             <div className="flex items-center gap-2 text-sm text-emerald-300">
               <CheckCircle2 className="w-4 h-4" />
@@ -219,30 +287,42 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
 
           <section className="rounded-3xl border border-slate-200/80 bg-white/95 p-5 shadow-xl shadow-slate-900/[0.06] backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-950/90 dark:shadow-black/20 sm:p-8">
             {/* Account Type Selector Tabs */}
-            <div className="mb-6 flex rounded-2xl bg-slate-100 p-1 dark:bg-zinc-900">
+            <div className="mb-6 grid grid-cols-3 gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-zinc-900">
               <button
                 type="button"
                 onClick={() => setRegType('patient')}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition cursor-pointer ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition cursor-pointer ${
                   regType === 'patient'
                     ? 'bg-white text-violet-700 shadow-xs dark:bg-zinc-800 dark:text-violet-300'
                     : 'text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
                 }`}
               >
-                <HeartPulse className="h-4 w-4" />
-                Patient Registration
+                <HeartPulse className="h-3.5 w-3.5" />
+                <span>Patient</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setRegType('doctor')}
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition cursor-pointer ${
+                  regType === 'doctor'
+                    ? 'bg-white text-emerald-700 shadow-xs dark:bg-zinc-800 dark:text-emerald-300'
+                    : 'text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
+                }`}
+              >
+                <Stethoscope className="h-3.5 w-3.5" />
+                <span>Doctor</span>
               </button>
               <button
                 type="button"
                 onClick={() => setRegType('clinic')}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition cursor-pointer ${
+                className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition cursor-pointer ${
                   regType === 'clinic'
                     ? 'bg-white text-blue-700 shadow-xs dark:bg-zinc-800 dark:text-blue-300'
                     : 'text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
                 }`}
               >
-                <Hospital className="h-4 w-4" />
-                Clinic Practice
+                <Hospital className="h-3.5 w-3.5" />
+                <span>Clinic</span>
               </button>
             </div>
 
@@ -361,6 +441,134 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate }) => {
                     rightIcon={<ArrowRight className="h-4 w-4" />}
                   >
                     Complete Patient Sign Up
+                  </Button>
+                </form>
+              </div>
+            )}
+
+            {/* DOCTOR REGISTRATION FORM */}
+            {regType === 'doctor' && (
+              <div>
+                <div className="mb-6">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-600 dark:text-emerald-400">
+                    Physician & Clinical Portal
+                  </p>
+                  <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-[1.75rem]">
+                    Register Doctor Workspace
+                  </h1>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">
+                    Join as an attending doctor to manage patient consultations, live queue desk, and clinical histories.
+                  </p>
+                </div>
+
+                <form onSubmit={handleDoctorRegistration} className="space-y-4">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Input
+                      label="First Name"
+                      placeholder="e.g. Hana"
+                      value={doctorForm.firstName}
+                      onChange={e => setDoctorForm(f => ({ ...f, firstName: e.target.value }))}
+                      required
+                    />
+                    <Input
+                      label="Last Name"
+                      placeholder="e.g. Tesfaye"
+                      value={doctorForm.lastName}
+                      onChange={e => setDoctorForm(f => ({ ...f, lastName: e.target.value }))}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Input
+                      label="Phone Number"
+                      type="tel"
+                      placeholder="+251911234567"
+                      leftIcon={<Phone className="h-4 w-4" />}
+                      value={doctorForm.phone}
+                      onChange={e => setDoctorForm(f => ({ ...f, phone: e.target.value }))}
+                      required
+                    />
+                    <Input
+                      label="Email Address (Optional)"
+                      type="email"
+                      placeholder="doctor.hana@clinic.et"
+                      value={doctorForm.email}
+                      onChange={e => setDoctorForm(f => ({ ...f, email: e.target.value }))}
+                    />
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Select
+                      label="Specialization"
+                      value={doctorForm.specialization}
+                      onChange={e => setDoctorForm(f => ({ ...f, specialization: e.target.value }))}
+                      required
+                    >
+                      <option value="Internal Medicine">Internal Medicine</option>
+                      <option value="Pediatrics & Child Health">Pediatrics & Child Health</option>
+                      <option value="Cardiology">Cardiology</option>
+                      <option value="Obstetrics & Gynecology">Obstetrics & Gynecology</option>
+                      <option value="General Practice">General Practice</option>
+                      <option value="Orthopedics">Orthopedics</option>
+                      <option value="Dermatology">Dermatology</option>
+                    </Select>
+
+                    <Input
+                      label="Medical License Number"
+                      placeholder="e.g. MD-ETH-78901"
+                      value={doctorForm.licenseNumber}
+                      onChange={e => setDoctorForm(f => ({ ...f, licenseNumber: e.target.value }))}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Input
+                      label="Consultation Fee (ETB)"
+                      type="number"
+                      placeholder="e.g. 850"
+                      value={doctorForm.consultationFee}
+                      onChange={e => setDoctorForm(f => ({ ...f, consultationFee: e.target.value }))}
+                      required
+                    />
+                    <Input
+                      label="Professional Bio (Optional)"
+                      placeholder="e.g. Consultant Internist with 12+ years clinical experience"
+                      value={doctorForm.bio}
+                      onChange={e => setDoctorForm(f => ({ ...f, bio: e.target.value }))}
+                    />
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Input
+                      label="Account Password"
+                      type="password"
+                      placeholder="Minimum 6 characters"
+                      leftIcon={<Lock className="h-4 w-4" />}
+                      value={doctorForm.password}
+                      onChange={e => setDoctorForm(f => ({ ...f, password: e.target.value }))}
+                      required
+                    />
+                    <Input
+                      label="Confirm Password"
+                      type="password"
+                      placeholder="Re-enter password"
+                      leftIcon={<Lock className="h-4 w-4" />}
+                      value={doctorForm.confirmPassword}
+                      onChange={e => setDoctorForm(f => ({ ...f, confirmPassword: e.target.value }))}
+                      required
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    size="lg"
+                    isLoading={isRegistering}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white mt-2 shadow-xs cursor-pointer"
+                    rightIcon={<ArrowRight className="h-4 w-4" />}
+                  >
+                    Complete Doctor Sign Up
                   </Button>
                 </form>
               </div>

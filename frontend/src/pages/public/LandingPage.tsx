@@ -196,7 +196,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-2">
                 <button
                   onClick={() => onNavigate("/register")}
                   className="px-6 sm:px-7 py-3.5 rounded-xl bg-[#1D5BD8] text-white font-semibold text-sm hover:bg-[#1548B0] hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all duration-200 cursor-pointer shadow-sm flex items-center gap-2 group"
@@ -205,8 +205,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
                 </button>
                 <button
+                  onClick={() => onNavigate("/login?portal=doctor")}
+                  className="px-5 sm:px-6 py-3.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 font-semibold text-sm border border-emerald-200 dark:border-emerald-800 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 cursor-pointer shadow-xs flex items-center gap-2"
+                >
+                  <Stethoscope className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <span>Doctor Portal</span>
+                </button>
+                <button
                   onClick={() => onNavigate("/login")}
-                  className="px-6 py-3.5 rounded-xl bg-white dark:bg-zinc-900 text-[#172033] dark:text-zinc-200 font-semibold text-sm hover:bg-[#F7FAFC] dark:hover:bg-zinc-800 hover:border-[#1D5BD8]/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 border border-[#E6EAF0] dark:border-zinc-700 cursor-pointer shadow-xs flex items-center gap-2"
+                  className="px-5 py-3.5 rounded-xl bg-white dark:bg-zinc-900 text-[#172033] dark:text-zinc-200 font-semibold text-sm hover:bg-[#F7FAFC] dark:hover:bg-zinc-800 hover:border-[#1D5BD8]/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 border border-[#E6EAF0] dark:border-zinc-700 cursor-pointer shadow-xs flex items-center gap-2"
                 >
                   <span>Sign In Options</span>
                 </button>

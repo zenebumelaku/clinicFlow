@@ -17,6 +17,7 @@ import { PatientsService } from './patients/patients.service';
 import { AppointmentsService } from './appointments/appointments.service';
 import { QueueService } from './queue/queue.service';
 import { PaymentsService } from './payments/payments.service';
+import { ChapaService } from './payments/chapa.service';
 import { NotificationsService } from './notifications/notifications.service';
 import { ReportsService } from './reports/reports.service';
 
@@ -37,6 +38,7 @@ export interface AppServices {
   appointments: AppointmentsService;
   queue: QueueService;
   payments: PaymentsService;
+  chapa: ChapaService;
   notifications: NotificationsService;
   reports: ReportsService;
 }
@@ -72,7 +74,8 @@ export function createServices(overrides?: {
   const patients = new PatientsService(prisma);
   const appointments = new AppointmentsService(prisma);
   const queue = new QueueService(prisma);
-  const payments = new PaymentsService(prisma);
+  const chapa = new ChapaService(config);
+  const payments = new PaymentsService(prisma, chapa);
   const notifications = new NotificationsService(prisma);
   const reports = new ReportsService(prisma);
 
@@ -93,6 +96,7 @@ export function createServices(overrides?: {
     appointments,
     queue,
     payments,
+    chapa,
     notifications,
     reports,
   };

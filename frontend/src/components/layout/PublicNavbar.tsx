@@ -358,6 +358,14 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
           </div>
 
           <button
+            onClick={() => handleNavClick("/login?portal=doctor")}
+            className="text-xs sm:text-[13px] font-semibold px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 transition-all duration-200 cursor-pointer flex items-center gap-1.5 shadow-2xs whitespace-nowrap"
+          >
+            <Stethoscope className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>Doctor Portal</span>
+          </button>
+
+          <button
             onClick={() => handleNavClick("/login")}
             className="text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg text-[#667085] dark:text-zinc-300 hover:text-[#172033] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-all duration-200 cursor-pointer whitespace-nowrap"
           >
@@ -517,6 +525,16 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
                   Auto
                 </button>
               </div>
+            </div>
+
+            <div className="pt-2">
+              <button
+                onClick={() => handleNavClick("/login?portal=doctor")}
+                className="w-full text-xs font-bold py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-2xs"
+              >
+                <Stethoscope className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>Doctor Portal Sign In</span>
+              </button>
             </div>
 
             <div className="flex items-center gap-2 pt-1">

@@ -61,7 +61,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
       { label: 'Patient Check-In', path: '/dashboard/check-in', icon: UserCheck },
       { label: 'Patients Directory', path: '/dashboard/patients', icon: Users },
       { label: 'Doctors & Suites', path: '/dashboard/doctors', icon: Stethoscope },
-      { label: 'Telebirr & Payments', path: '/dashboard/payments', icon: CreditCard },
+      { label: 'Chapa & Payments', path: '/dashboard/payments', icon: CreditCard },
       { label: 'Reports & Analytics', path: '/dashboard/reports', icon: BarChart3 }
     ];
 

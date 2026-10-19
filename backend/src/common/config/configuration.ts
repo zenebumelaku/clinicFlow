@@ -25,4 +25,9 @@ export default () => ({
     limit: parseInt(process.env.THROTTLE_LIMIT || '100', 10),
   },
   trustProxyHops: parseInt(process.env.TRUST_PROXY_HOPS || '0', 10),
+  chapa: {
+    secretKey: process.env.CHAPA_SECRET_KEY || '',
+    baseUrl: process.env.CHAPA_BASE_URL || 'https://api.chapa.co/v1',
+    webhookSecret: process.env.CHAPA_WEBHOOK_SECRET || '',
+  },
 });

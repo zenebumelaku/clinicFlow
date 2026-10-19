@@ -111,6 +111,17 @@ export class DoctorsService {
     return this.map(doctor);
   }
 
+  async findMine(userId: string): Promise<DoctorResponseDto> {
+    const doctor = await this.prisma.doctor.findFirst({
+      where: { userId, isActive: true },
+      include: { user: true, staffMember: { include: { user: true } } },
+    });
+    if (!doctor) {
+      throw new NotFoundException('Doctor profile not found for this user');
+    }
+    return this.map(doctor);
+  }
+
   async update(
     clinicId: string,
     doctorId: string,

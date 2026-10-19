@@ -16,6 +16,29 @@ import {
 } from '../../types';
 import { apiPaginated, apiPath, apiRequest, ApiError, PaginatedData } from './apiClient';
 import { clinicDateInputValue, clinicTimeValue } from '../utils';
+import {
+  INITIAL_PATIENTS,
+  INITIAL_DOCTORS,
+  INITIAL_APPOINTMENTS,
+  INITIAL_QUEUE,
+  INITIAL_PAYMENTS,
+  INITIAL_NOTIFICATIONS,
+  INITIAL_STAFF,
+  INITIAL_STATS,
+} from '../mockData';
+
+export function getStoredMockData() {
+  return {
+    patients: INITIAL_PATIENTS,
+    doctors: INITIAL_DOCTORS,
+    appointments: INITIAL_APPOINTMENTS,
+    queue: INITIAL_QUEUE,
+    payments: INITIAL_PAYMENTS,
+    notifications: INITIAL_NOTIFICATIONS,
+    staff: INITIAL_STAFF,
+    stats: INITIAL_STATS,
+  };
+}
 
 const CLINIC_ID_KEY = 'mediflow_clinic_id';
 const PAGE_SIZE = 100;
@@ -277,8 +300,9 @@ function toQueueItem(record: ApiQueueTicket, index: number): QueueItem {
 }
 
 function fromPaymentMethod(value: string): PaymentMethod {
-  if (['cash', 'telebirr', 'mpesa', 'bank_transfer'].includes(lowerEnum(value))) {
-    return lowerEnum(value) as PaymentMethod;
+  const normalized = lowerEnum(value);
+  if (['chapa', 'cash', 'telebirr', 'mpesa', 'bank_transfer'].includes(normalized)) {
+    return normalized as PaymentMethod;
   }
   return 'card';
 }
@@ -291,7 +315,8 @@ function fromPaymentStatus(value: string): PaymentStatus {
 }
 
 function toPaymentMethod(value: PaymentMethod): string {
-  return value === 'cbe_birr' || value === 'card' ? 'OTHER' : value.toUpperCase();
+  if (value === 'chapa' || value === 'cbe_birr' || value === 'card') return 'OTHER';
+  return value.toUpperCase();
 }
 
 function toApiPaymentStatus(value: PaymentStatus): string {
@@ -742,6 +767,36 @@ export const clinicService = {
           .join(' · '),
       },
     });
+    const patients = await getPatientsPage();
+    return toPayment(result, patients.data.map(toPatient));
+  },
+
+  async initializeChapaPayment(params: {
+    patientId: string;
+    amount: number;
+    appointmentId?: string;
+    returnUrl?: string;
+    callbackUrl?: string;
+    description?: string;
+  }): Promise<{ checkoutUrl: string; txRef: string; paymentId: string; amount: number; currency: string }> {
+    const clinicId = await getClinicId();
+    return await apiRequest('/payments/chapa/initialize', {
+      method: 'POST',
+      body: {
+        clinicId,
+        patientId: params.patientId,
+        amount: params.amount,
+        appointmentId: params.appointmentId,
+        returnUrl: params.returnUrl || `${window.location.origin}/patient/payments`,
+        callbackUrl: params.callbackUrl,
+        description: params.description || 'Clinical Consultation Fee Payment',
+      },
+    });
+  },
+
+  async verifyChapaPayment(txRef: string): Promise<PaymentRecord> {
+    const clinicId = await getClinicId();
+    const result = await apiRequest<ApiPayment>(`/payments/chapa/verify/${encodeURIComponent(txRef)}?clinicId=${clinicId}`);
     const patients = await getPatientsPage();
     return toPayment(result, patients.data.map(toPatient));
   },

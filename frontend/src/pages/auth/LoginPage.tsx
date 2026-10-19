@@ -48,18 +48,19 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
   };
 
   const handleLogin = async () => {
+    if (!identifier.trim()) {
+      error("Please enter your phone number or email address.");
+      return;
+    }
+    if (!password) {
+      error("Please enter your password.");
+      return;
+    }
     setLoading(true);
     try {
-      const targetRole = requestedPortal || (identifier.toLowerCase().includes("doc") || identifier.toLowerCase().includes("hana") ? "doctor" : identifier.toLowerCase().includes("pat") || identifier.toLowerCase().includes("abebe") ? "patient" : "admin");
-      
-      const user = await authService.login(
-        identifier || (targetRole === "doctor" ? "doctor.hana@mediflow-demo.local" : targetRole === "patient" ? "+251911223344" : "admin@mediflow-demo.local"),
-        password || "ClinicFlow@2026",
-        targetRole,
-      );
-
-      const actualRole = user.role.toLowerCase() as Role;
-      success(`Signed in to the ${actualRole} portal`);
+      const user = await authService.login(identifier, password);
+      const actualRole = user.role.toLowerCase();
+      success(`Signed in to the ${actualRole} portal as ${user.firstName}`);
       onNavigate(
         actualRole === "doctor"
           ? "/doctor/overview"
@@ -69,7 +70,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
       );
     } catch (loginError) {
       error(
-        loginError instanceof Error ? loginError.message : "Unable to sign in.",
+        loginError instanceof Error ? loginError.message : "Invalid identifier or password.",
       );
     } finally {
       setLoading(false);

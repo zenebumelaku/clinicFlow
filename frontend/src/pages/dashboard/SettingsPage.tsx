@@ -48,9 +48,10 @@ export const SettingsPage: React.FC<{
     maxWaitingCap: "30",
   });
 
-  const [telebirrConfig, setTelebirrConfig] = useState({
-    merchantId: "",
-    cbeShortCode: "",
+  const [chapaConfig, setChapaConfig] = useState({
+    publicKey: "CHAPUBK_TEST-sandbox-key",
+    baseUrl: "https://api.chapa.co/v1",
+    testMode: true,
     allowCashSettlement: true,
   });
 
@@ -148,7 +149,7 @@ export const SettingsPage: React.FC<{
               : "text-slate-600 dark:text-zinc-300 hover:bg-[#F8FAFC] dark:hover:bg-zinc-800"
           }`}
         >
-          <CreditCard className="w-3.5 h-3.5" /> Telebirr & Billing
+          <CreditCard className="w-3.5 h-3.5" /> Chapa & Billing
         </button>
 
         <button
@@ -350,28 +351,38 @@ export const SettingsPage: React.FC<{
 
         {activeTab === "payments" && (
           <form onSubmit={handleSave} className="space-y-4">
-            <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
-              Digital Billing & Currency (ETB)
-            </h3>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
+                  Chapa Payment Gateway & Currency (ETB)
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-zinc-400">
+                  Configure Chapa hosted test checkout and digital fee settlement.
+                </p>
+              </div>
+              <span className="px-2.5 py-1 text-[10px] font-bold rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">
+                Chapa Sandbox Active
+              </span>
+            </div>
 
             <Input
-              label="Telebirr Merchant / Short Code"
-              value={telebirrConfig.merchantId}
+              label="Chapa Merchant / Public Key (Test Mode)"
+              value={chapaConfig.publicKey}
               onChange={(e) =>
-                setTelebirrConfig({
-                  ...telebirrConfig,
-                  merchantId: e.target.value,
+                setChapaConfig({
+                  ...chapaConfig,
+                  publicKey: e.target.value,
                 })
               }
             />
 
             <Input
-              label="Commercial Bank of Ethiopia (CBE Birr) Pay ID"
-              value={telebirrConfig.cbeShortCode}
+              label="Chapa API Base URL"
+              value={chapaConfig.baseUrl}
               onChange={(e) =>
-                setTelebirrConfig({
-                  ...telebirrConfig,
-                  cbeShortCode: e.target.value,
+                setChapaConfig({
+                  ...chapaConfig,
+                  baseUrl: e.target.value,
                 })
               }
             />
@@ -382,15 +393,15 @@ export const SettingsPage: React.FC<{
                   Allow Physical Cash Collections
                 </strong>
                 <p className="text-slate-500 dark:text-zinc-400">
-                  Permit cash receipt generation at reception counter.
+                  Permit cash receipt generation at reception counter alongside Chapa digital payments.
                 </p>
               </div>
               <input
                 type="checkbox"
-                checked={telebirrConfig.allowCashSettlement}
+                checked={chapaConfig.allowCashSettlement}
                 onChange={(e) =>
-                  setTelebirrConfig({
-                    ...telebirrConfig,
+                  setChapaConfig({
+                    ...chapaConfig,
                     allowCashSettlement: e.target.checked,
                   })
                 }
@@ -399,7 +410,7 @@ export const SettingsPage: React.FC<{
             </div>
 
             <div className="pt-4 flex justify-end">
-              <Button type="submit">Save Billing Settings</Button>
+              <Button type="submit">Save Chapa Settings</Button>
             </div>
           </form>
         )}

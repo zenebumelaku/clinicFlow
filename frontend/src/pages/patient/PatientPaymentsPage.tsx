@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   CreditCard,
   Receipt,
@@ -11,10 +11,15 @@ import {
   Building,
   Calendar,
   X,
+  ExternalLink,
+  ShieldCheck,
+  AlertCircle,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { StatusBadge } from '../../components/ui/StatusBadge';
+import { useToast } from '../../components/ui/Toast';
 import { useClinicData } from '../../lib/hooks/useClinic';
 import { authService } from '../../lib/services/authService';
 import { formatDateSafe } from '../../lib/utils';
@@ -25,11 +30,73 @@ interface PatientPaymentsPageProps {
 }
 
 export const PatientPaymentsPage: React.FC<PatientPaymentsPageProps> = ({ onNavigate }) => {
-  const { payments, patients, clinicProfile } = useClinicData();
+  const { payments, patients, clinicProfile, initializeChapaPayment, verifyChapaPayment } = useClinicData();
+  const { success, error, info } = useToast();
   const currentUser = authService.getUser();
   const patient = patients.find(p => p.phone === currentUser?.phone || p.id === currentUser?.id) || patients[0];
 
   const [selectedReceipt, setSelectedReceipt] = useState<PaymentRecord | null>(null);
+  const [isInitializingChapa, setIsInitializingChapa] = useState(false);
+  const [isVerifyingChapa, setIsVerifyingChapa] = useState(false);
+  const [activeChapaModal, setActiveChapaModal] = useState<{ checkoutUrl: string; txRef: string; amount: number } | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const txRef = params.get('tx_ref');
+    if (txRef) {
+      setIsVerifyingChapa(true);
+      info(`Verifying Chapa transaction (${txRef})...`);
+      verifyChapaPayment(txRef)
+        .then(rec => {
+          success(`Payment verified and confirmed! Receipt: ${rec.receiptNumber}`);
+          window.history.replaceState({}, document.title, window.location.pathname);
+        })
+        .catch(err => {
+          error(err instanceof Error ? err.message : 'Verification failed');
+        })
+        .finally(() => setIsVerifyingChapa(false));
+    }
+  }, []);
+
+  const handlePayWithChapa = async (amount: number = 850) => {
+    if (!patient) {
+      error('Patient profile not available');
+      return;
+    }
+    setIsInitializingChapa(true);
+    try {
+      const res = await initializeChapaPayment({
+        patientId: patient.id,
+        amount,
+        returnUrl: `${window.location.origin}/patient/payments`,
+        description: 'Clinic Consultation Fee Payment',
+      });
+      setActiveChapaModal({
+        checkoutUrl: res.checkoutUrl,
+        txRef: res.txRef,
+        amount: res.amount,
+      });
+      info(`Chapa test transaction initialized (${res.txRef}).`);
+    } catch (err) {
+      error(err instanceof Error ? err.message : 'Could not initialize Chapa payment');
+    } finally {
+      setIsInitializingChapa(false);
+    }
+  };
+
+  const handleConfirmVerification = async (txRef: string) => {
+    setIsVerifyingChapa(true);
+    try {
+      const rec = await verifyChapaPayment(txRef);
+      success(`Payment confirmed by Chapa server! Receipt: ${rec.receiptNumber}`);
+      setActiveChapaModal(null);
+      setSelectedReceipt(rec);
+    } catch (err) {
+      error(err instanceof Error ? err.message : 'Verification failed');
+    } finally {
+      setIsVerifyingChapa(false);
+    }
+  };
 
   // Filter payments for this patient or show demo records
   const myPayments = patient
@@ -85,13 +152,40 @@ export const PatientPaymentsPage: React.FC<PatientPaymentsPageProps> = ({ onNavi
           <p className="mt-1 text-[11px] text-slate-400">Electronic verification enabled</p>
         </div>
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 dark:border-zinc-800 dark:bg-[#121214]">
-          <span className="text-xs font-semibold text-slate-500 dark:text-zinc-400">Supported Channels</span>
+          <span className="text-xs font-semibold text-slate-500 dark:text-zinc-400">Payment Gateway</span>
           <div className="mt-2 flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-zinc-300">
-            <span className="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300">Telebirr</span>
-            <span className="px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300">CBE Birr</span>
+            <span className="px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800">Chapa (Test Mode)</span>
             <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-zinc-800">Cash</span>
           </div>
-          <p className="mt-2 text-[11px] text-slate-400">Ministry of Health standard invoices</p>
+          <p className="mt-2 text-[11px] text-slate-400">Official Ethiopian Birr (ETB) test checkout</p>
+        </div>
+      </div>
+
+      {/* Chapa Test Checkout Action Card */}
+      <div className="p-5 sm:p-6 rounded-2xl border border-emerald-200/90 dark:border-emerald-800/60 bg-gradient-to-r from-emerald-50/70 via-white to-white dark:from-emerald-950/30 dark:via-[#121214] dark:to-[#121214] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 uppercase tracking-wider">
+              Chapa Sandbox
+            </span>
+            <span className="text-xs text-slate-500 dark:text-zinc-400">Experimental Integration</span>
+          </div>
+          <h2 className="text-base font-bold text-slate-900 dark:text-white">
+            Settle Clinical Consultation Fee (850 ETB)
+          </h2>
+          <p className="text-xs text-slate-600 dark:text-zinc-400 max-w-xl">
+            Test the live Chapa payment flow in sandbox mode. Generates a server-tracked transaction reference, opens the hosted checkout flow, and verifies the transaction server-to-server.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <Button
+            onClick={() => handlePayWithChapa(850)}
+            isLoading={isInitializingChapa}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs cursor-pointer"
+            leftIcon={<CreditCard className="h-4 w-4" />}
+          >
+            Pay with Chapa (Test Mode)
+          </Button>
         </div>
       </div>
 
@@ -227,6 +321,94 @@ export const PatientPaymentsPage: React.FC<PatientPaymentsPageProps> = ({ onNavi
                 onClick={() => setSelectedReceipt(null)}
               >
                 Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Chapa Test Checkout Modal */}
+      {activeChapaModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-lg rounded-3xl bg-white p-6 sm:p-7 shadow-2xl border border-emerald-200 dark:border-zinc-800 dark:bg-[#121214]">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4 dark:border-zinc-800">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-black text-sm shadow-sm">
+                  C
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Chapa Payment Gateway</h3>
+                    <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300">
+                      Sandbox Mode
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-zinc-400">Official Ethiopian Birr (ETB) Hosted Checkout</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveChapaModal(null)}
+                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-5 space-y-4 text-xs">
+              <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-200 flex items-start gap-2.5">
+                <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-xs">Experimental Sandbox Checkout</p>
+                  <p className="text-[11px] text-emerald-700 dark:text-emerald-300 mt-0.5">
+                    This transaction is tracked on the ClinicFlow backend. Verification happens server-to-server directly against Chapa's official API.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2 rounded-xl bg-slate-50 dark:bg-zinc-900/60 p-4 border border-slate-200/60 dark:border-zinc-800">
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-500 font-medium">Transaction Ref:</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-white">{activeChapaModal.txRef}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-500 font-medium">Amount Due:</span>
+                  <span className="text-sm font-black text-slate-900 dark:text-white">{activeChapaModal.amount} ETB</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-500 font-medium">Customer:</span>
+                  <span className="font-semibold text-slate-900 dark:text-white">{patient?.name || 'Patient'}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span className="text-slate-500 font-medium">Hosted URL:</span>
+                  <a
+                    href={activeChapaModal.checkoutUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono text-xs text-[#1D5BD8] hover:underline flex items-center gap-1"
+                  >
+                    <span>Open Checkout</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setActiveChapaModal(null)}
+              >
+                Close
+              </Button>
+              <Button
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer"
+                isLoading={isVerifyingChapa}
+                onClick={() => handleConfirmVerification(activeChapaModal.txRef)}
+                leftIcon={<CheckCircle2 className="h-4 w-4" />}
+              >
+                Verify Payment on Server
               </Button>
             </div>
           </div>
