@@ -160,23 +160,20 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
             {showPortalsMenu && (
               <div
                 role="menu"
-                className="absolute right-0 top-full z-50 mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-2 text-sm text-slate-700 shadow-xl dark:border-zinc-800 dark:bg-[#121214] dark:text-zinc-200"
+                className="absolute right-0 top-full z-50 mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-2.5 text-sm text-slate-700 shadow-xl dark:border-zinc-800 dark:bg-[#121214] dark:text-zinc-200"
               >
                 <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
-                  Direct Portal Launch
+                  Select Portal to Sign In
                 </div>
                 <div className="space-y-1 mt-1">
                   <button
                     type="button"
                     role="menuitem"
-                    onClick={async () => {
-                      await authService.demoLogin("patient");
-                      handleNavClick("/patient/dashboard");
-                    }}
+                    onClick={() => handleNavClick("/login?portal=patient")}
                     className="flex w-full items-center justify-between rounded-xl p-2 text-left hover:bg-violet-50 hover:text-violet-700 dark:hover:bg-zinc-800 dark:hover:text-violet-300 group cursor-pointer transition-colors"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300 flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-violet-100 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300 flex items-center justify-center shrink-0">
                         <Users className="h-4 w-4" />
                       </div>
                       <div>
@@ -184,26 +181,23 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
                           Patient Portal
                         </div>
                         <div className="text-[10px] text-slate-500 dark:text-zinc-400">
-                          Tickets, bookings & receipts
+                          Sign in options, queue & receipts
                         </div>
                       </div>
                     </div>
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-100 text-violet-800 dark:bg-violet-950/60 dark:text-violet-300">
-                      Launch
+                      Sign In →
                     </span>
                   </button>
 
                   <button
                     type="button"
                     role="menuitem"
-                    onClick={async () => {
-                      await authService.demoLogin("doctor");
-                      handleNavClick("/doctor/overview");
-                    }}
+                    onClick={() => handleNavClick("/login?portal=doctor")}
                     className="flex w-full items-center justify-between rounded-xl p-2 text-left hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-zinc-800 dark:hover:text-emerald-300 group cursor-pointer transition-colors"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 flex items-center justify-center shrink-0">
                         <Stethoscope className="h-4 w-4" />
                       </div>
                       <div>
@@ -211,26 +205,23 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
                           Doctor Workspace
                         </div>
                         <div className="text-[10px] text-slate-500 dark:text-zinc-400">
-                          Dr. Hana · Consult desk
+                          Doctor sign in & consultation desk
                         </div>
                       </div>
                     </div>
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                      Launch
+                      Sign In →
                     </span>
                   </button>
 
                   <button
                     type="button"
                     role="menuitem"
-                    onClick={async () => {
-                      await authService.demoLogin("admin");
-                      handleNavClick("/dashboard/overview");
-                    }}
+                    onClick={() => handleNavClick("/login?portal=admin")}
                     className="flex w-full items-center justify-between rounded-xl p-2 text-left hover:bg-blue-50 hover:text-blue-700 dark:hover:bg-zinc-800 dark:hover:text-blue-300 group cursor-pointer transition-colors"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 flex items-center justify-center shrink-0">
                         <Hospital className="h-4 w-4" />
                       </div>
                       <div>
@@ -238,12 +229,12 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
                           Clinic Admin Portal
                         </div>
                         <div className="text-[10px] text-slate-500 dark:text-zinc-400">
-                          Totem, check-in, billing
+                          Admin sign in, queue totem & billing
                         </div>
                       </div>
                     </div>
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">
-                      Launch
+                      Sign In →
                     </span>
                   </button>
                 </div>
@@ -254,7 +245,7 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
                     onClick={() => handleNavClick("/login")}
                     className="text-[11px] text-[#1D5BD8] dark:text-[#60A5FA] font-medium hover:underline cursor-pointer"
                   >
-                    View Portal Sign-in Options →
+                    All Portal Sign In Options →
                   </button>
                 </div>
               </div>
@@ -462,39 +453,30 @@ export const PublicNavbar: React.FC<PublicNavbarProps> = ({
               Contact
             </button>
             <button
-              onClick={async () => {
-                await authService.demoLogin("patient");
-                handleNavClick("/patient/dashboard");
-              }}
+              onClick={() => handleNavClick("/login?portal=patient")}
               className="text-left px-3 py-2 rounded-lg hover:bg-violet-50 dark:hover:bg-zinc-800 text-violet-700 dark:text-violet-300 font-semibold transition-colors flex items-center justify-between"
             >
               <span>Patient Portal</span>
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-violet-100 dark:bg-violet-950/60 text-violet-800 dark:text-violet-300">
-                Launch
+                Sign In →
               </span>
             </button>
             <button
-              onClick={async () => {
-                await authService.demoLogin("doctor");
-                handleNavClick("/doctor/overview");
-              }}
+              onClick={() => handleNavClick("/login?portal=doctor")}
               className="text-left px-3 py-2 rounded-lg hover:bg-emerald-50 dark:hover:bg-zinc-800 text-emerald-700 dark:text-emerald-300 font-semibold transition-colors flex items-center justify-between"
             >
               <span>Doctor Workspace</span>
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
-                Launch
+                Sign In →
               </span>
             </button>
             <button
-              onClick={async () => {
-                await authService.demoLogin("admin");
-                handleNavClick("/dashboard/overview");
-              }}
+              onClick={() => handleNavClick("/login?portal=admin")}
               className="text-left px-3 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-zinc-800 text-[#1D5BD8] dark:text-[#60A5FA] font-semibold transition-colors flex items-center justify-between"
             >
               <span>Clinic Admin Portal</span>
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300">
-                Launch
+                Sign In →
               </span>
             </button>
           </div>

@@ -218,15 +218,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   <span>Sign In Options</span>
                 </button>
 
-                {/* 1-Click Direct Portal Access Pills */}
+                {/* Portal Sign-In Options Pills */}
                 <div className="w-full flex flex-wrap items-center gap-2 pt-1 text-xs">
-                  <span className="font-semibold text-slate-500 dark:text-zinc-400">Direct Portals:</span>
+                  <span className="font-semibold text-slate-500 dark:text-zinc-400">Sign In to Portal:</span>
                   <button
                     type="button"
-                    onClick={async () => {
-                      await authService.demoLogin("patient");
-                      onNavigate("/patient/dashboard");
-                    }}
+                    onClick={() => onNavigate("/login?portal=patient")}
                     className="px-2.5 py-1 rounded-lg bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 dark:bg-violet-950/40 dark:border-violet-900/60 dark:text-violet-300 font-semibold transition cursor-pointer flex items-center gap-1 shadow-2xs"
                   >
                     <span>Patient Portal</span>
@@ -234,10 +231,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   </button>
                   <button
                     type="button"
-                    onClick={async () => {
-                      await authService.demoLogin("doctor");
-                      onNavigate("/doctor/overview");
-                    }}
+                    onClick={() => onNavigate("/login?portal=doctor")}
                     className="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-900/60 dark:text-emerald-300 font-semibold transition cursor-pointer flex items-center gap-1 shadow-2xs"
                   >
                     <span>Doctor Workspace</span>
@@ -245,10 +239,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   </button>
                   <button
                     type="button"
-                    onClick={async () => {
-                      await authService.demoLogin("admin");
-                      onNavigate("/dashboard/overview");
-                    }}
+                    onClick={() => onNavigate("/login?portal=admin")}
                     className="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-[#1D5BD8] border border-blue-200 dark:bg-blue-950/40 dark:border-blue-900/60 dark:text-blue-300 font-semibold transition cursor-pointer flex items-center gap-1 shadow-2xs"
                   >
                     <span>Clinic Admin</span>

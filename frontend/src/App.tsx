@@ -63,6 +63,7 @@ function MainRouter() {
     return '/';
   });
 
+  const [locationKey, setLocationKey] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const role = useActiveRole();
   const { user, isLoading: isAuthLoading, error: authError } = useAuth();
@@ -78,6 +79,7 @@ function MainRouter() {
   useEffect(() => {
     const handlePopState = () => {
       setCurrentPath(window.location.pathname || '/');
+      setLocationKey(k => k + 1);
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -90,6 +92,7 @@ function MainRouter() {
       if (currentPath !== '/') {
         window.history.pushState({}, '', '/');
         setCurrentPath('/');
+        setLocationKey(k => k + 1);
       }
       setTimeout(() => {
         const el = document.getElementById(id);
@@ -105,6 +108,7 @@ function MainRouter() {
       window.history.pushState({}, '', targetUrl);
     }
     setCurrentPath(targetPath);
+    setLocationKey(k => k + 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -225,7 +229,7 @@ function MainRouter() {
       <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#09090b] text-slate-900 dark:text-zinc-100 transition-colors">
         <PublicNavbar currentPath={currentPath} onNavigate={navigate} />
         <main className="flex-1">
-          <div key={currentPath} className="animate-in fade-in duration-300 slide-in-from-bottom-2 ease-out">
+          <div key={`${currentPath}-${locationKey}`} className="animate-in fade-in duration-300 slide-in-from-bottom-2 ease-out">
             {renderPageContent()}
           </div>
         </main>
@@ -238,7 +242,7 @@ function MainRouter() {
   if (isAuthRoute) {
     return (
       <main className="min-h-screen bg-slate-50 dark:bg-[#09090b] text-slate-900 dark:text-zinc-100 transition-colors">
-        <div key={currentPath} className="animate-in fade-in duration-300 slide-in-from-bottom-2 ease-out">
+        <div key={`${currentPath}-${locationKey}`} className="animate-in fade-in duration-300 slide-in-from-bottom-2 ease-out">
           {renderPageContent()}
         </div>
       </main>

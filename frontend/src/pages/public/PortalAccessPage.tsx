@@ -151,13 +151,18 @@ export const PortalAccessPage: React.FC<PortalAccessPageProps> = ({ portal, onNa
               Sign in with password
             </Button>
             {portal === 'admin' && (
-              <Button size="lg" variant="outline" onClick={() => onNavigate('/register')}>
+              <Button size="lg" variant="outline" onClick={() => onNavigate('/register?type=clinic')}>
                 Register a clinic
               </Button>
             )}
             {portal === 'patient' && (
-              <Button size="lg" variant="outline" onClick={() => onNavigate('/register')}>
+              <Button size="lg" variant="outline" onClick={() => onNavigate('/register?type=patient')}>
                 Create Patient Account
+              </Button>
+            )}
+            {portal === 'doctor' && (
+              <Button size="lg" variant="outline" onClick={() => onNavigate('/register?type=doctor')}>
+                Register as Doctor
               </Button>
             )}
           </div>
