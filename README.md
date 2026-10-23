@@ -11,9 +11,13 @@ appointments and patient visits.
 
 ## Who uses ClinicFlow
 
-- **Clinic administrators** manage clinic information, branches, and staff.
-- **Doctors** follow their appointments and the patient queue.
-- **Patients** can use the patient portal to access clinic-related information.
+- **Clinic administrators** use the staff dashboard and can access clinic
+  settings.
+- **Receptionists** use the staff dashboard for front-desk and daily clinic
+  operations.
+- **Doctors** follow their consultations, schedule, patient queue, and patients.
+- **Patients** use the patient portal to access appointments, queue status, and
+  billing information.
 
 ## The problem
 
@@ -39,7 +43,9 @@ information.
 
 ## Main features
 
-- **Clinic setup:** Organize clinic branches, staff, and doctors.
+- **Clinic operations dashboard:** View the clinic overview and work with
+  appointments, check-ins, the live queue, patients, doctors, payments, and
+  reports.
 - **Patient records:** Register patients and keep their clinic information
   organized.
 - **Appointments:** Schedule appointments and follow their status.
@@ -47,8 +53,23 @@ information.
 - **Payments:** Record payments, including online payments through Chapa.
 - **Reports and notifications:** Review clinic activity and keep users
   informed.
-- **Role-based access:** Give administrators, receptionists, doctors, and
-  patients access appropriate to their role.
+- **Role-based dashboards:** Give administrators, receptionists, doctors, and
+  patients navigation suited to their role.
+
+## Dashboard navigation
+
+Administrators and receptionists share the main clinic operations dashboard.
+It includes **Clinic Overview**, **Appointments**, **Live Queue & Totem**,
+**Patient Check-In**, **Patients Directory**, **Doctors & Suites**,
+**Chapa & Payments**, **Reports & Analytics**, and **Notifications**.
+Administrators also see **Clinic Settings**; receptionists do not.
+
+Doctors have a separate workspace for **My Consultations**, **Patient Queue**,
+**Schedule**, **Patients**, and **Notifications**. The patient portal provides
+**Patient Portal**, **Live Ticket Status**, **Appointments**,
+**Billing & Receipts**, and **Notifications**.
+
+The Clinic Settings screen provides the clinic profile and appearance options.
 
 ## How it works
 
@@ -80,9 +101,8 @@ interactive Swagger documentation.
 
 ## Access and data
 
-The application supports different user roles and organizes clinic work around
-the clinic a user belongs to. This helps keep everyday tasks relevant to the
-right users and clinic.
+The web interface presents different dashboard navigation for administrators,
+receptionists, doctors, and patients, as described above.
 
 ## Run locally
 
