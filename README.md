@@ -1,196 +1,198 @@
-<div align="center">
-
 # ClinicFlow
 
-### Clinic operations, brought together.
+ClinicFlow is a clinic management application designed to bring common clinic
+tasks into one place. It helps clinic teams keep track of patients from
+appointment booking and check-in through the queue and payment process.
 
-An electronic healthcare and clinic management platform for coordinating appointments, patient records, clinic queues, payments, and reporting.
+The application includes a web interface for clinic staff, doctors, and
+patients, with access shaped around each user's role. Its main goal is to make
+day-to-day clinic work easier to organize and give staff a clearer view of
+appointments and patient visits.
 
-**Designed and built by Zenebu Melaku · Fullstack Developer**
+## Who uses ClinicFlow
 
-<br />
+- **Clinic administrators** manage clinic information, branches, and staff.
+- **Doctors** follow their appointments and the patient queue.
+- **Patients** can use the patient portal to access clinic-related information.
 
-<img src="./frontend/src/assets/images/hero_clinic_reception_1791475794007.jpg" alt="Illustrative clinic reception for ClinicFlow ET" width="100%" />
+## The problem
 
-<br />
+When appointments, patient information, and check-in queues are handled
+separately, it can be difficult for a clinic team to follow a visit from start
+to finish. Staff may need to switch between processes to answer simple
+questions, such as who is waiting or which appointments are scheduled.
 
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
-![Express](https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma&logoColor=white)
+## The solution
 
-</div>
+ClinicFlow connects these tasks in one application. Clinic staff can manage
+appointments and patient check-ins, doctors can see relevant appointments and
+queue information, and patients can use a portal for their clinic-related
+information.
 
----
+### A typical clinic visit
 
-## Overview
+1. Staff register or find a patient and schedule an appointment.
+2. When the patient arrives, staff check them in and add them to the queue.
+3. The doctor follows the queue and updates the appointment as the visit
+   progresses.
+4. The clinic records the payment and can review activity in its reports.
 
-ClinicFlow brings the everyday work of a clinic into one role-aware application. Administrators and front-desk staff can coordinate clinic operations, doctors can follow appointments and patient queues, and patients have a dedicated portal for their visit information.
+## Main features
 
-The project is built as a full-stack application with a React and Vite frontend, an Express API, and PostgreSQL persistence managed through Prisma.
+- **Clinic setup:** Organize clinic branches, staff, and doctors.
+- **Patient records:** Register patients and keep their clinic information
+  organized.
+- **Appointments:** Schedule appointments and follow their status.
+- **Check-in and queues:** Check in patients and track the order of visits.
+- **Payments:** Record payments, including online payments through Chapa.
+- **Reports and notifications:** Review clinic activity and keep users
+  informed.
+- **Role-based access:** Give administrators, receptionists, doctors, and
+  patients access appropriate to their role.
 
-## What it includes
+## How it works
 
-| Clinic operations             | Patient care          | Platform foundation  |
-| ----------------------------- | --------------------- | -------------------- |
-| Clinics and branches          | Patient records       | Role-based access    |
-| Staff and doctor management   | Appointment workflows | JWT authentication   |
-| Check-in and queue management | Patient portal        | Clinic-scoped access |
-| Payment records               | Visit status          | Request validation   |
-| Reports and analytics         | Notifications         | Swagger API docs     |
-
-### Role-focused experiences
-
-- **Administrators** — oversee clinic operations, staff, and reporting.
-- **Receptionists** — manage patient registration, appointments, check-in, and queues.
-- **Doctors** — review relevant patient information and manage their appointment and queue workflows.
-- **Patients** — access their portal and follow appointment, queue, and payment details.
-
-## Technology
-
-| Area                    | Tools                                                    |
-| ----------------------- | -------------------------------------------------------- |
-| Frontend                | React, TypeScript, Vite, TanStack Query, Tailwind CSS    |
-| Backend                 | Express, TypeScript, JWT, Passport                       |
-| Data                    | PostgreSQL 16, Prisma ORM                                |
-| API                     | REST, Swagger / OpenAPI                                  |
-| Security and validation | Helmet, class-validator, role and clinic access controls |
-
-## Architecture
+The React web app sends REST requests to the Express API. The API handles
+authentication and clinic operations, and Prisma reads and writes data in
+PostgreSQL.
 
 ```mermaid
 flowchart LR
-    U[Clinic users] --> FE[React + Vite frontend]
-    FE -->|REST API| API[Express backend]
-    API --> AUTH[Authentication and access control]
-    API --> DOMAIN[Clinic, patients, appointments, queue, payments, reports]
-    DOMAIN --> ORM[Prisma ORM]
-    ORM --> DB[(PostgreSQL)]
+    User[Clinic user] --> Web[React web app]
+    Web -->|REST API| API[Express API]
+    API --> Prisma[Prisma ORM]
+    Prisma --> DB[(PostgreSQL)]
 ```
 
-## Get started
-
-### Prerequisites
-
-- Node.js 20 or newer
-- npm
-- Docker with Docker Compose, or a PostgreSQL 16 instance
-
-### 1. Start the database
-
-The backend includes a Compose service for local PostgreSQL. From the backend directory:
-
-```bash
-cd backend
-docker compose up -d postgres
-```
-
-### 2. Configure and start the API
-
-In a second terminal, from the repository root:
-
-```bash
-cd backend
-npm ci
-cp .env.example .env
-npm run prisma:generate
-npm run prisma:migrate
-npm run db:seed
-npm run start:dev
-```
-
-Update `backend/.env` before running the seed. Use private development values for `JWT_SECRET` and every `SEED_*_PASSWORD`; never commit your `.env` file.
-
-The API is available at `http://localhost:3000/api/v1`. The health check is `http://localhost:3000/api/v1/health`, and Swagger docs are at `http://localhost:3000/api/docs` when enabled.
-
-Note: the backend is implemented with Express rather than NestJS, so `npm run start:dev` starts the Express application directly.
-
-### 3. Configure and start the frontend
-
-In another terminal, from the repository root:
-
-```bash
-cd frontend
-npm ci
-cp .env.example .env.local
-npm run dev
-```
-
-The frontend runs at `http://localhost:5173`. Set `VITE_API_BASE_URL` in `frontend/.env.local` to the API base URL:
-
-```env
-VITE_API_BASE_URL=http://localhost:3000/api/v1
-```
-
-Only public configuration belongs in `VITE_*` variables. Do not put database credentials, signing keys, or API secrets in frontend environment variables.
-
-## Useful commands
-
-Run commands from the corresponding `backend/` or `frontend/` directory.
-
-### Backend
-
-| Command                 | Purpose                     |
-| ----------------------- | --------------------------- |
-| `npm run start:dev`     | Start the API in watch mode |
-| `npm run build`         | Build the API               |
-| `npm run test`          | Run backend test suites     |
-| `npm run lint`          | Lint backend TypeScript     |
-| `npm run typecheck`     | Type-check the backend      |
-| `npm run prisma:studio` | Open Prisma Studio          |
-
-For production, apply committed migrations with `npm run prisma:migrate:deploy`; see [backend/README.md](./backend/README.md) for environment and deployment guidance.
+## Technology stack
 
 ### Frontend
 
-| Command           | Purpose                           |
-| ----------------- | --------------------------------- |
-| `npm run dev`     | Start the Vite development server |
-| `npm run build`   | Build the frontend                |
-| `npm run preview` | Preview the production build      |
-| `npm run lint`    | Type-check the frontend           |
-| `npm run test`    | Run frontend tests                |
+React, TypeScript, Vite, Tailwind CSS
 
-## Project layout
+### Backend and data
+
+Node.js, Express, TypeScript, Prisma, PostgreSQL, Swagger
+
+The frontend and backend are separate applications. Both use TypeScript; the
+frontend is built with React and Vite, and the backend exposes a REST API with
+interactive Swagger documentation.
+
+## Access and data
+
+The application supports different user roles and organizes clinic work around
+the clinic a user belongs to. This helps keep everyday tasks relevant to the
+right users and clinic.
+
+## Run locally
+
+You need Node.js, npm, and Docker with Docker Compose.
+
+1. Start PostgreSQL:
+
+   ```bash
+   cd backend
+   docker compose up -d postgres
+   ```
+
+2. Set up and start the backend:
+
+   ```bash
+   cd backend
+   npm install
+   cp .env.example .env
+   ```
+
+   Set a development `JWT_SECRET` and unique passwords for the seed accounts
+   in `backend/.env`, then run:
+
+   ```bash
+   npm run prisma:generate
+   npm run prisma:migrate
+   npm run db:seed
+   npm run start:dev
+   ```
+
+   The API runs at `http://localhost:3000/api/v1`.
+   API documentation is available at `http://localhost:3000/api/docs`.
+
+3. In a new terminal, set up and start the frontend:
+
+   ```bash
+   cd frontend
+   npm install
+   cp .env.example .env.local
+   npm run dev
+   ```
+
+   The frontend runs at `http://localhost:5173`. Its
+   `VITE_API_BASE_URL` should be `http://localhost:3000/api/v1`.
+
+## Tests
+
+Run backend tests from `backend/`:
+
+```bash
+npm test
+```
+
+Run frontend tests from `frontend/`:
+
+```bash
+npm test
+```
+
+## Project structure
 
 ```text
-.
+clinic/
 ├── backend/
-│   ├── prisma/       # Database schema, migrations, and seed
-│   ├── src/          # Express routes, middleware, and domain modules
-│   └── test/         # Backend tests
+│   ├── prisma/
+│   │   ├── migrations/
+│   │   ├── schema.prisma
+│   │   └── seed.ts
+│   ├── src/
+│   │   ├── appointments/
+│   │   ├── audit/
+│   │   ├── auth/
+│   │   ├── branches/
+│   │   ├── clinics/
+│   │   ├── common/
+│   │   ├── doctors/
+│   │   ├── health/
+│   │   ├── notifications/
+│   │   ├── patients/
+│   │   ├── payments/
+│   │   ├── prisma/
+│   │   ├── queue/
+│   │   ├── reports/
+│   │   ├── staff/
+│   │   ├── swagger/
+│   │   └── tenancy/
+│   └── test/
 ├── frontend/
-│   └── src/          # React application
+│   ├── src/
+│   │   ├── assets/images/
+│   │   ├── components/
+│   │   │   ├── layout/
+│   │   │   └── ui/
+│   │   ├── lib/
+│   │   │   ├── hooks/
+│   │   │   └── services/
+│   │   ├── pages/
+│   │   │   ├── auth/
+│   │   │   ├── dashboard/
+│   │   │   ├── doctor/
+│   │   │   ├── patient/
+│   │   │   └── public/
+│   │   └── types/
+│   └── test/
+│
 └── README.md
 ```
 
-## API modules
+**Live application:** [clinicflow-web-one.vercel.app](https://clinicflow-web-one.vercel.app/)
 
-The Express API is organized around the application's core domains:
+## Built by
 
-`Authentication` · `Clinics` · `Branches` · `Staff` · `Doctors` · `Patients` · `Appointments` · `Queue` · `Payments` · `Notifications` · `Reports`
-
-Explore endpoints interactively through Swagger at `/api/docs` while the backend is running.
-
-## Security notes
-
-- Keep backend secrets in the backend environment, never in source control.
-- Use a unique, strong `JWT_SECRET` outside local development.
-- Configure an explicit allowed CORS origin for production.
-- Password recovery is handled by the clinic administrator; the API does not expose an unauthenticated password-reset operation.
-- Review [backend/README.md](./backend/README.md) for production configuration and deployment details.
-
-## About the developer
-
-**Zenebu Melaku** is a Fullstack Developer interested in building practical, reliable, and user-centered software. ClinicFlow ET demonstrates full-stack development across frontend experiences, API design, authentication, and data persistence.
-
-## License
-
-This repository is marked `UNLICENSED` in the backend package. Contact the project owner for permission before reusing or distributing the code.
-
-<div align="center">
-
-**ClinicFlow ET · Built with care for better-organized clinic workflows.**
-
-</div>
+**Zenebu Melaku**
